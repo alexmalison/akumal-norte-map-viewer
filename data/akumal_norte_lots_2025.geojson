@@ -1,0 +1,6642 @@
+{
+  "type": "FeatureCollection",
+  "name": "2025 Mapa de Lotes de Akumal Norte",
+  "source": "https://www.google.com/maps/d/viewer?mid=1NkpuEQjY6u3VBCBX3xiiNDblxbPNw2g",
+  "map_description": "Yellow = Vecinos member\nOrange =Vecinos member owned\nGreen = M&M\nRed = Etapa I\nPink = Possibleetapa I",
+  "features": [
+    {
+      "type": "Feature",
+      "id": "463D80EB7E71E8C8",
+      "properties": {
+        "name": "M&M 100 hectares",
+        "description": "",
+        "layer": "Macro and adjacent areas",
+        "style_color": "#93D7E8",
+        "style_index": 0
+      },
+      "geometry": {
+        "type": "Polygon",
+        "coordinates": [
+          [
+            [
+              -87.3111096,
+              20.3968977
+            ],
+            [
+              -87.3096947,
+              20.3995371
+            ],
+            [
+              -87.3091394,
+              20.3999746
+            ],
+            [
+              -87.308906,
+              20.4006483
+            ],
+            [
+              -87.3099038,
+              20.4021593
+            ],
+            [
+              -87.3101923,
+              20.4032943
+            ],
+            [
+              -87.3102231,
+              20.4046304
+            ],
+            [
+              -87.3095139,
+              20.406129
+            ],
+            [
+              -87.3080307,
+              20.4106664
+            ],
+            [
+              -87.3116581,
+              20.4123002
+            ],
+            [
+              -87.3184548,
+              20.4003517
+            ],
+            [
+              -87.3111096,
+              20.3968977
+            ]
+          ]
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "id": "46F316336FD1C144",
+      "properties": {
+        "name": "HIZ - Sargassum high impact zone",
+        "description": "F33-35\nG36-53\nHF and HE",
+        "layer": "Macro and adjacent areas",
+        "style_color": "#DB4436",
+        "style_index": 1
+      },
+      "geometry": {
+        "type": "LineString",
+        "coordinates": [
+          [
+            -87.3073827,
+            20.4066505
+          ],
+          [
+            -87.3081873,
+            20.4061276
+          ],
+          [
+            -87.3085387,
+            20.4058862
+          ],
+          [
+            -87.3087721,
+            20.4055645
+          ],
+          [
+            -87.3090403,
+            20.4051823
+          ],
+          [
+            -87.3091583,
+            20.4047751
+          ],
+          [
+            -87.3092817,
+            20.4043828
+          ],
+          [
+            -87.3093353,
+            20.4041918
+          ],
+          [
+            -87.3093783,
+            20.4039857
+          ],
+          [
+            -87.3093997,
+            20.4035835
+          ],
+          [
+            -87.3093675,
+            20.4030506
+          ],
+          [
+            -87.3091422,
+            20.4022461
+          ]
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "id": "4A150522F39F2D74",
+      "properties": {
+        "name": "Etapa I (appx)",
+        "description": "",
+        "layer": "Macro and adjacent areas",
+        "style_color": "#DB4436",
+        "style_index": 2
+      },
+      "geometry": {
+        "type": "Polygon",
+        "coordinates": [
+          [
+            [
+              -87.30882,
+              20.40781
+            ],
+            [
+              -87.3077576,
+              20.4073426
+            ],
+            [
+              -87.3062468,
+              20.4102767
+            ],
+            [
+              -87.3077743,
+              20.4110093
+            ],
+            [
+              -87.30882,
+              20.40781
+            ]
+          ]
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "id": "444B28D91A18C877",
+      "properties": {
+        "name": "Missing lots H69-72, H90-93 (approximate)",
+        "description": "",
+        "layer": "Macro and adjacent areas",
+        "style_color": "#EE9C96",
+        "style_index": 3
+      },
+      "geometry": {
+        "type": "Polygon",
+        "coordinates": [
+          [
+            [
+              -87.3068048,
+              20.4084934
+            ],
+            [
+              -87.3067356,
+              20.4078928
+            ],
+            [
+              -87.3062548,
+              20.4080746
+            ],
+            [
+              -87.3062924,
+              20.4085824
+            ],
+            [
+              -87.3068048,
+              20.4084934
+            ]
+          ]
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "id": "444B2626EB191B20",
+      "properties": {
+        "name": "Missing lots H45-48, H63-68 (approximate)",
+        "description": "",
+        "layer": "Macro and adjacent areas",
+        "style_color": "#EE9C96",
+        "style_index": 3
+      },
+      "geometry": {
+        "type": "Polygon",
+        "coordinates": [
+          [
+            [
+              -87.3061528,
+              20.4086326
+            ],
+            [
+              -87.3062441,
+              20.409329
+            ],
+            [
+              -87.306727,
+              20.4092761
+            ],
+            [
+              -87.3071621,
+              20.408461
+            ],
+            [
+              -87.3061528,
+              20.4086326
+            ]
+          ]
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "id": "444B3D198F0F229C",
+      "properties": {
+        "name": "Zona Comercial (approximate)",
+        "description": "",
+        "layer": "Macro and adjacent areas",
+        "style_color": "#EE9C96",
+        "style_index": 3
+      },
+      "geometry": {
+        "type": "Polygon",
+        "coordinates": [
+          [
+            [
+              -87.3068048,
+              20.4084934
+            ],
+            [
+              -87.3071701,
+              20.4084384
+            ],
+            [
+              -87.3077604,
+              20.4073652
+            ],
+            [
+              -87.3067356,
+              20.4079129
+            ],
+            [
+              -87.3068048,
+              20.4084934
+            ]
+          ]
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "id": "444B7BC09B816501",
+      "properties": {
+        "name": "Parque Publica 1 (approximate)",
+        "description": "",
+        "layer": "Macro and adjacent areas",
+        "style_color": "#DB4436",
+        "style_index": 4
+      },
+      "geometry": {
+        "type": "Polygon",
+        "coordinates": [
+          [
+            [
+              -87.309452,
+              20.4060383
+            ],
+            [
+              -87.307822,
+              20.4073626
+            ],
+            [
+              -87.3088975,
+              20.407785
+            ],
+            [
+              -87.309452,
+              20.4060383
+            ]
+          ]
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "id": "444BE28AA58FBA4F",
+      "properties": {
+        "name": "Parque Publica 2 (approximate)",
+        "description": "",
+        "layer": "Macro and adjacent areas",
+        "style_color": "#EE9C96",
+        "style_index": 3
+      },
+      "geometry": {
+        "type": "Polygon",
+        "coordinates": [
+          [
+            [
+              -87.3077743,
+              20.4110093
+            ],
+            [
+              -87.3062468,
+              20.4102767
+            ],
+            [
+              -87.3076831,
+              20.411286
+            ],
+            [
+              -87.3077743,
+              20.4110093
+            ]
+          ]
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "id": "4647DCCEE70F817A",
+      "properties": {
+        "name": "Akumal Norte",
+        "description": "",
+        "layer": "Macro and adjacent areas",
+        "style_color": "#000000",
+        "style_index": 5
+      },
+      "geometry": {
+        "type": "Polygon",
+        "coordinates": [
+          [
+            [
+              -87.304624,
+              20.4111854
+            ],
+            [
+              -87.3049632,
+              20.4108663
+            ],
+            [
+              -87.3052448,
+              20.4107192
+            ],
+            [
+              -87.3054088,
+              20.4105133
+            ],
+            [
+              -87.3055547,
+              20.410283
+            ],
+            [
+              -87.305595,
+              20.4100442
+            ],
+            [
+              -87.3057908,
+              20.4099345
+            ],
+            [
+              -87.3059343,
+              20.4101871
+            ],
+            [
+              -87.3064211,
+              20.4099058
+            ],
+            [
+              -87.3067377,
+              20.4092698
+            ],
+            [
+              -87.3071245,
+              20.4084396
+            ],
+            [
+              -87.3068155,
+              20.4084871
+            ],
+            [
+              -87.3067463,
+              20.4078865
+            ],
+            [
+              -87.3077683,
+              20.4073388
+            ],
+            [
+              -87.307822,
+              20.4073513
+            ],
+            [
+              -87.309452,
+              20.406027
+            ],
+            [
+              -87.3100312,
+              20.4046561
+            ],
+            [
+              -87.310074,
+              20.403245
+            ],
+            [
+              -87.3098071,
+              20.4022156
+            ],
+            [
+              -87.3087584,
+              20.4006997
+            ],
+            [
+              -87.3090131,
+              20.4000084
+            ],
+            [
+              -87.3095791,
+              20.3995835
+            ],
+            [
+              -87.3109544,
+              20.3970555
+            ],
+            [
+              -87.3101413,
+              20.3968058
+            ],
+            [
+              -87.3091972,
+              20.3985255
+            ],
+            [
+              -87.3081189,
+              20.399971
+            ],
+            [
+              -87.307996,
+              20.4004217
+            ],
+            [
+              -87.3081189,
+              20.4009791
+            ],
+            [
+              -87.3086961,
+              20.4017164
+            ],
+            [
+              -87.3092387,
+              20.4021971
+            ],
+            [
+              -87.3094949,
+              20.4032241
+            ],
+            [
+              -87.3094604,
+              20.4036195
+            ],
+            [
+              -87.3094225,
+              20.4041416
+            ],
+            [
+              -87.3090957,
+              20.405163
+            ],
+            [
+              -87.3088139,
+              20.405678
+            ],
+            [
+              -87.3086005,
+              20.405901
+            ],
+            [
+              -87.3083389,
+              20.4061013
+            ],
+            [
+              -87.3070049,
+              20.4069943
+            ],
+            [
+              -87.3067883,
+              20.4071144
+            ],
+            [
+              -87.3065556,
+              20.4072093
+            ],
+            [
+              -87.3058515,
+              20.4073652
+            ],
+            [
+              -87.305249,
+              20.4073583
+            ],
+            [
+              -87.3044896,
+              20.4071681
+            ],
+            [
+              -87.3039052,
+              20.4069144
+            ],
+            [
+              -87.3028966,
+              20.40838
+            ],
+            [
+              -87.3034197,
+              20.4088627
+            ],
+            [
+              -87.3037148,
+              20.4094685
+            ],
+            [
+              -87.3039614,
+              20.410102
+            ],
+            [
+              -87.3039025,
+              20.4102629
+            ],
+            [
+              -87.3038355,
+              20.4104967
+            ],
+            [
+              -87.3038006,
+              20.4107682
+            ],
+            [
+              -87.3042753,
+              20.4109265
+            ],
+            [
+              -87.304624,
+              20.4111854
+            ]
+          ]
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "id": "138C811A148A9155",
+      "properties": {
+        "name": "Lot 0 - Casa Cordova",
+        "description": "Casa de Espehas",
+        "layer": "Akumal Norte property Lots",
+        "style_color": "#000000",
+        "style_index": 0
+      },
+      "geometry": {
+        "type": "Polygon",
+        "coordinates": [
+          [
+            [
+              -87.3108334,
+              20.3970384
+            ],
+            [
+              -87.3109809,
+              20.396777
+            ],
+            [
+              -87.3102486,
+              20.3965305
+            ],
+            [
+              -87.3101413,
+              20.3968171
+            ],
+            [
+              -87.3108334,
+              20.3970384
+            ]
+          ]
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "id": "K31GYERMMUY41290521FF42988E4",
+      "properties": {
+        "name": "Lots F1-4 - Casa Alux",
+        "description": "Casa Alux 4 lots - 2 houses - 3 memberships - casa, condo, lot",
+        "layer": "Akumal Norte property Lots",
+        "style_color": "#F4EB37",
+        "style_index": 1
+      },
+      "geometry": {
+        "type": "Polygon",
+        "coordinates": [
+          [
+            [
+              -87.3108455,
+              20.3970384
+            ],
+            [
+              -87.3101413,
+              20.3968171
+            ],
+            [
+              -87.3098328,
+              20.397418
+            ],
+            [
+              -87.3105115,
+              20.397643
+            ],
+            [
+              -87.3108455,
+              20.3970384
+            ]
+          ]
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "id": "K31GYERMMUY412905344B82C6EDC",
+      "properties": {
+        "name": "Lot F5 - Casa Cascadas",
+        "description": "Casa Cascadas",
+        "layer": "Akumal Norte property Lots",
+        "style_color": "#F4EB37",
+        "style_index": 1
+      },
+      "geometry": {
+        "type": "Polygon",
+        "coordinates": [
+          [
+            [
+              -87.3105115,
+              20.397643
+            ],
+            [
+              -87.3098328,
+              20.397418
+            ],
+            [
+              -87.3097578,
+              20.397584
+            ],
+            [
+              -87.3104082,
+              20.3978177
+            ],
+            [
+              -87.3105115,
+              20.397643
+            ]
+          ]
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "id": "138697A25CF8EABC",
+      "properties": {
+        "name": "Lot F6 - Casa Seagate",
+        "description": "formerly La Puerta al Mar",
+        "layer": "Akumal Norte property Lots",
+        "style_color": "#000000",
+        "style_index": 0
+      },
+      "geometry": {
+        "type": "Polygon",
+        "coordinates": [
+          [
+            [
+              -87.3103264,
+              20.3979598
+            ],
+            [
+              -87.3104082,
+              20.3978177
+            ],
+            [
+              -87.3097578,
+              20.397584
+            ],
+            [
+              -87.3096907,
+              20.3977398
+            ],
+            [
+              -87.3103264,
+              20.3979598
+            ]
+          ]
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "id": "1386987029629BCA",
+      "properties": {
+        "name": "Lot F7 - Casa Dos Palmas",
+        "description": "Casa Dos Palmas",
+        "layer": "Akumal Norte property Lots",
+        "style_color": "#F4EB37",
+        "style_index": 1
+      },
+      "geometry": {
+        "type": "Polygon",
+        "coordinates": [
+          [
+            [
+              -87.3103264,
+              20.3979598
+            ],
+            [
+              -87.3096907,
+              20.3977398
+            ],
+            [
+              -87.3095808,
+              20.3979283
+            ],
+            [
+              -87.3102245,
+              20.398142
+            ],
+            [
+              -87.3103264,
+              20.3979598
+            ]
+          ]
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "id": "1386993FE456BA88",
+      "properties": {
+        "name": "Lot F8 - Casa Papagayo",
+        "description": "Casa Papagayo - separate lot membership",
+        "layer": "Akumal Norte property Lots",
+        "style_color": "#F4EB37",
+        "style_index": 1
+      },
+      "geometry": {
+        "type": "Polygon",
+        "coordinates": [
+          [
+            [
+              -87.3102245,
+              20.398142
+            ],
+            [
+              -87.3095808,
+              20.3979283
+            ],
+            [
+              -87.3094627,
+              20.3980742
+            ],
+            [
+              -87.3101253,
+              20.3983155
+            ],
+            [
+              -87.3102245,
+              20.398142
+            ]
+          ]
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "id": "1386AB1C777A0B97",
+      "properties": {
+        "name": "Lots F12 and 13 - Casa Magna",
+        "description": "Casa Magna",
+        "layer": "Akumal Norte property Lots",
+        "style_color": "#000000",
+        "style_index": 0
+      },
+      "geometry": {
+        "type": "Polygon",
+        "coordinates": [
+          [
+            [
+              -87.3096988,
+              20.3991212
+            ],
+            [
+              -87.3098731,
+              20.3987919
+            ],
+            [
+              -87.3091972,
+              20.3985368
+            ],
+            [
+              -87.3089665,
+              20.398768
+            ],
+            [
+              -87.3096988,
+              20.3991212
+            ]
+          ]
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "id": "K31GYERMMUY412955A6EC3DCC026",
+      "properties": {
+        "name": "Lot F14 - Casa Solymar",
+        "description": "Casa Solymar",
+        "layer": "Akumal Norte property Lots",
+        "style_color": "#000000",
+        "style_index": 0
+      },
+      "geometry": {
+        "type": "Polygon",
+        "coordinates": [
+          [
+            [
+              -87.3096894,
+              20.3991263
+            ],
+            [
+              -87.3089665,
+              20.398768
+            ],
+            [
+              -87.3088887,
+              20.3989189
+            ],
+            [
+              -87.3095888,
+              20.399291
+            ],
+            [
+              -87.3096894,
+              20.3991263
+            ]
+          ]
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "id": "K31GYERMMUY412955AFE9451AEC8",
+      "properties": {
+        "name": "Lot F15 - Casa Ligera",
+        "description": "Casa Ligera\nFormer Ina Tan Kanab, El Cielo? former member",
+        "layer": "Akumal Norte property Lots",
+        "style_color": "#000000",
+        "style_index": 0
+      },
+      "geometry": {
+        "type": "Polygon",
+        "coordinates": [
+          [
+            [
+              -87.3095888,
+              20.399291
+            ],
+            [
+              -87.3088887,
+              20.3989189
+            ],
+            [
+              -87.3087975,
+              20.3991024
+            ],
+            [
+              -87.3090953,
+              20.3992696
+            ],
+            [
+              -87.3094413,
+              20.3994594
+            ],
+            [
+              -87.3095888,
+              20.399291
+            ]
+          ]
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "id": "1386AEBF4BFDB8D3",
+      "properties": {
+        "name": "Lot F16 - Casa Iguana",
+        "description": "Casa Iguana",
+        "layer": "Akumal Norte property Lots",
+        "style_color": "#000000",
+        "style_index": 0
+      },
+      "geometry": {
+        "type": "Polygon",
+        "coordinates": [
+          [
+            [
+              -87.3092629,
+              20.3995851
+            ],
+            [
+              -87.3094413,
+              20.3994594
+            ],
+            [
+              -87.3087975,
+              20.3991024
+            ],
+            [
+              -87.3086849,
+              20.3992909
+            ],
+            [
+              -87.3092629,
+              20.3995851
+            ]
+          ]
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "id": "K31GYERMMUY412955EA66146D238",
+      "properties": {
+        "name": "Lot F17",
+        "description": "vacant",
+        "layer": "Akumal Norte property Lots",
+        "style_color": "#000000",
+        "style_index": 0
+      },
+      "geometry": {
+        "type": "Polygon",
+        "coordinates": [
+          [
+            [
+              -87.3092629,
+              20.3995851
+            ],
+            [
+              -87.3086849,
+              20.3992909
+            ],
+            [
+              -87.3086125,
+              20.3993965
+            ],
+            [
+              -87.3091516,
+              20.3996693
+            ],
+            [
+              -87.3092629,
+              20.3995851
+            ]
+          ]
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "id": "K31GYERMMUY41295623FA470206B",
+      "properties": {
+        "name": "Lot F18 - Casa Del Mar",
+        "description": "Casa del Mar",
+        "layer": "Akumal Norte property Lots",
+        "style_color": "#000000",
+        "style_index": 0
+      },
+      "geometry": {
+        "type": "Polygon",
+        "coordinates": [
+          [
+            [
+              -87.3091516,
+              20.3996693
+            ],
+            [
+              -87.3086125,
+              20.3993965
+            ],
+            [
+              -87.3085535,
+              20.3994895
+            ],
+            [
+              -87.3090295,
+              20.3997636
+            ],
+            [
+              -87.3091516,
+              20.3996693
+            ]
+          ]
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "id": "K31GYERMMUY4129562D729BC3D6B",
+      "properties": {
+        "name": "Lot F19 - Casa Nicte-Ha",
+        "description": "Casa Nicte-Ha",
+        "layer": "Akumal Norte property Lots",
+        "style_color": "#000000",
+        "style_index": 0
+      },
+      "geometry": {
+        "type": "Polygon",
+        "coordinates": [
+          [
+            [
+              -87.3090295,
+              20.3997636
+            ],
+            [
+              -87.3085535,
+              20.3994895
+            ],
+            [
+              -87.3083818,
+              20.3996454
+            ],
+            [
+              -87.3088955,
+              20.3999232
+            ],
+            [
+              -87.3090295,
+              20.3997636
+            ]
+          ]
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "id": "K31GYERMMUY4129563C4EC33DC8C",
+      "properties": {
+        "name": "Lot F20 - Casa Redondo",
+        "description": "Casa Redondo",
+        "layer": "Akumal Norte property Lots",
+        "style_color": "#F4EB37",
+        "style_index": 1
+      },
+      "geometry": {
+        "type": "Polygon",
+        "coordinates": [
+          [
+            [
+              -87.3088955,
+              20.3999232
+            ],
+            [
+              -87.3083818,
+              20.3996454
+            ],
+            [
+              -87.3082316,
+              20.3998239
+            ],
+            [
+              -87.3087949,
+              20.4000854
+            ],
+            [
+              -87.3088955,
+              20.3999232
+            ]
+          ]
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "id": "K31GYERMMUY41295647BC1200592",
+      "properties": {
+        "name": "Lot F21- Casa Caribe",
+        "description": "Casa Caribe",
+        "layer": "Akumal Norte property Lots",
+        "style_color": "#F4EB37",
+        "style_index": 1
+      },
+      "geometry": {
+        "type": "Polygon",
+        "coordinates": [
+          [
+            [
+              -87.3087962,
+              20.4000942
+            ],
+            [
+              -87.3082316,
+              20.3998239
+            ],
+            [
+              -87.3081189,
+              20.3999823
+            ],
+            [
+              -87.3086809,
+              20.4002601
+            ],
+            [
+              -87.3087962,
+              20.4000942
+            ]
+          ]
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "id": "K31GYERMMUY41295567AB86ED04C",
+      "properties": {
+        "name": "Lots F22 and 23 - Casa Miramar",
+        "description": "Miramar and Casita",
+        "layer": "Akumal Norte property Lots",
+        "style_color": "#F4EB37",
+        "style_index": 1
+      },
+      "geometry": {
+        "type": "Polygon",
+        "coordinates": [
+          [
+            [
+              -87.3086111,
+              20.4005505
+            ],
+            [
+              -87.3086809,
+              20.4002601
+            ],
+            [
+              -87.3081189,
+              20.3999823
+            ],
+            [
+              -87.3079687,
+              20.4004122
+            ],
+            [
+              -87.3086111,
+              20.4005505
+            ]
+          ]
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "id": "446A6269B7ABC187",
+      "properties": {
+        "name": "Parque Bush",
+        "description": "",
+        "layer": "Akumal Norte property Lots",
+        "style_color": "#000000",
+        "style_index": 0
+      },
+      "geometry": {
+        "type": "Polygon",
+        "coordinates": [
+          [
+            [
+              -87.3085991,
+              20.4007088
+            ],
+            [
+              -87.3086111,
+              20.4005505
+            ],
+            [
+              -87.3079687,
+              20.4004122
+            ],
+            [
+              -87.3081082,
+              20.4009829
+            ],
+            [
+              -87.3085991,
+              20.4007088
+            ]
+          ]
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "id": "K31GYERMMUY4129566B724C47D0A",
+      "properties": {
+        "name": "Lot F24 - Casa de Luna",
+        "description": "Casa Luna",
+        "layer": "Akumal Norte property Lots",
+        "style_color": "#F4EB37",
+        "style_index": 1
+      },
+      "geometry": {
+        "type": "Polygon",
+        "coordinates": [
+          [
+            [
+              -87.3085991,
+              20.4007088
+            ],
+            [
+              -87.3081082,
+              20.4009829
+            ],
+            [
+              -87.3082611,
+              20.401199
+            ],
+            [
+              -87.3087037,
+              20.400915
+            ],
+            [
+              -87.3085991,
+              20.4007088
+            ]
+          ]
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "id": "K31GYERMMUY412956D143F1C9C72",
+      "properties": {
+        "name": "Lot F25 Casa Zama",
+        "description": "Casa Zama",
+        "layer": "Akumal Norte property Lots",
+        "style_color": "#F4EB37",
+        "style_index": 1
+      },
+      "geometry": {
+        "type": "Polygon",
+        "coordinates": [
+          [
+            [
+              -87.308768,
+              20.4009955
+            ],
+            [
+              -87.3087117,
+              20.4009125
+            ],
+            [
+              -87.3082504,
+              20.4012116
+            ],
+            [
+              -87.3083415,
+              20.4012946
+            ],
+            [
+              -87.308768,
+              20.4009955
+            ]
+          ]
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "id": "K31GYERMMUY412956A046F286B0A",
+      "properties": {
+        "name": "Lot F26 - Casa Moorea",
+        "description": "(formerly Casa Rosa)",
+        "layer": "Akumal Norte property Lots",
+        "style_color": "#F4EB37",
+        "style_index": 1
+      },
+      "geometry": {
+        "type": "Polygon",
+        "coordinates": [
+          [
+            [
+              -87.3088861,
+              20.4011237
+            ],
+            [
+              -87.3087707,
+              20.4009904
+            ],
+            [
+              -87.3083442,
+              20.4012895
+            ],
+            [
+              -87.3084328,
+              20.4014253
+            ],
+            [
+              -87.3088861,
+              20.4011237
+            ]
+          ]
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "id": "K31GYERMMUY412956EE0DF497CFB",
+      "properties": {
+        "name": "Lot F27 - Casa Balem Ek",
+        "description": "Casa Balem Ek\n2 apartment memberships - main house & penthouse",
+        "layer": "Akumal Norte property Lots",
+        "style_color": "#F4EB37",
+        "style_index": 1
+      },
+      "geometry": {
+        "type": "Polygon",
+        "coordinates": [
+          [
+            [
+              -87.3090014,
+              20.4012845
+            ],
+            [
+              -87.3088914,
+              20.4011262
+            ],
+            [
+              -87.3084381,
+              20.4014278
+            ],
+            [
+              -87.3085615,
+              20.4015837
+            ],
+            [
+              -87.3090014,
+              20.4012845
+            ]
+          ]
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "id": "K31GYERMMUY412957090BB45C658",
+      "properties": {
+        "name": "Lot F28 - Villa Valhalla",
+        "description": "Viilla Valhalla",
+        "layer": "Akumal Norte property Lots",
+        "style_color": "#F4EB37",
+        "style_index": 1
+      },
+      "geometry": {
+        "type": "Polygon",
+        "coordinates": [
+          [
+            [
+              -87.3090872,
+              20.4014279
+            ],
+            [
+              -87.3090094,
+              20.4012845
+            ],
+            [
+              -87.3085695,
+              20.4015837
+            ],
+            [
+              -87.3086822,
+              20.4017044
+            ],
+            [
+              -87.3090872,
+              20.4014279
+            ]
+          ]
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "id": "K31GYERMMUY41295713B651A083C",
+      "properties": {
+        "name": "Lot F29 - Villa Kokobeach",
+        "description": "Villa Kokobeach",
+        "layer": "Akumal Norte property Lots",
+        "style_color": "#000000",
+        "style_index": 0
+      },
+      "geometry": {
+        "type": "Polygon",
+        "coordinates": [
+          [
+            [
+              -87.3091865,
+              20.4016063
+            ],
+            [
+              -87.3090872,
+              20.4014279
+            ],
+            [
+              -87.3086822,
+              20.4017044
+            ],
+            [
+              -87.3088271,
+              20.4018477
+            ],
+            [
+              -87.3091865,
+              20.4016063
+            ]
+          ]
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "id": "K31GYERMMUY4129573477580A72F",
+      "properties": {
+        "name": "Lot F30",
+        "description": "vacant",
+        "layer": "Akumal Norte property Lots",
+        "style_color": "#F4EB37",
+        "style_index": 1
+      },
+      "geometry": {
+        "type": "Polygon",
+        "coordinates": [
+          [
+            [
+              -87.3092762,
+              20.4017483
+            ],
+            [
+              -87.3091865,
+              20.4016063
+            ],
+            [
+              -87.3088472,
+              20.4018339
+            ],
+            [
+              -87.3089545,
+              20.4019407
+            ],
+            [
+              -87.3092762,
+              20.4017483
+            ]
+          ]
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "id": "1386B31BB21D4792",
+      "properties": {
+        "name": "Lot F31",
+        "description": "vacant",
+        "layer": "Akumal Norte property Lots",
+        "style_color": "#F4EB37",
+        "style_index": 1
+      },
+      "geometry": {
+        "type": "Polygon",
+        "coordinates": [
+          [
+            [
+              -87.3093594,
+              20.4018803
+            ],
+            [
+              -87.3092762,
+              20.4017483
+            ],
+            [
+              -87.3089545,
+              20.4019407
+            ],
+            [
+              -87.3090806,
+              20.4020337
+            ],
+            [
+              -87.3093594,
+              20.4018803
+            ]
+          ]
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "id": "K31GYERMMUY41295752DA9EA4181",
+      "properties": {
+        "name": "Lot F32 - Villa de la Playa",
+        "description": "Villa de la Playa",
+        "layer": "Akumal Norte property Lots",
+        "style_color": "#000000",
+        "style_index": 0
+      },
+      "geometry": {
+        "type": "Polygon",
+        "coordinates": [
+          [
+            [
+              -87.3094815,
+              20.4020765
+            ],
+            [
+              -87.3093701,
+              20.4018753
+            ],
+            [
+              -87.3090819,
+              20.4020236
+            ],
+            [
+              -87.3092387,
+              20.4021971
+            ],
+            [
+              -87.3094815,
+              20.4020765
+            ]
+          ]
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "id": "K31GYERMMUY41295775EADE5923C",
+      "properties": {
+        "name": "Lot F33-35 - The Rock House and LBV",
+        "description": "LBV, Dive Adventures and Rock House",
+        "layer": "Akumal Norte property Lots",
+        "style_color": "#F4EB37",
+        "style_index": 1
+      },
+      "geometry": {
+        "type": "Polygon",
+        "coordinates": [
+          [
+            [
+              -87.3094815,
+              20.4020765
+            ],
+            [
+              -87.3092387,
+              20.4021971
+            ],
+            [
+              -87.3094493,
+              20.4026879
+            ],
+            [
+              -87.309523,
+              20.4032341
+            ],
+            [
+              -87.3096759,
+              20.4032051
+            ],
+            [
+              -87.3096639,
+              20.4025692
+            ],
+            [
+              -87.3094815,
+              20.4020765
+            ]
+          ]
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "id": "K31GYERMMUY412957D2D167E0D71",
+      "properties": {
+        "name": "Lot G41B Half Moon Bay condos (3)",
+        "description": "Half Moon Bay condos - 2 of 3 member owned (maybe 1) 3/2025",
+        "layer": "Akumal Norte property Lots",
+        "style_color": "#F4EB37",
+        "style_index": 1
+      },
+      "geometry": {
+        "type": "Polygon",
+        "coordinates": [
+          [
+            [
+              -87.3097551,
+              20.4044571
+            ],
+            [
+              -87.3097765,
+              20.4042384
+            ],
+            [
+              -87.3094225,
+              20.4041529
+            ],
+            [
+              -87.3093474,
+              20.404339
+            ],
+            [
+              -87.3097551,
+              20.4044571
+            ]
+          ]
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "id": "K31GYERMMUY412957EEB2F87BF30",
+      "properties": {
+        "name": "Lot G41C - Lol Ka'naab condos (11)",
+        "description": "Lol Ka'naab Condos\n0 of 11 member owned 3/2025",
+        "layer": "Akumal Norte property Lots",
+        "style_color": "#000000",
+        "style_index": 2
+      },
+      "geometry": {
+        "type": "Polygon",
+        "coordinates": [
+          [
+            [
+              -87.3097926,
+              20.4044684
+            ],
+            [
+              -87.3093474,
+              20.4043365
+            ],
+            [
+              -87.3093072,
+              20.4045099
+            ],
+            [
+              -87.309747,
+              20.4046407
+            ],
+            [
+              -87.3097926,
+              20.4044684
+            ]
+          ]
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "id": "K31GYERMMUY412958010C636B4FD",
+      "properties": {
+        "name": "lot G41D - Vista Del Mar Norte",
+        "description": "Del Sol Beachfront/Vista del Mar Norte hotel?",
+        "layer": "Akumal Norte property Lots",
+        "style_color": "#F8971B",
+        "style_index": 3
+      },
+      "geometry": {
+        "type": "Polygon",
+        "coordinates": [
+          [
+            [
+              -87.309747,
+              20.4046457
+            ],
+            [
+              -87.3093072,
+              20.4045149
+            ],
+            [
+              -87.3093045,
+              20.4046934
+            ],
+            [
+              -87.3097283,
+              20.4048116
+            ],
+            [
+              -87.309747,
+              20.4046457
+            ]
+          ]
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "id": "K31GYERMMUY4129581736C535685",
+      "properties": {
+        "name": "lot G41E - Playa Blanca condos (10)",
+        "description": "Playa Blanca condos\n5 of 10 member owned 3/2025",
+        "layer": "Akumal Norte property Lots",
+        "style_color": "#F4EB37",
+        "style_index": 1
+      },
+      "geometry": {
+        "type": "Polygon",
+        "coordinates": [
+          [
+            [
+              -87.3097283,
+              20.4048116
+            ],
+            [
+              -87.3093045,
+              20.4046934
+            ],
+            [
+              -87.3092683,
+              20.4047776
+            ],
+            [
+              -87.3092294,
+              20.4048644
+            ],
+            [
+              -87.3096398,
+              20.404985
+            ],
+            [
+              -87.3097283,
+              20.4048116
+            ]
+          ]
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "id": "13450DA02B9C6F85",
+      "properties": {
+        "name": "Lot G41F Nikte condos (9)",
+        "description": "Nikte condos\n4 of 9 member owned 3/2025",
+        "layer": "Akumal Norte property Lots",
+        "style_color": "#000000",
+        "style_index": 2
+      },
+      "geometry": {
+        "type": "Polygon",
+        "coordinates": [
+          [
+            [
+              -87.3096706,
+              20.405161
+            ],
+            [
+              -87.3097082,
+              20.4050076
+            ],
+            [
+              -87.3092294,
+              20.4048644
+            ],
+            [
+              -87.3091757,
+              20.40498
+            ],
+            [
+              -87.3096706,
+              20.405161
+            ]
+          ]
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "id": "K31GYERMMUY4129582A023656180",
+      "properties": {
+        "name": "lot G42 Nikte Ha condos (10)",
+        "description": "Nikte Ha condos\n3 of 10 member owned 3/2025",
+        "layer": "Akumal Norte property Lots",
+        "style_color": "#000000",
+        "style_index": 2
+      },
+      "geometry": {
+        "type": "Polygon",
+        "coordinates": [
+          [
+            [
+              -87.3096706,
+              20.405161
+            ],
+            [
+              -87.309381,
+              20.4050592
+            ],
+            [
+              -87.3091757,
+              20.40498
+            ],
+            [
+              -87.3091221,
+              20.405141
+            ],
+            [
+              -87.3095956,
+              20.4053509
+            ],
+            [
+              -87.3096706,
+              20.405161
+            ]
+          ]
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "id": "K31GYERMMUY4129584B993D2264B",
+      "properties": {
+        "name": "lot G43 - Casa Blanca",
+        "description": "Casa Blanca",
+        "layer": "Akumal Norte property Lots",
+        "style_color": "#000000",
+        "style_index": 0
+      },
+      "geometry": {
+        "type": "Polygon",
+        "coordinates": [
+          [
+            [
+              -87.3095956,
+              20.4053509
+            ],
+            [
+              -87.3091221,
+              20.405141
+            ],
+            [
+              -87.3090657,
+              20.4053118
+            ],
+            [
+              -87.3095123,
+              20.4055343
+            ],
+            [
+              -87.3095956,
+              20.4053509
+            ]
+          ]
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "id": "K31GYERMMUY4129585FAF5FD9992",
+      "properties": {
+        "name": "Lot G44 - Playa Caribe condos (15)",
+        "description": "Playa Caribe condos\n12 of 15 member owned (1 office) 3/2025",
+        "layer": "Akumal Norte property Lots",
+        "style_color": "#F4EB37",
+        "style_index": 1
+      },
+      "geometry": {
+        "type": "Polygon",
+        "coordinates": [
+          [
+            [
+              -87.3090657,
+              20.4053294
+            ],
+            [
+              -87.3089638,
+              20.4055029
+            ],
+            [
+              -87.309397,
+              20.4056814
+            ],
+            [
+              -87.3095123,
+              20.4055343
+            ],
+            [
+              -87.3092789,
+              20.4054212
+            ],
+            [
+              -87.3090657,
+              20.4053294
+            ]
+          ]
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "id": "134503CECD0C0441",
+      "properties": {
+        "name": "Lot G45 - Luna Azul condos (11)",
+        "description": "Luna Azul condos\n7 of 11 member owned 3/2025",
+        "layer": "Akumal Norte property Lots",
+        "style_color": "#F4EB37",
+        "style_index": 1
+      },
+      "geometry": {
+        "type": "Polygon",
+        "coordinates": [
+          [
+            [
+              -87.3092764,
+              20.4058109
+            ],
+            [
+              -87.309397,
+              20.4056814
+            ],
+            [
+              -87.3089531,
+              20.4054903
+            ],
+            [
+              -87.3088807,
+              20.4056462
+            ],
+            [
+              -87.3092764,
+              20.4058109
+            ]
+          ]
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "id": "138CDBEF6C892408",
+      "properties": {
+        "name": "lot 46a",
+        "description": "",
+        "layer": "Akumal Norte property Lots",
+        "style_color": "#000000",
+        "style_index": 0
+      },
+      "geometry": {
+        "type": "Polygon",
+        "coordinates": [
+          [
+            [
+              -87.3093152,
+              20.4059077
+            ],
+            [
+              -87.3091677,
+              20.4060434
+            ],
+            [
+              -87.3093179,
+              20.4061339
+            ],
+            [
+              -87.3094707,
+              20.4059982
+            ],
+            [
+              -87.3093152,
+              20.4059077
+            ]
+          ]
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "id": "1345000717FF1893",
+      "properties": {
+        "name": "Lot G46 - The Reef condos (6)",
+        "description": "The Reef condos\n4 of 6 member owned 3/2025",
+        "layer": "Akumal Norte property Lots",
+        "style_color": "#F4EB37",
+        "style_index": 1
+      },
+      "geometry": {
+        "type": "Polygon",
+        "coordinates": [
+          [
+            [
+              -87.3092764,
+              20.4058109
+            ],
+            [
+              -87.3088807,
+              20.4056462
+            ],
+            [
+              -87.3087532,
+              20.4057681
+            ],
+            [
+              -87.3091167,
+              20.4059491
+            ],
+            [
+              -87.3092764,
+              20.4058109
+            ]
+          ]
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "id": "138CDCA96E750608",
+      "properties": {
+        "name": "Lot G47A - La Bahia lot",
+        "description": "La Bahia\nlot member",
+        "layer": "Akumal Norte property Lots",
+        "style_color": "#000000",
+        "style_index": 2
+      },
+      "geometry": {
+        "type": "Polygon",
+        "coordinates": [
+          [
+            [
+              -87.3093072,
+              20.4061514
+            ],
+            [
+              -87.3091382,
+              20.4060459
+            ],
+            [
+              -87.3090041,
+              20.4061716
+            ],
+            [
+              -87.309157,
+              20.4062696
+            ],
+            [
+              -87.3093072,
+              20.4061514
+            ]
+          ]
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "id": "1344FE5661098FE2",
+      "properties": {
+        "name": "Lot G47 - La Bahia condos (8)",
+        "description": "La Bahia condos\n5 of 8 member owned 3/2025",
+        "layer": "Akumal Norte property Lots",
+        "style_color": "#F4EB37",
+        "style_index": 1
+      },
+      "geometry": {
+        "type": "Polygon",
+        "coordinates": [
+          [
+            [
+              -87.3089852,
+              20.4060736
+            ],
+            [
+              -87.3091167,
+              20.4059541
+            ],
+            [
+              -87.3087532,
+              20.4057681
+            ],
+            [
+              -87.3086098,
+              20.4059089
+            ],
+            [
+              -87.3089852,
+              20.4060736
+            ]
+          ]
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "id": "1344FD57387742A1",
+      "properties": {
+        "name": "Lot G48 - Casa Flamingos",
+        "description": "Casa Flamingos 34",
+        "layer": "Akumal Norte property Lots",
+        "style_color": "#F4EB37",
+        "style_index": 1
+      },
+      "geometry": {
+        "type": "Polygon",
+        "coordinates": [
+          [
+            [
+              -87.308827,
+              20.4062268
+            ],
+            [
+              -87.3089852,
+              20.4060736
+            ],
+            [
+              -87.3086098,
+              20.4059089
+            ],
+            [
+              -87.3085025,
+              20.4059956
+            ],
+            [
+              -87.308827,
+              20.4062268
+            ]
+          ]
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "id": "138CDD9190541EDF",
+      "properties": {
+        "name": "lot 48a",
+        "description": "",
+        "layer": "Akumal Norte property Lots",
+        "style_color": "#000000",
+        "style_index": 0
+      },
+      "geometry": {
+        "type": "Polygon",
+        "coordinates": [
+          [
+            [
+              -87.309157,
+              20.4062596
+            ],
+            [
+              -87.3090041,
+              20.4061616
+            ],
+            [
+              -87.3088807,
+              20.4062721
+            ],
+            [
+              -87.3090068,
+              20.4063828
+            ],
+            [
+              -87.309157,
+              20.4062596
+            ]
+          ]
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "id": "1344F9DA75148865",
+      "properties": {
+        "name": "Lot G49 - Casa Flamingos",
+        "description": "La Flamingo 12",
+        "layer": "Akumal Norte property Lots",
+        "style_color": "#F4EB37",
+        "style_index": 1
+      },
+      "geometry": {
+        "type": "Polygon",
+        "coordinates": [
+          [
+            [
+              -87.3086997,
+              20.4063526
+            ],
+            [
+              -87.308827,
+              20.4062268
+            ],
+            [
+              -87.3085025,
+              20.4059956
+            ],
+            [
+              -87.3083349,
+              20.4061138
+            ],
+            [
+              -87.3086997,
+              20.4063526
+            ]
+          ]
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "id": "138CDE1C5C3FCD4B",
+      "properties": {
+        "name": "Lot G49A - Los Flamingos studio",
+        "description": "",
+        "layer": "Akumal Norte property Lots",
+        "style_color": "#000000",
+        "style_index": 0
+      },
+      "geometry": {
+        "type": "Polygon",
+        "coordinates": [
+          [
+            [
+              -87.3090229,
+              20.4063778
+            ],
+            [
+              -87.3088968,
+              20.4062671
+            ],
+            [
+              -87.3087359,
+              20.4064105
+            ],
+            [
+              -87.3088458,
+              20.4065186
+            ],
+            [
+              -87.3090229,
+              20.4063778
+            ]
+          ]
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "id": "1344F8F1079FFAD2",
+      "properties": {
+        "name": "Lot G50 - La Joya condos (7)",
+        "description": "La Joya condos\n4 of 7 member owned 3/2025",
+        "layer": "Akumal Norte property Lots",
+        "style_color": "#F4EB37",
+        "style_index": 1
+      },
+      "geometry": {
+        "type": "Polygon",
+        "coordinates": [
+          [
+            [
+              -87.3085441,
+              20.4064922
+            ],
+            [
+              -87.3086903,
+              20.4063526
+            ],
+            [
+              -87.3083349,
+              20.4061138
+            ],
+            [
+              -87.3082048,
+              20.4062445
+            ],
+            [
+              -87.3085441,
+              20.4064922
+            ]
+          ]
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "id": "138CDF519A78DF0E",
+      "properties": {
+        "name": "Lot G50a",
+        "description": "Nai Ha Condos (3)",
+        "layer": "Akumal Norte property Lots",
+        "style_color": "#000000",
+        "style_index": 2
+      },
+      "geometry": {
+        "type": "Polygon",
+        "coordinates": [
+          [
+            [
+              -87.3088431,
+              20.4065186
+            ],
+            [
+              -87.3087359,
+              20.4064105
+            ],
+            [
+              -87.3085615,
+              20.4065537
+            ],
+            [
+              -87.3086795,
+              20.4066744
+            ],
+            [
+              -87.3088431,
+              20.4065186
+            ]
+          ]
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "id": "1344F66C32B695D5",
+      "properties": {
+        "name": "Lot G51 - Casa Fortuna",
+        "description": "Casa Fortuna",
+        "layer": "Akumal Norte property Lots",
+        "style_color": "#F4EB37",
+        "style_index": 1
+      },
+      "geometry": {
+        "type": "Polygon",
+        "coordinates": [
+          [
+            [
+              -87.3083965,
+              20.4066266
+            ],
+            [
+              -87.3085441,
+              20.4064922
+            ],
+            [
+              -87.3082048,
+              20.4062445
+            ],
+            [
+              -87.3080787,
+              20.4063186
+            ],
+            [
+              -87.3083965,
+              20.4066266
+            ]
+          ]
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "id": "138CDFDF09934500",
+      "properties": {
+        "name": "Lot G51A - La Fortuna casita",
+        "description": "Casa Fotruna casita\nlote member",
+        "layer": "Akumal Norte property Lots",
+        "style_color": "#F4EB37",
+        "style_index": 1
+      },
+      "geometry": {
+        "type": "Polygon",
+        "coordinates": [
+          [
+            [
+              -87.3086795,
+              20.4066618
+            ],
+            [
+              -87.3085615,
+              20.4065436
+            ],
+            [
+              -87.3084167,
+              20.4066894
+            ],
+            [
+              -87.3085159,
+              20.4067976
+            ],
+            [
+              -87.3086795,
+              20.4066618
+            ]
+          ]
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "id": "1344F5993152D523",
+      "properties": {
+        "name": "Lot G52",
+        "description": "",
+        "layer": "Akumal Norte property Lots",
+        "style_color": "#000000",
+        "style_index": 0
+      },
+      "geometry": {
+        "type": "Polygon",
+        "coordinates": [
+          [
+            [
+              -87.3082329,
+              20.4067472
+            ],
+            [
+              -87.3083871,
+              20.4066241
+            ],
+            [
+              -87.3080787,
+              20.4063186
+            ],
+            [
+              -87.3079486,
+              20.4064117
+            ],
+            [
+              -87.3082329,
+              20.4067472
+            ]
+          ]
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "id": "138CE07B3C104386",
+      "properties": {
+        "name": "Lot G52a",
+        "description": "",
+        "layer": "Akumal Norte property Lots",
+        "style_color": "#F4EB37",
+        "style_index": 1
+      },
+      "geometry": {
+        "type": "Polygon",
+        "coordinates": [
+          [
+            [
+              -87.3085078,
+              20.4068026
+            ],
+            [
+              -87.3084086,
+              20.4066919
+            ],
+            [
+              -87.3082584,
+              20.4068428
+            ],
+            [
+              -87.3083522,
+              20.4069484
+            ],
+            [
+              -87.3085078,
+              20.4068026
+            ]
+          ]
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "id": "K31GYERMMUY412907A7891570C8A",
+      "properties": {
+        "name": "Lot G53 - Tan Ik condos",
+        "description": "Tan Ik condo - 12 br?",
+        "layer": "Akumal Norte property Lots",
+        "style_color": "#000000",
+        "style_index": 0
+      },
+      "geometry": {
+        "type": "Polygon",
+        "coordinates": [
+          [
+            [
+              -87.3082222,
+              20.4067485
+            ],
+            [
+              -87.3079486,
+              20.4064104
+            ],
+            [
+              -87.307789,
+              20.4065311
+            ],
+            [
+              -87.3080519,
+              20.4068893
+            ],
+            [
+              -87.3082222,
+              20.4067485
+            ]
+          ]
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "id": "138CE0DC8A5F1579",
+      "properties": {
+        "name": "Lot G53A - Cristal Azul",
+        "description": "Cristal Azul - 12 br?",
+        "layer": "Akumal Norte property Lots",
+        "style_color": "#000000",
+        "style_index": 0
+      },
+      "geometry": {
+        "type": "Polygon",
+        "coordinates": [
+          [
+            [
+              -87.3083455,
+              20.4069271
+            ],
+            [
+              -87.3082759,
+              20.4068428
+            ],
+            [
+              -87.3080907,
+              20.4069735
+            ],
+            [
+              -87.3081685,
+              20.4070779
+            ],
+            [
+              -87.3083455,
+              20.4069271
+            ]
+          ]
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "id": "13452E4865929A53",
+      "properties": {
+        "name": "lot HA",
+        "description": "",
+        "layer": "Akumal Norte property Lots",
+        "style_color": "#000000",
+        "style_index": 0
+      },
+      "geometry": {
+        "type": "Polygon",
+        "coordinates": [
+          [
+            [
+              -87.3072084,
+              20.4074336
+            ],
+            [
+              -87.3069817,
+              20.4070716
+            ],
+            [
+              -87.3068785,
+              20.4071407
+            ],
+            [
+              -87.3070166,
+              20.4075529
+            ],
+            [
+              -87.3072084,
+              20.4074336
+            ]
+          ]
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "id": "13452DDFA9593111",
+      "properties": {
+        "name": "lot HB",
+        "description": "",
+        "layer": "Akumal Norte property Lots",
+        "style_color": "#F8971B",
+        "style_index": 3
+      },
+      "geometry": {
+        "type": "Polygon",
+        "coordinates": [
+          [
+            [
+              -87.3073773,
+              20.4073267
+            ],
+            [
+              -87.3071358,
+              20.4069559
+            ],
+            [
+              -87.3069817,
+              20.4070716
+            ],
+            [
+              -87.3072084,
+              20.4074336
+            ],
+            [
+              -87.3073773,
+              20.4073267
+            ]
+          ]
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "id": "13452C3BF1AAD0A6",
+      "properties": {
+        "name": "Lot HC",
+        "description": "",
+        "layer": "Akumal Norte property Lots",
+        "style_color": "#F8971B",
+        "style_index": 3
+      },
+      "geometry": {
+        "type": "Polygon",
+        "coordinates": [
+          [
+            [
+              -87.3075543,
+              20.4072099
+            ],
+            [
+              -87.3072862,
+              20.4068441
+            ],
+            [
+              -87.3071358,
+              20.4069559
+            ],
+            [
+              -87.3073868,
+              20.4073255
+            ],
+            [
+              -87.3075543,
+              20.4072099
+            ]
+          ]
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "id": "1344F132AE486465",
+      "properties": {
+        "name": "Lot HD - La Mirage condos (8)",
+        "description": "La Mirage condos \n5 of 8 member owned 3/2025",
+        "layer": "Akumal Norte property Lots",
+        "style_color": "#F4EB37",
+        "style_index": 1
+      },
+      "geometry": {
+        "type": "Polygon",
+        "coordinates": [
+          [
+            [
+              -87.3077301,
+              20.4071068
+            ],
+            [
+              -87.3074632,
+              20.4067183
+            ],
+            [
+              -87.3072862,
+              20.4068441
+            ],
+            [
+              -87.3075543,
+              20.4072099
+            ],
+            [
+              -87.3077301,
+              20.4071068
+            ]
+          ]
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "id": "K31GYERMMUY412905F5706D11B38",
+      "properties": {
+        "name": "Lot HE - Hacienda de la Tortuga (12)",
+        "description": "Hacienda de la Tortuga condos\n4 of 12 member owned 3/2025",
+        "layer": "Akumal Norte property Lots",
+        "style_color": "#000000",
+        "style_index": 2
+      },
+      "geometry": {
+        "type": "Polygon",
+        "coordinates": [
+          [
+            [
+              -87.307907,
+              20.4070062
+            ],
+            [
+              -87.3076349,
+              20.406604
+            ],
+            [
+              -87.3074672,
+              20.4067108
+            ],
+            [
+              -87.3077301,
+              20.4071068
+            ],
+            [
+              -87.307907,
+              20.4070062
+            ]
+          ]
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "id": "1344ECB9BB0B5952",
+      "properties": {
+        "name": "Lot HF",
+        "description": "",
+        "layer": "Akumal Norte property Lots",
+        "style_color": "#000000",
+        "style_index": 2
+      },
+      "geometry": {
+        "type": "Polygon",
+        "coordinates": [
+          [
+            [
+              -87.3080613,
+              20.4069031
+            ],
+            [
+              -87.3077796,
+              20.4065248
+            ],
+            [
+              -87.3076429,
+              20.406604
+            ],
+            [
+              -87.3079057,
+              20.4070087
+            ],
+            [
+              -87.3080613,
+              20.4069031
+            ]
+          ]
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "id": "13259B562ABA446C",
+      "properties": {
+        "name": "Lot H01",
+        "description": "",
+        "layer": "Akumal Norte property Lots",
+        "style_color": "#000000",
+        "style_index": 0
+      },
+      "geometry": {
+        "type": "Polygon",
+        "coordinates": [
+          [
+            [
+              -87.3063165,
+              20.4100152
+            ],
+            [
+              -87.3067109,
+              20.4092837
+            ],
+            [
+              -87.3064024,
+              20.409329
+            ],
+            [
+              -87.3061368,
+              20.4100907
+            ],
+            [
+              -87.3063165,
+              20.4100152
+            ]
+          ]
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "id": "13259D0FE34CBAB6",
+      "properties": {
+        "name": "Lot H04",
+        "description": "",
+        "layer": "Akumal Norte property Lots",
+        "style_color": "#000000",
+        "style_index": 0
+      },
+      "geometry": {
+        "type": "Polygon",
+        "coordinates": [
+          [
+            [
+              -87.3057707,
+              20.4094003
+            ],
+            [
+              -87.3055655,
+              20.4094547
+            ],
+            [
+              -87.3056862,
+              20.4099876
+            ],
+            [
+              -87.3057908,
+              20.4099458
+            ],
+            [
+              -87.3057707,
+              20.4094003
+            ]
+          ]
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "id": "13259E60A8B0E87B",
+      "properties": {
+        "name": "Lot H05 - Lagoon access",
+        "description": "Lagoon access",
+        "layer": "Akumal Norte property Lots",
+        "style_color": "#000000",
+        "style_index": 0
+      },
+      "geometry": {
+        "type": "Polygon",
+        "coordinates": [
+          [
+            [
+              -87.3053723,
+              20.4095352
+            ],
+            [
+              -87.305595,
+              20.4100555
+            ],
+            [
+              -87.3056862,
+              20.4099876
+            ],
+            [
+              -87.3055655,
+              20.4094547
+            ],
+            [
+              -87.3053723,
+              20.4095352
+            ]
+          ]
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "id": "132597758F2BE663",
+      "properties": {
+        "name": "Lot H06 - Casa del Sol",
+        "description": "Casa del Sol",
+        "layer": "Akumal Norte property Lots",
+        "style_color": "#F4EB37",
+        "style_index": 1
+      },
+      "geometry": {
+        "type": "Polygon",
+        "coordinates": [
+          [
+            [
+              -87.3051525,
+              20.4096508
+            ],
+            [
+              -87.305536,
+              20.4102893
+            ],
+            [
+              -87.3055977,
+              20.4100455
+            ],
+            [
+              -87.305375,
+              20.4095251
+            ],
+            [
+              -87.3051525,
+              20.4096508
+            ]
+          ]
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "id": "1325968FDC7E4665",
+      "properties": {
+        "name": "Lot H07 - Casa Azul Riviera",
+        "description": "Casa Azul Riviera",
+        "layer": "Akumal Norte property Lots",
+        "style_color": "#F4EB37",
+        "style_index": 1
+      },
+      "geometry": {
+        "type": "Polygon",
+        "coordinates": [
+          [
+            [
+              -87.3049754,
+              20.4098142
+            ],
+            [
+              -87.305426,
+              20.4104728
+            ],
+            [
+              -87.305536,
+              20.4102893
+            ],
+            [
+              -87.3051471,
+              20.4096583
+            ],
+            [
+              -87.3049754,
+              20.4098142
+            ]
+          ]
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "id": "132595DF97276B8E",
+      "properties": {
+        "name": "Lot H08 - Aventuras Mayas",
+        "description": "Aventuras Mayas",
+        "layer": "Akumal Norte property Lots",
+        "style_color": "#F4EB37",
+        "style_index": 1
+      },
+      "geometry": {
+        "type": "Polygon",
+        "coordinates": [
+          [
+            [
+              -87.3047957,
+              20.4100027
+            ],
+            [
+              -87.3053,
+              20.4106311
+            ],
+            [
+              -87.305426,
+              20.4104728
+            ],
+            [
+              -87.3049754,
+              20.4098117
+            ],
+            [
+              -87.3047957,
+              20.4100027
+            ]
+          ]
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "id": "13259513A1D72478",
+      "properties": {
+        "name": "Lot H09 - Xcaret",
+        "description": "Xcaret",
+        "layer": "Akumal Norte property Lots",
+        "style_color": "#F4EB37",
+        "style_index": 1
+      },
+      "geometry": {
+        "type": "Polygon",
+        "coordinates": [
+          [
+            [
+              -87.3052261,
+              20.4107255
+            ],
+            [
+              -87.3052946,
+              20.4106261
+            ],
+            [
+              -87.3047903,
+              20.4100002
+            ],
+            [
+              -87.3046723,
+              20.4101661
+            ],
+            [
+              -87.304738,
+              20.4105809
+            ],
+            [
+              -87.3049713,
+              20.41086
+            ],
+            [
+              -87.3052261,
+              20.4107255
+            ]
+          ]
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "id": "1325825C9A34ACF2",
+      "properties": {
+        "name": "Lot H10",
+        "description": "Casa Romero",
+        "layer": "Akumal Norte property Lots",
+        "style_color": "#F8971B",
+        "style_index": 3
+      },
+      "geometry": {
+        "type": "Polygon",
+        "coordinates": [
+          [
+            [
+              -87.3049713,
+              20.4108512
+            ],
+            [
+              -87.3045704,
+              20.4103873
+            ],
+            [
+              -87.3043706,
+              20.410743
+            ],
+            [
+              -87.304266,
+              20.410929
+            ],
+            [
+              -87.3046147,
+              20.4111879
+            ],
+            [
+              -87.3049713,
+              20.4108512
+            ]
+          ]
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "id": "1386E7C944A479B7",
+      "properties": {
+        "name": "Lot H11 - Casa Mariposa",
+        "description": "Casa Mariposa (fractional)",
+        "layer": "Akumal Norte property Lots",
+        "style_color": "#F4EB37",
+        "style_index": 1
+      },
+      "geometry": {
+        "type": "Polygon",
+        "coordinates": [
+          [
+            [
+              -87.3042566,
+              20.4109328
+            ],
+            [
+              -87.3043853,
+              20.4107141
+            ],
+            [
+              -87.3038355,
+              20.410508
+            ],
+            [
+              -87.3038006,
+              20.4107795
+            ],
+            [
+              -87.3042566,
+              20.4109328
+            ]
+          ]
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "id": "132583D18B11BC9B",
+      "properties": {
+        "name": "H12 - Casa Las Vigas",
+        "description": "Villa Las Vigas",
+        "layer": "Akumal Norte property Lots",
+        "style_color": "#F4EB37",
+        "style_index": 1
+      },
+      "geometry": {
+        "type": "Polygon",
+        "coordinates": [
+          [
+            [
+              -87.3043451,
+              20.4106965
+            ],
+            [
+              -87.3044309,
+              20.4104778
+            ],
+            [
+              -87.3039025,
+              20.4102742
+            ],
+            [
+              -87.3038355,
+              20.410508
+            ],
+            [
+              -87.303924,
+              20.4105382
+            ],
+            [
+              -87.3043451,
+              20.4106965
+            ]
+          ]
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "id": "132584A1ECC9BB68",
+      "properties": {
+        "name": "Lot H13 - Casa Quinta Del Mar",
+        "description": "Quinta Del Mar",
+        "layer": "Akumal Norte property Lots",
+        "style_color": "#F4EB37",
+        "style_index": 1
+      },
+      "geometry": {
+        "type": "Polygon",
+        "coordinates": [
+          [
+            [
+              -87.3039025,
+              20.4102742
+            ],
+            [
+              -87.3044309,
+              20.4104778
+            ],
+            [
+              -87.3045382,
+              20.4101234
+            ],
+            [
+              -87.3039427,
+              20.4101083
+            ],
+            [
+              -87.3039025,
+              20.4102742
+            ]
+          ]
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "id": "1386E8A5CC43CC28",
+      "properties": {
+        "name": "Lot H14 Casa Bella",
+        "description": "Casa Bella",
+        "layer": "Akumal Norte property Lots",
+        "style_color": "#F4EB37",
+        "style_index": 1
+      },
+      "geometry": {
+        "type": "Polygon",
+        "coordinates": [
+          [
+            [
+              -87.3045382,
+              20.4101234
+            ],
+            [
+              -87.3044631,
+              20.4098393
+            ],
+            [
+              -87.3038891,
+              20.4099524
+            ],
+            [
+              -87.3039427,
+              20.4101083
+            ],
+            [
+              -87.3045382,
+              20.4101234
+            ]
+          ]
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "id": "1386E9858E65D78E",
+      "properties": {
+        "name": "Lot H15 - Casa Aurora",
+        "description": "Casa Aurora",
+        "layer": "Akumal Norte property Lots",
+        "style_color": "#F4EB37",
+        "style_index": 1
+      },
+      "geometry": {
+        "type": "Polygon",
+        "coordinates": [
+          [
+            [
+              -87.3044631,
+              20.4098393
+            ],
+            [
+              -87.3044094,
+              20.4096307
+            ],
+            [
+              -87.3038274,
+              20.4098117
+            ],
+            [
+              -87.3038891,
+              20.4099524
+            ],
+            [
+              -87.3044631,
+              20.4098393
+            ]
+          ]
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "id": "K31GYERMMUY4129080CE9D64D196",
+      "properties": {
+        "name": "lot H16",
+        "description": "Villa Gaugain - former member",
+        "layer": "Akumal Norte property Lots",
+        "style_color": "#000000",
+        "style_index": 0
+      },
+      "geometry": {
+        "type": "Polygon",
+        "coordinates": [
+          [
+            [
+              -87.3044094,
+              20.4096307
+            ],
+            [
+              -87.3043451,
+              20.4094648
+            ],
+            [
+              -87.3037657,
+              20.4096206
+            ],
+            [
+              -87.3038274,
+              20.4098117
+            ],
+            [
+              -87.3044094,
+              20.4096307
+            ]
+          ]
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "id": "1325A21A0729C559",
+      "properties": {
+        "name": "Lot H17",
+        "description": "",
+        "layer": "Akumal Norte property Lots",
+        "style_color": "#000000",
+        "style_index": 2
+      },
+      "geometry": {
+        "type": "Polygon",
+        "coordinates": [
+          [
+            [
+              -87.3043478,
+              20.4094698
+            ],
+            [
+              -87.3042834,
+              20.4092913
+            ],
+            [
+              -87.3037148,
+              20.4094798
+            ],
+            [
+              -87.3037684,
+              20.4096256
+            ],
+            [
+              -87.3043478,
+              20.4094698
+            ]
+          ]
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "id": "1325A2B259DDAC6D",
+      "properties": {
+        "name": "Lot H18",
+        "description": "",
+        "layer": "Akumal Norte property Lots",
+        "style_color": "#F8971B",
+        "style_index": 3
+      },
+      "geometry": {
+        "type": "Polygon",
+        "coordinates": [
+          [
+            [
+              -87.3042834,
+              20.4092913
+            ],
+            [
+              -87.3042002,
+              20.4091153
+            ],
+            [
+              -87.303645,
+              20.4093014
+            ],
+            [
+              -87.3037121,
+              20.4094748
+            ],
+            [
+              -87.3040044,
+              20.409383
+            ],
+            [
+              -87.3042834,
+              20.4092913
+            ]
+          ]
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "id": "13869430C4DB46AC",
+      "properties": {
+        "name": "Lot H19 - Casa Christiansen",
+        "description": "Casa Christiansen",
+        "layer": "Akumal Norte property Lots",
+        "style_color": "#F4EB37",
+        "style_index": 1
+      },
+      "geometry": {
+        "type": "Polygon",
+        "coordinates": [
+          [
+            [
+              -87.3042002,
+              20.4091153
+            ],
+            [
+              -87.3041197,
+              20.4089393
+            ],
+            [
+              -87.3035243,
+              20.4091455
+            ],
+            [
+              -87.303645,
+              20.4093014
+            ],
+            [
+              -87.3042002,
+              20.4091153
+            ]
+          ]
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "id": "1325A3220496545B",
+      "properties": {
+        "name": "Lot H20 - Casa Christiansen",
+        "description": "Owned by Casa Christiansen (not separate member)",
+        "layer": "Akumal Norte property Lots",
+        "style_color": "#F8971B",
+        "style_index": 3
+      },
+      "geometry": {
+        "type": "Polygon",
+        "coordinates": [
+          [
+            [
+              -87.3041197,
+              20.4089393
+            ],
+            [
+              -87.3040152,
+              20.4087634
+            ],
+            [
+              -87.3034466,
+              20.4089921
+            ],
+            [
+              -87.3035243,
+              20.4091455
+            ],
+            [
+              -87.3041197,
+              20.4089393
+            ]
+          ]
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "id": "1325A449F9170121",
+      "properties": {
+        "name": "Lot H21",
+        "description": "",
+        "layer": "Akumal Norte property Lots",
+        "style_color": "#000000",
+        "style_index": 0
+      },
+      "geometry": {
+        "type": "Polygon",
+        "coordinates": [
+          [
+            [
+              -87.3040125,
+              20.4087584
+            ],
+            [
+              -87.3038891,
+              20.4085949
+            ],
+            [
+              -87.3034197,
+              20.408874
+            ],
+            [
+              -87.3034466,
+              20.4089921
+            ],
+            [
+              -87.3040125,
+              20.4087584
+            ]
+          ]
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "id": "1325A5073CB6F8ED",
+      "properties": {
+        "name": "Lot H22",
+        "description": "",
+        "layer": "Akumal Norte property Lots",
+        "style_color": "#000000",
+        "style_index": 0
+      },
+      "geometry": {
+        "type": "Polygon",
+        "coordinates": [
+          [
+            [
+              -87.3038784,
+              20.40861
+            ],
+            [
+              -87.3037631,
+              20.4084416
+            ],
+            [
+              -87.3033929,
+              20.408781
+            ],
+            [
+              -87.303417,
+              20.408874
+            ],
+            [
+              -87.3036571,
+              20.4087395
+            ],
+            [
+              -87.3038784,
+              20.40861
+            ]
+          ]
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "id": "1325A8722110FC3D",
+      "properties": {
+        "name": "Lot H23 - Villa de los Suenos",
+        "description": "Villa de los Suenos",
+        "layer": "Akumal Norte property Lots",
+        "style_color": "#F4EB37",
+        "style_index": 1
+      },
+      "geometry": {
+        "type": "Polygon",
+        "coordinates": [
+          [
+            [
+              -87.3037631,
+              20.4084416
+            ],
+            [
+              -87.3035431,
+              20.4082883
+            ],
+            [
+              -87.3032829,
+              20.4086553
+            ],
+            [
+              -87.3033929,
+              20.408781
+            ],
+            [
+              -87.3037631,
+              20.4084416
+            ]
+          ]
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "id": "1325A91B2BD88AEA",
+      "properties": {
+        "name": "Lot H24",
+        "description": "",
+        "layer": "Akumal Norte property Lots",
+        "style_color": "#000000",
+        "style_index": 0
+      },
+      "geometry": {
+        "type": "Polygon",
+        "coordinates": [
+          [
+            [
+              -87.3035431,
+              20.4082883
+            ],
+            [
+              -87.3032588,
+              20.408052
+            ],
+            [
+              -87.3029503,
+              20.4084718
+            ],
+            [
+              -87.3032829,
+              20.4086553
+            ],
+            [
+              -87.3035431,
+              20.4082883
+            ]
+          ]
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "id": "1325AAB0457B7585",
+      "properties": {
+        "name": "Lot H25 Yalku Cai condos (7)",
+        "description": "Yalku Cai condos\n7 of 7 member owned 3/2025",
+        "layer": "Akumal Norte property Lots",
+        "style_color": "#F4EB37",
+        "style_index": 1
+      },
+      "geometry": {
+        "type": "Polygon",
+        "coordinates": [
+          [
+            [
+              -87.3032105,
+              20.4079162
+            ],
+            [
+              -87.3034894,
+              20.408145
+            ],
+            [
+              -87.3036101,
+              20.4079715
+            ],
+            [
+              -87.3032963,
+              20.4077654
+            ],
+            [
+              -87.3032105,
+              20.4079162
+            ]
+          ]
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "id": "1325B46997ACFEF2",
+      "properties": {
+        "name": "Lot H26",
+        "description": "Yalku Kai lot?",
+        "layer": "Akumal Norte property Lots",
+        "style_color": "#000000",
+        "style_index": 2
+      },
+      "geometry": {
+        "type": "Polygon",
+        "coordinates": [
+          [
+            [
+              -87.3034894,
+              20.408145
+            ],
+            [
+              -87.3038489,
+              20.4083763
+            ],
+            [
+              -87.3039776,
+              20.4081902
+            ],
+            [
+              -87.3036101,
+              20.4079715
+            ],
+            [
+              -87.3034894,
+              20.408145
+            ]
+          ]
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "id": "1325B4F0792FAA49",
+      "properties": {
+        "name": "Lot H27",
+        "description": "",
+        "layer": "Akumal Norte property Lots",
+        "style_color": "#000000",
+        "style_index": 0
+      },
+      "geometry": {
+        "type": "Polygon",
+        "coordinates": [
+          [
+            [
+              -87.3039776,
+              20.4081902
+            ],
+            [
+              -87.3040956,
+              20.4080344
+            ],
+            [
+              -87.3037362,
+              20.4078106
+            ],
+            [
+              -87.3036101,
+              20.4079715
+            ],
+            [
+              -87.3039776,
+              20.4081902
+            ]
+          ]
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "id": "1325ABB8BB3A2CB2",
+      "properties": {
+        "name": "Lot H28 - Casa Jaguar",
+        "description": "Casa Jaguar",
+        "layer": "Akumal Norte property Lots",
+        "style_color": "#000000",
+        "style_index": 0
+      },
+      "geometry": {
+        "type": "Polygon",
+        "coordinates": [
+          [
+            [
+              -87.3032963,
+              20.4077654
+            ],
+            [
+              -87.3036101,
+              20.4079715
+            ],
+            [
+              -87.3037362,
+              20.4078106
+            ],
+            [
+              -87.3034519,
+              20.407607
+            ],
+            [
+              -87.3032963,
+              20.4077654
+            ]
+          ]
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "id": "444AF0DB7318BC0D",
+      "properties": {
+        "name": "H29 per lot map",
+        "description": "",
+        "layer": "Akumal Norte property Lots",
+        "style_color": "#000000",
+        "style_index": 0
+      },
+      "geometry": {
+        "type": "Polygon",
+        "coordinates": [
+          [
+            [
+              -87.3038284,
+              20.4077362
+            ],
+            [
+              -87.303933,
+              20.4075778
+            ],
+            [
+              -87.3036621,
+              20.4074295
+            ],
+            [
+              -87.3035548,
+              20.4075577
+            ],
+            [
+              -87.3038284,
+              20.4077362
+            ]
+          ]
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "id": "444AF17FBADBCB09",
+      "properties": {
+        "name": "H30 per lot map",
+        "description": "",
+        "layer": "Akumal Norte property Lots",
+        "style_color": "#000000",
+        "style_index": 0
+      },
+      "geometry": {
+        "type": "Polygon",
+        "coordinates": [
+          [
+            [
+              -87.3039545,
+              20.4075426
+            ],
+            [
+              -87.3040618,
+              20.4073767
+            ],
+            [
+              -87.3037989,
+              20.407251
+            ],
+            [
+              -87.3036889,
+              20.4073943
+            ],
+            [
+              -87.3039545,
+              20.4075426
+            ]
+          ]
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "id": "444AF22E81564DD2",
+      "properties": {
+        "name": "H31 per lot map",
+        "description": "",
+        "layer": "Akumal Norte property Lots",
+        "style_color": "#000000",
+        "style_index": 0
+      },
+      "geometry": {
+        "type": "Polygon",
+        "coordinates": [
+          [
+            [
+              -87.3040913,
+              20.4073365
+            ],
+            [
+              -87.3041932,
+              20.4071882
+            ],
+            [
+              -87.3039411,
+              20.4070625
+            ],
+            [
+              -87.3038257,
+              20.4072259
+            ],
+            [
+              -87.3040913,
+              20.4073365
+            ]
+          ]
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "id": "444AF833517D8DAE",
+      "properties": {
+        "name": "H32 per lot map",
+        "description": "Possibly carved up between H29, H30 & H31",
+        "layer": "Akumal Norte property Lots",
+        "style_color": "#000000",
+        "style_index": 0
+      },
+      "geometry": {
+        "type": "Polygon",
+        "coordinates": [
+          [
+            [
+              -87.3044896,
+              20.4071681
+            ],
+            [
+              -87.3043461,
+              20.4071127
+            ],
+            [
+              -87.3039599,
+              20.4078594
+            ],
+            [
+              -87.3041922,
+              20.407969
+            ],
+            [
+              -87.3044896,
+              20.4071681
+            ]
+          ]
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "id": "13452A23C02B4F94",
+      "properties": {
+        "name": "Lot H29",
+        "description": "",
+        "layer": "Akumal Norte property Lots",
+        "style_color": "#000000",
+        "style_index": 0
+      },
+      "geometry": {
+        "type": "Polygon",
+        "coordinates": [
+          [
+            [
+              -87.3041922,
+              20.407969
+            ],
+            [
+              -87.3042753,
+              20.4077352
+            ],
+            [
+              -87.3036504,
+              20.4073959
+            ],
+            [
+              -87.3035244,
+              20.4075542
+            ],
+            [
+              -87.303814,
+              20.4077578
+            ],
+            [
+              -87.3041922,
+              20.407969
+            ]
+          ]
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "id": "13452AC64DFBFFF9",
+      "properties": {
+        "name": "Lot H30 - Casa de Colores",
+        "description": "Casa de Colores",
+        "layer": "Akumal Norte property Lots",
+        "style_color": "#F4EB37",
+        "style_index": 1
+      },
+      "geometry": {
+        "type": "Polygon",
+        "coordinates": [
+          [
+            [
+              -87.3042927,
+              20.407744
+            ],
+            [
+              -87.3043759,
+              20.4074875
+            ],
+            [
+              -87.3038257,
+              20.4072259
+            ],
+            [
+              -87.3036786,
+              20.4074097
+            ],
+            [
+              -87.3039856,
+              20.4075807
+            ],
+            [
+              -87.3041063,
+              20.4076473
+            ],
+            [
+              -87.3042927,
+              20.407744
+            ]
+          ]
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "id": "13452B83FDDE1432",
+      "properties": {
+        "name": "Lot H31 - Villa Sirena at Nah-Hah",
+        "description": "Villa Sirena at Nah-Hah",
+        "layer": "Akumal Norte property Lots",
+        "style_color": "#F4EB37",
+        "style_index": 1
+      },
+      "geometry": {
+        "type": "Polygon",
+        "coordinates": [
+          [
+            [
+              -87.3043585,
+              20.4074712
+            ],
+            [
+              -87.3044953,
+              20.4071847
+            ],
+            [
+              -87.3039669,
+              20.406966
+            ],
+            [
+              -87.3038257,
+              20.4072259
+            ],
+            [
+              -87.3043585,
+              20.4074712
+            ]
+          ]
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "id": "13452875C1F662CB",
+      "properties": {
+        "name": "Lot H33 - La Iguana condos (15)",
+        "description": "La Iguana condos\n8 of 15 member owned 3/2025",
+        "layer": "Akumal Norte property Lots",
+        "style_color": "#F4EB37",
+        "style_index": 1
+      },
+      "geometry": {
+        "type": "Polygon",
+        "coordinates": [
+          [
+            [
+              -87.3044819,
+              20.4080582
+            ],
+            [
+              -87.3047299,
+              20.4072387
+            ],
+            [
+              -87.3044896,
+              20.4071681
+            ],
+            [
+              -87.3041922,
+              20.407969
+            ],
+            [
+              -87.3044819,
+              20.4080582
+            ]
+          ]
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "id": "K31GYERMMUY41290652996ED43BB",
+      "properties": {
+        "name": "Lot H35 and 34 - La Sirena condos (19)",
+        "description": "La Sirena condos\n11 of 19 member owned 3/2025",
+        "layer": "Akumal Norte property Lots",
+        "style_color": "#F4EB37",
+        "style_index": 1
+      },
+      "geometry": {
+        "type": "Polygon",
+        "coordinates": [
+          [
+            [
+              -87.3050666,
+              20.4073342
+            ],
+            [
+              -87.3047299,
+              20.4072387
+            ],
+            [
+              -87.3044819,
+              20.4080582
+            ],
+            [
+              -87.3049003,
+              20.4081802
+            ],
+            [
+              -87.3050666,
+              20.4073342
+            ]
+          ]
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "id": "13451A9BE683C32C",
+      "properties": {
+        "name": "Lot H36 - Casa Bellamar",
+        "description": "Bellamar",
+        "layer": "Akumal Norte property Lots",
+        "style_color": "#F4EB37",
+        "style_index": 1
+      },
+      "geometry": {
+        "type": "Polygon",
+        "coordinates": [
+          [
+            [
+              -87.3051256,
+              20.4081903
+            ],
+            [
+              -87.3052141,
+              20.4074286
+            ],
+            [
+              -87.3050666,
+              20.4073342
+            ],
+            [
+              -87.3049003,
+              20.4081802
+            ],
+            [
+              -87.3051256,
+              20.4081903
+            ]
+          ]
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "id": "13451BDF08C9F6BC",
+      "properties": {
+        "name": "Lot H37",
+        "description": "",
+        "layer": "Akumal Norte property Lots",
+        "style_color": "#F4EB37",
+        "style_index": 1
+      },
+      "geometry": {
+        "type": "Polygon",
+        "coordinates": [
+          [
+            [
+              -87.305391,
+              20.4081965
+            ],
+            [
+              -87.3053885,
+              20.407416
+            ],
+            [
+              -87.3052141,
+              20.4074311
+            ],
+            [
+              -87.3051256,
+              20.4081928
+            ],
+            [
+              -87.305391,
+              20.4081965
+            ]
+          ]
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "id": "13451CE5F46CA6E9",
+      "properties": {
+        "name": "Lot H38 - Casa Tlalocan",
+        "description": "Casa Tlalocan",
+        "layer": "Akumal Norte property Lots",
+        "style_color": "#F4EB37",
+        "style_index": 1
+      },
+      "geometry": {
+        "type": "Polygon",
+        "coordinates": [
+          [
+            [
+              -87.3056687,
+              20.4081853
+            ],
+            [
+              -87.3055801,
+              20.4074286
+            ],
+            [
+              -87.3053978,
+              20.4074261
+            ],
+            [
+              -87.305391,
+              20.4081965
+            ],
+            [
+              -87.3056687,
+              20.4081853
+            ]
+          ]
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "id": "1345210D01EDB312",
+      "properties": {
+        "name": "Lot H39",
+        "description": "",
+        "layer": "Akumal Norte property Lots",
+        "style_color": "#000000",
+        "style_index": 0
+      },
+      "geometry": {
+        "type": "Polygon",
+        "coordinates": [
+          [
+            [
+              -87.3058739,
+              20.4081425
+            ],
+            [
+              -87.3057452,
+              20.4074337
+            ],
+            [
+              -87.3055708,
+              20.4074185
+            ],
+            [
+              -87.3056687,
+              20.4081853
+            ],
+            [
+              -87.3058739,
+              20.4081425
+            ]
+          ]
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "id": "13452026D6700A24",
+      "properties": {
+        "name": "Lot H40 - Casa Mayanah",
+        "description": "Casa Mayanah (fractional)",
+        "layer": "Akumal Norte property Lots",
+        "style_color": "#F4EB37",
+        "style_index": 1
+      },
+      "geometry": {
+        "type": "Polygon",
+        "coordinates": [
+          [
+            [
+              -87.3061206,
+              20.4080671
+            ],
+            [
+              -87.3059115,
+              20.4073984
+            ],
+            [
+              -87.3057452,
+              20.4074337
+            ],
+            [
+              -87.3058739,
+              20.4081425
+            ],
+            [
+              -87.3061206,
+              20.4080671
+            ]
+          ]
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "id": "13451E8396D12D7E",
+      "properties": {
+        "name": "Lot H41 - Casa Mayanah",
+        "description": "Owned by Mayanah (not separate member)",
+        "layer": "Akumal Norte property Lots",
+        "style_color": "#F8971B",
+        "style_index": 3
+      },
+      "geometry": {
+        "type": "Polygon",
+        "coordinates": [
+          [
+            [
+              -87.3061006,
+              20.4073455
+            ],
+            [
+              -87.3059128,
+              20.4073946
+            ],
+            [
+              -87.3061206,
+              20.4080671
+            ],
+            [
+              -87.3063065,
+              20.4079914
+            ],
+            [
+              -87.3061006,
+              20.4073455
+            ]
+          ]
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "id": "4ABA2A81B247B7C1",
+      "properties": {
+        "name": "H42 - Nahil condos",
+        "description": "",
+        "layer": "Akumal Norte property Lots",
+        "style_color": "#000000",
+        "style_index": 0
+      },
+      "geometry": {
+        "type": "Polygon",
+        "coordinates": [
+          [
+            [
+              -87.3064868,
+              20.4079099
+            ],
+            [
+              -87.3063353,
+              20.4072928
+            ],
+            [
+              -87.3061006,
+              20.4073455
+            ],
+            [
+              -87.3063065,
+              20.4079914
+            ],
+            [
+              -87.3064868,
+              20.4079099
+            ]
+          ]
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "id": "K31GYERMMUY412906380CCE36283",
+      "properties": {
+        "name": "Lot H43 - Yool Canal condos (5)",
+        "description": "Yool Canal condos\n5 of 5 member owned 3/2025",
+        "layer": "Akumal Norte property Lots",
+        "style_color": "#F4EB37",
+        "style_index": 1
+      },
+      "geometry": {
+        "type": "Polygon",
+        "coordinates": [
+          [
+            [
+              -87.3066505,
+              20.4078094
+            ],
+            [
+              -87.3065096,
+              20.4072538
+            ],
+            [
+              -87.3063353,
+              20.4072928
+            ],
+            [
+              -87.3064868,
+              20.4079099
+            ],
+            [
+              -87.3066505,
+              20.4078094
+            ]
+          ]
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "id": "134516FEF0697D61",
+      "properties": {
+        "name": "Lot H44 - Casa Maya",
+        "description": "Casa Maya",
+        "layer": "Akumal Norte property Lots",
+        "style_color": "#000000",
+        "style_index": 0
+      },
+      "geometry": {
+        "type": "Polygon",
+        "coordinates": [
+          [
+            [
+              -87.3066505,
+              20.4078094
+            ],
+            [
+              -87.3068289,
+              20.4076723
+            ],
+            [
+              -87.306684,
+              20.4071948
+            ],
+            [
+              -87.306515,
+              20.4072513
+            ],
+            [
+              -87.3066505,
+              20.4078094
+            ]
+          ]
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "id": "13452D6662367A88",
+      "properties": {
+        "name": "Lot H45 - Casa Milah",
+        "description": "Casa Milah",
+        "layer": "Akumal Norte property Lots",
+        "style_color": "#F4EB37",
+        "style_index": 1
+      },
+      "geometry": {
+        "type": "Polygon",
+        "coordinates": [
+          [
+            [
+              -87.3068289,
+              20.4076723
+            ],
+            [
+              -87.3070046,
+              20.4075705
+            ],
+            [
+              -87.3068664,
+              20.4071394
+            ],
+            [
+              -87.306684,
+              20.4071948
+            ],
+            [
+              -87.3068289,
+              20.4076723
+            ]
+          ]
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "id": "1344E67D673B516F",
+      "properties": {
+        "name": "Lot H49",
+        "description": "",
+        "layer": "Akumal Norte property Lots",
+        "style_color": "#000000",
+        "style_index": 0
+      },
+      "geometry": {
+        "type": "Polygon",
+        "coordinates": [
+          [
+            [
+              -87.3062414,
+              20.4092435
+            ],
+            [
+              -87.3061904,
+              20.4089067
+            ],
+            [
+              -87.3060536,
+              20.4089218
+            ],
+            [
+              -87.30611,
+              20.4092661
+            ],
+            [
+              -87.3062414,
+              20.4092435
+            ]
+          ]
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "id": "1344E2278238CB63",
+      "properties": {
+        "name": "Lot H50 - Casa Laguna",
+        "description": "Casa Laguna",
+        "layer": "Akumal Norte property Lots",
+        "style_color": "#000000",
+        "style_index": 0
+      },
+      "geometry": {
+        "type": "Polygon",
+        "coordinates": [
+          [
+            [
+              -87.3059811,
+              20.4092887
+            ],
+            [
+              -87.30611,
+              20.4092661
+            ],
+            [
+              -87.3060536,
+              20.4089218
+            ],
+            [
+              -87.3059061,
+              20.4089368
+            ],
+            [
+              -87.3059811,
+              20.4092887
+            ]
+          ]
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "id": "1344E07BACC28836",
+      "properties": {
+        "name": "Lot H51 - Casa Laguna",
+        "description": "Casa Laguna",
+        "layer": "Akumal Norte property Lots",
+        "style_color": "#000000",
+        "style_index": 0
+      },
+      "geometry": {
+        "type": "Polygon",
+        "coordinates": [
+          [
+            [
+              -87.3058283,
+              20.4093038
+            ],
+            [
+              -87.3059811,
+              20.4092887
+            ],
+            [
+              -87.3059222,
+              20.4089444
+            ],
+            [
+              -87.3057881,
+              20.4089746
+            ],
+            [
+              -87.3058283,
+              20.4093038
+            ]
+          ]
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "id": "1344DFAD027F8BA0",
+      "properties": {
+        "name": "Lot H52 - Casa Las Culpas",
+        "description": "Casa Las Culpas",
+        "layer": "Akumal Norte property Lots",
+        "style_color": "#F4EB37",
+        "style_index": 1
+      },
+      "geometry": {
+        "type": "Polygon",
+        "coordinates": [
+          [
+            [
+              -87.3058283,
+              20.4093038
+            ],
+            [
+              -87.3057881,
+              20.4089746
+            ],
+            [
+              -87.3056325,
+              20.4089896
+            ],
+            [
+              -87.3056889,
+              20.4093265
+            ],
+            [
+              -87.3058283,
+              20.4093038
+            ]
+          ]
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "id": "1344DF136C3FA0AC",
+      "properties": {
+        "name": "Lot H53 Casa Savanna",
+        "description": "Casa Savanna",
+        "layer": "Akumal Norte property Lots",
+        "style_color": "#F4EB37",
+        "style_index": 1
+      },
+      "geometry": {
+        "type": "Polygon",
+        "coordinates": [
+          [
+            [
+              -87.3056889,
+              20.4093265
+            ],
+            [
+              -87.3056325,
+              20.4089896
+            ],
+            [
+              -87.3054931,
+              20.4090072
+            ],
+            [
+              -87.3055386,
+              20.4093617
+            ],
+            [
+              -87.3056889,
+              20.4093265
+            ]
+          ]
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "id": "1344DA5CAE07A7E7",
+      "properties": {
+        "name": "Lot H54",
+        "description": "",
+        "layer": "Akumal Norte property Lots",
+        "style_color": "#000000",
+        "style_index": 0
+      },
+      "geometry": {
+        "type": "Polygon",
+        "coordinates": [
+          [
+            [
+              -87.3055386,
+              20.4093617
+            ],
+            [
+              -87.3055065,
+              20.4092058
+            ],
+            [
+              -87.3052194,
+              20.4092611
+            ],
+            [
+              -87.3052839,
+              20.409437
+            ],
+            [
+              -87.3055386,
+              20.4093617
+            ]
+          ]
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "id": "1344DADDE65CC976",
+      "properties": {
+        "name": "Lot H55",
+        "description": "",
+        "layer": "Akumal Norte property Lots",
+        "style_color": "#000000",
+        "style_index": 0
+      },
+      "geometry": {
+        "type": "Polygon",
+        "coordinates": [
+          [
+            [
+              -87.3055065,
+              20.4092058
+            ],
+            [
+              -87.3054849,
+              20.4090575
+            ],
+            [
+              -87.3051765,
+              20.4091129
+            ],
+            [
+              -87.3052194,
+              20.4092611
+            ],
+            [
+              -87.3055065,
+              20.4092058
+            ]
+          ]
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "id": "1344DB4DC84B0C95",
+      "properties": {
+        "name": "Lot H56",
+        "description": "",
+        "layer": "Akumal Norte property Lots",
+        "style_color": "#000000",
+        "style_index": 0
+      },
+      "geometry": {
+        "type": "Polygon",
+        "coordinates": [
+          [
+            [
+              -87.3055037,
+              20.409055
+            ],
+            [
+              -87.3054824,
+              20.4088967
+            ],
+            [
+              -87.3051283,
+              20.4089494
+            ],
+            [
+              -87.3051765,
+              20.4091129
+            ],
+            [
+              -87.3053401,
+              20.4090902
+            ],
+            [
+              -87.3055037,
+              20.409055
+            ]
+          ]
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "id": "1344D88B36B8B332",
+      "properties": {
+        "name": "Lot H57",
+        "description": "",
+        "layer": "Akumal Norte property Lots",
+        "style_color": "#000000",
+        "style_index": 0
+      },
+      "geometry": {
+        "type": "Polygon",
+        "coordinates": [
+          [
+            [
+              -87.3054555,
+              20.4087408
+            ],
+            [
+              -87.30508,
+              20.4088137
+            ],
+            [
+              -87.3051283,
+              20.4089519
+            ],
+            [
+              -87.3054824,
+              20.4088992
+            ],
+            [
+              -87.3054555,
+              20.4087408
+            ]
+          ]
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "id": "1344E2D6E63603E8",
+      "properties": {
+        "name": "Lot H58 - Casa Torrella",
+        "description": "Casa Torrella",
+        "layer": "Akumal Norte property Lots",
+        "style_color": "#F4EB37",
+        "style_index": 1
+      },
+      "geometry": {
+        "type": "Polygon",
+        "coordinates": [
+          [
+            [
+              -87.3054555,
+              20.4087408
+            ],
+            [
+              -87.3054931,
+              20.4090072
+            ],
+            [
+              -87.3056325,
+              20.4089896
+            ],
+            [
+              -87.3056057,
+              20.4087282
+            ],
+            [
+              -87.3054555,
+              20.4087408
+            ]
+          ]
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "id": "1344E3ED0E2BFCB2",
+      "properties": {
+        "name": "Lot H59 - Office",
+        "description": "Office",
+        "layer": "Akumal Norte property Lots",
+        "style_color": "#000000",
+        "style_index": 0
+      },
+      "geometry": {
+        "type": "Polygon",
+        "coordinates": [
+          [
+            [
+              -87.3056325,
+              20.4089896
+            ],
+            [
+              -87.3057881,
+              20.4089746
+            ],
+            [
+              -87.3057452,
+              20.4087131
+            ],
+            [
+              -87.3056057,
+              20.4087282
+            ],
+            [
+              -87.3056325,
+              20.4089896
+            ]
+          ]
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "id": "1344E470E752C43C",
+      "properties": {
+        "name": "Lot H60 - Casa Ikoods",
+        "description": "Casa Ikoods",
+        "layer": "Akumal Norte property Lots",
+        "style_color": "#F4EB37",
+        "style_index": 1
+      },
+      "geometry": {
+        "type": "Polygon",
+        "coordinates": [
+          [
+            [
+              -87.3057881,
+              20.4089746
+            ],
+            [
+              -87.3059222,
+              20.4089444
+            ],
+            [
+              -87.305882,
+              20.408693
+            ],
+            [
+              -87.3057452,
+              20.4087131
+            ],
+            [
+              -87.3057881,
+              20.4089746
+            ]
+          ]
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "id": "1344E507B00DDB0B",
+      "properties": {
+        "name": "Lot H61 - Casa Manglar",
+        "description": "Casa Manglar\nWas Casa Alcaraz",
+        "layer": "Akumal Norte property Lots",
+        "style_color": "#F4EB37",
+        "style_index": 1
+      },
+      "geometry": {
+        "type": "Polygon",
+        "coordinates": [
+          [
+            [
+              -87.3059222,
+              20.4089444
+            ],
+            [
+              -87.3060536,
+              20.4089218
+            ],
+            [
+              -87.3060161,
+              20.4086578
+            ],
+            [
+              -87.305882,
+              20.408693
+            ],
+            [
+              -87.3059222,
+              20.4089444
+            ]
+          ]
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "id": "1344E6253DD9204A",
+      "properties": {
+        "name": "lot H62 - Casa Manglar",
+        "description": "Owned by Casa Manglar (no separate membership)",
+        "layer": "Akumal Norte property Lots",
+        "style_color": "#F4EB37",
+        "style_index": 1
+      },
+      "geometry": {
+        "type": "Polygon",
+        "coordinates": [
+          [
+            [
+              -87.3060536,
+              20.4089218
+            ],
+            [
+              -87.3061904,
+              20.4089067
+            ],
+            [
+              -87.3061448,
+              20.4086452
+            ],
+            [
+              -87.3060161,
+              20.4086578
+            ],
+            [
+              -87.3060536,
+              20.4089218
+            ]
+          ]
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "id": "1325C021B352238E",
+      "properties": {
+        "name": "Lot H73 - Casa Chile",
+        "description": "Casa Chile lot",
+        "layer": "Akumal Norte property Lots",
+        "style_color": "#000000",
+        "style_index": 0
+      },
+      "geometry": {
+        "type": "Polygon",
+        "coordinates": [
+          [
+            [
+              -87.3062924,
+              20.4085824
+            ],
+            [
+              -87.3062736,
+              20.4082958
+            ],
+            [
+              -87.3061234,
+              20.408331
+            ],
+            [
+              -87.3061422,
+              20.4086075
+            ],
+            [
+              -87.3062924,
+              20.4085824
+            ]
+          ]
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "id": "1325C080F1EE167C",
+      "properties": {
+        "name": "Lot H74 - Casa Chile",
+        "description": "Casa Chile",
+        "layer": "Akumal Norte property Lots",
+        "style_color": "#000000",
+        "style_index": 0
+      },
+      "geometry": {
+        "type": "Polygon",
+        "coordinates": [
+          [
+            [
+              -87.3061811,
+              20.4085912
+            ],
+            [
+              -87.3061583,
+              20.408326
+            ],
+            [
+              -87.3060108,
+              20.4083637
+            ],
+            [
+              -87.306051,
+              20.4086051
+            ],
+            [
+              -87.3061811,
+              20.4085912
+            ]
+          ]
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "id": "1325C1C2397D5274",
+      "properties": {
+        "name": "Lot H75 - Casa Konomi",
+        "description": "Casa Konomi",
+        "layer": "Akumal Norte property Lots",
+        "style_color": "#000000",
+        "style_index": 0
+      },
+      "geometry": {
+        "type": "Polygon",
+        "coordinates": [
+          [
+            [
+              -87.3059973,
+              20.4086101
+            ],
+            [
+              -87.3060161,
+              20.4086101
+            ],
+            [
+              -87.3059759,
+              20.4083687
+            ],
+            [
+              -87.305831,
+              20.4084064
+            ],
+            [
+              -87.3058793,
+              20.4086327
+            ],
+            [
+              -87.3059973,
+              20.4086101
+            ]
+          ]
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "id": "1325C28F3B45EBA1",
+      "properties": {
+        "name": "Lot H76 - Casa Konomi",
+        "description": "Casa Koomi",
+        "layer": "Akumal Norte property Lots",
+        "style_color": "#000000",
+        "style_index": 0
+      },
+      "geometry": {
+        "type": "Polygon",
+        "coordinates": [
+          [
+            [
+              -87.3058793,
+              20.4086327
+            ],
+            [
+              -87.305831,
+              20.4084064
+            ],
+            [
+              -87.3056862,
+              20.4084366
+            ],
+            [
+              -87.3057237,
+              20.4086452
+            ],
+            [
+              -87.3058793,
+              20.4086327
+            ]
+          ]
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "id": "1325C2FCA4E3AED9",
+      "properties": {
+        "name": "Lot H77",
+        "description": "",
+        "layer": "Akumal Norte property Lots",
+        "style_color": "#000000",
+        "style_index": 0
+      },
+      "geometry": {
+        "type": "Polygon",
+        "coordinates": [
+          [
+            [
+              -87.3057452,
+              20.4086477
+            ],
+            [
+              -87.305709,
+              20.4084316
+            ],
+            [
+              -87.3055856,
+              20.4084504
+            ],
+            [
+              -87.3056192,
+              20.4086628
+            ],
+            [
+              -87.3057452,
+              20.4086477
+            ]
+          ]
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "id": "1325C34EEBD679BF",
+      "properties": {
+        "name": "Lot H78",
+        "description": "",
+        "layer": "Akumal Norte property Lots",
+        "style_color": "#000000",
+        "style_index": 0
+      },
+      "geometry": {
+        "type": "Polygon",
+        "coordinates": [
+          [
+            [
+              -87.3055816,
+              20.4086628
+            ],
+            [
+              -87.305544,
+              20.4084592
+            ],
+            [
+              -87.3053938,
+              20.4084668
+            ],
+            [
+              -87.3054367,
+              20.4086804
+            ],
+            [
+              -87.3055816,
+              20.4086628
+            ]
+          ]
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "id": "1325C3B83263B303",
+      "properties": {
+        "name": "Lot H79 - Casa Galeria",
+        "description": "Casa Galeria",
+        "layer": "Akumal Norte property Lots",
+        "style_color": "#F4EB37",
+        "style_index": 1
+      },
+      "geometry": {
+        "type": "Polygon",
+        "coordinates": [
+          [
+            [
+              -87.3054367,
+              20.4086804
+            ],
+            [
+              -87.3053938,
+              20.4084668
+            ],
+            [
+              -87.3052463,
+              20.4084894
+            ],
+            [
+              -87.3052999,
+              20.4087005
+            ],
+            [
+              -87.3054367,
+              20.4086804
+            ]
+          ]
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "id": "1325B76907CB337E",
+      "properties": {
+        "name": "Lot H80 - Casa Orozco",
+        "description": "Casa Orozco",
+        "layer": "Akumal Norte property Lots",
+        "style_color": "#F4EB37",
+        "style_index": 1
+      },
+      "geometry": {
+        "type": "Polygon",
+        "coordinates": [
+          [
+            [
+              -87.3052999,
+              20.4087005
+            ],
+            [
+              -87.3052597,
+              20.4085522
+            ],
+            [
+              -87.3049593,
+              20.4085925
+            ],
+            [
+              -87.305029,
+              20.4087584
+            ],
+            [
+              -87.3052999,
+              20.4087005
+            ]
+          ]
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "id": "1325B8E1D482F6F0",
+      "properties": {
+        "name": "Lot H81 - Casa Orozco",
+        "description": "Casa Orozco lot",
+        "layer": "Akumal Norte property Lots",
+        "style_color": "#F4EB37",
+        "style_index": 1
+      },
+      "geometry": {
+        "type": "Polygon",
+        "coordinates": [
+          [
+            [
+              -87.3052597,
+              20.4085522
+            ],
+            [
+              -87.3052275,
+              20.4083964
+            ],
+            [
+              -87.3049325,
+              20.4084517
+            ],
+            [
+              -87.3049593,
+              20.4085925
+            ],
+            [
+              -87.3052597,
+              20.4085522
+            ]
+          ]
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "id": "1325B9DC3B5BE8B5",
+      "properties": {
+        "name": "Lot H82 Casa Orozco",
+        "description": "Casa Orozco lot",
+        "layer": "Akumal Norte property Lots",
+        "style_color": "#F4EB37",
+        "style_index": 1
+      },
+      "geometry": {
+        "type": "Polygon",
+        "coordinates": [
+          [
+            [
+              -87.3052115,
+              20.4082707
+            ],
+            [
+              -87.3048654,
+              20.4082455
+            ],
+            [
+              -87.3049325,
+              20.4084517
+            ],
+            [
+              -87.3052275,
+              20.4083964
+            ],
+            [
+              -87.3052115,
+              20.4082707
+            ]
+          ]
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "id": "1325BAEC57CECB66",
+      "properties": {
+        "name": "Lot H83 - Casa Tucan y Quetzal",
+        "description": "Casa Tucan y Quetzal",
+        "layer": "Akumal Norte property Lots",
+        "style_color": "#F4EB37",
+        "style_index": 1
+      },
+      "geometry": {
+        "type": "Polygon",
+        "coordinates": [
+          [
+            [
+              -87.3052276,
+              20.4082732
+            ],
+            [
+              -87.3052651,
+              20.4084869
+            ],
+            [
+              -87.3054126,
+              20.4084668
+            ],
+            [
+              -87.3053804,
+              20.4082782
+            ],
+            [
+              -87.3052276,
+              20.4082732
+            ]
+          ]
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "id": "1325BB841734FC97",
+      "properties": {
+        "name": "Lot H84 - Casa Tucan y Quetzal",
+        "description": "Tucan y Quetzal lot",
+        "layer": "Akumal Norte property Lots",
+        "style_color": "#F4EB37",
+        "style_index": 1
+      },
+      "geometry": {
+        "type": "Polygon",
+        "coordinates": [
+          [
+            [
+              -87.3054018,
+              20.4082719
+            ],
+            [
+              -87.30543,
+              20.4084681
+            ],
+            [
+              -87.3055856,
+              20.4084504
+            ],
+            [
+              -87.3055508,
+              20.4082531
+            ],
+            [
+              -87.3054018,
+              20.4082719
+            ]
+          ]
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "id": "1325BBF613E06F69",
+      "properties": {
+        "name": "Lot H85 - Casa Jimenez",
+        "description": "Casa Jiminez",
+        "layer": "Akumal Norte property Lots",
+        "style_color": "#000000",
+        "style_index": 0
+      },
+      "geometry": {
+        "type": "Polygon",
+        "coordinates": [
+          [
+            [
+              -87.3055923,
+              20.4084517
+            ],
+            [
+              -87.3057251,
+              20.4084291
+            ],
+            [
+              -87.305705,
+              20.4082468
+            ],
+            [
+              -87.3055508,
+              20.4082531
+            ],
+            [
+              -87.3055923,
+              20.4084517
+            ]
+          ]
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "id": "1325BD6C735266B1",
+      "properties": {
+        "name": "Lot H86",
+        "description": "",
+        "layer": "Akumal Norte property Lots",
+        "style_color": "#000000",
+        "style_index": 0
+      },
+      "geometry": {
+        "type": "Polygon",
+        "coordinates": [
+          [
+            [
+              -87.3057251,
+              20.4084265
+            ],
+            [
+              -87.3058699,
+              20.4083963
+            ],
+            [
+              -87.3058337,
+              20.4082317
+            ],
+            [
+              -87.305705,
+              20.4082468
+            ],
+            [
+              -87.3057251,
+              20.4084265
+            ]
+          ]
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "id": "1325BDD6D2BBFA7A",
+      "properties": {
+        "name": "Lot H87 - Morningstar Restaurant",
+        "description": "Morningstar Restaurant",
+        "layer": "Akumal Norte property Lots",
+        "style_color": "#000000",
+        "style_index": 0
+      },
+      "geometry": {
+        "type": "Polygon",
+        "coordinates": [
+          [
+            [
+              -87.3058699,
+              20.4083926
+            ],
+            [
+              -87.3060148,
+              20.4083549
+            ],
+            [
+              -87.3059839,
+              20.4081953
+            ],
+            [
+              -87.3058337,
+              20.4082317
+            ],
+            [
+              -87.3058699,
+              20.4083926
+            ]
+          ]
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "id": "1325BEB9E270A761",
+      "properties": {
+        "name": "Lot H88 - Akumal Villas",
+        "description": "Akumal Villas",
+        "layer": "Akumal Norte property Lots",
+        "style_color": "#F4EB37",
+        "style_index": 1
+      },
+      "geometry": {
+        "type": "Polygon",
+        "coordinates": [
+          [
+            [
+              -87.3059839,
+              20.4081953
+            ],
+            [
+              -87.3060188,
+              20.4083549
+            ],
+            [
+              -87.3061556,
+              20.4083247
+            ],
+            [
+              -87.306118,
+              20.4081488
+            ],
+            [
+              -87.3059839,
+              20.4081953
+            ]
+          ]
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "id": "1325BF65BC026645",
+      "properties": {
+        "name": "Lot H89",
+        "description": "",
+        "layer": "Akumal Norte property Lots",
+        "style_color": "#F4EB37",
+        "style_index": 1
+      },
+      "geometry": {
+        "type": "Polygon",
+        "coordinates": [
+          [
+            [
+              -87.3061583,
+              20.408326
+            ],
+            [
+              -87.3062736,
+              20.4082945
+            ],
+            [
+              -87.3062521,
+              20.4081023
+            ],
+            [
+              -87.306118,
+              20.4081488
+            ],
+            [
+              -87.3061583,
+              20.408326
+            ]
+          ]
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "id": "132592DE8E4E4374",
+      "properties": {
+        "name": "Lot H94",
+        "description": "",
+        "layer": "Akumal Norte property Lots",
+        "style_color": "#000000",
+        "style_index": 0
+      },
+      "geometry": {
+        "type": "Polygon",
+        "coordinates": [
+          [
+            [
+              -87.3049137,
+              20.4097388
+            ],
+            [
+              -87.3048225,
+              20.4095075
+            ],
+            [
+              -87.3044819,
+              20.4096256
+            ],
+            [
+              -87.3046133,
+              20.4100932
+            ],
+            [
+              -87.3049137,
+              20.4097388
+            ]
+          ]
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "id": "132592253878ED05",
+      "properties": {
+        "name": "Lot H95",
+        "description": "",
+        "layer": "Akumal Norte property Lots",
+        "style_color": "#000000",
+        "style_index": 0
+      },
+      "geometry": {
+        "type": "Polygon",
+        "coordinates": [
+          [
+            [
+              -87.3048225,
+              20.4095075
+            ],
+            [
+              -87.3047769,
+              20.4093692
+            ],
+            [
+              -87.3044389,
+              20.4094798
+            ],
+            [
+              -87.3044819,
+              20.4096256
+            ],
+            [
+              -87.3048225,
+              20.4095075
+            ]
+          ]
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "id": "K31GYERMMUY4129080101B34655A",
+      "properties": {
+        "name": "Lot H96 - Villa Josefina or Villa Sofia",
+        "description": "Villa Sofia\nwas (or is) Villa Josefina",
+        "layer": "Akumal Norte property Lots",
+        "style_color": "#F4EB37",
+        "style_index": 1
+      },
+      "geometry": {
+        "type": "Polygon",
+        "coordinates": [
+          [
+            [
+              -87.3044389,
+              20.4094798
+            ],
+            [
+              -87.3047769,
+              20.409369199999997
+            ],
+            [
+              -87.3047474,
+              20.4092486
+            ],
+            [
+              -87.30437990000001,
+              20.4093441
+            ],
+            [
+              -87.3044389,
+              20.4094798
+            ]
+          ]
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "id": "1386E55A992A11EE",
+      "properties": {
+        "name": "Lot H97 - Casa Que Onda",
+        "description": "Que Onda house",
+        "layer": "Akumal Norte property Lots",
+        "style_color": "#F4EB37",
+        "style_index": 1
+      },
+      "geometry": {
+        "type": "Polygon",
+        "coordinates": [
+          [
+            [
+              -87.3047474,
+              20.4092486
+            ],
+            [
+              -87.3046804,
+              20.4091203
+            ],
+            [
+              -87.3043182,
+              20.4092008
+            ],
+            [
+              -87.3043799,
+              20.4093441
+            ],
+            [
+              -87.3047474,
+              20.4092486
+            ]
+          ]
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "id": "1386E3D9D86F17E1",
+      "properties": {
+        "name": "Lots H98 and 99 - Que Onda hotel",
+        "description": "Que Onda hotel",
+        "layer": "Akumal Norte property Lots",
+        "style_color": "#F8971B",
+        "style_index": 3
+      },
+      "geometry": {
+        "type": "Polygon",
+        "coordinates": [
+          [
+            [
+              -87.3046804,
+              20.4091203
+            ],
+            [
+              -87.3045892,
+              20.4088765
+            ],
+            [
+              -87.3042163,
+              20.4089544
+            ],
+            [
+              -87.3043182,
+              20.4092008
+            ],
+            [
+              -87.3046804,
+              20.4091203
+            ]
+          ]
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "id": "K31GYERMMUY412907B6DB78C63D2",
+      "properties": {
+        "name": "Lot H100 - Casa Gatos",
+        "description": "Casa Gatos",
+        "layer": "Akumal Norte property Lots",
+        "style_color": "#F4EB37",
+        "style_index": 1
+      },
+      "geometry": {
+        "type": "Polygon",
+        "coordinates": [
+          [
+            [
+              -87.3047823,
+              20.4088312
+            ],
+            [
+              -87.3045892,
+              20.4088564
+            ],
+            [
+              -87.3046804,
+              20.4091203
+            ],
+            [
+              -87.3048574,
+              20.409065
+            ],
+            [
+              -87.3047823,
+              20.4088312
+            ]
+          ]
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "id": "1325B5B8A5723C17",
+      "properties": {
+        "name": "Lot H101 - Casa Ventura",
+        "description": "Casa Ventura",
+        "layer": "Akumal Norte property Lots",
+        "style_color": "#F4EB37",
+        "style_index": 1
+      },
+      "geometry": {
+        "type": "Polygon",
+        "coordinates": [
+          [
+            [
+              -87.3048574,
+              20.409065
+            ],
+            [
+              -87.3050531,
+              20.4090148
+            ],
+            [
+              -87.3049754,
+              20.4087885
+            ],
+            [
+              -87.3047823,
+              20.4088312
+            ],
+            [
+              -87.3048574,
+              20.409065
+            ]
+          ]
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "id": "K31GYERMMUY412907CF11421E785",
+      "properties": {
+        "name": "lot H102 - Casa Tranquilidad",
+        "description": "Casa Tranquilidad",
+        "layer": "Akumal Norte property Lots",
+        "style_color": "#000000",
+        "style_index": 2
+      },
+      "geometry": {
+        "type": "Polygon",
+        "coordinates": [
+          [
+            [
+              -87.3050988,
+              20.4091354
+            ],
+            [
+              -87.3050531,
+              20.4090148
+            ],
+            [
+              -87.304675,
+              20.4091153
+            ],
+            [
+              -87.3047474,
+              20.4092486
+            ],
+            [
+              -87.3050988,
+              20.4091354
+            ]
+          ]
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "id": "132590D0D7F2A385",
+      "properties": {
+        "name": "Lot H103 - Villa Milagro",
+        "description": "Villa Milagro\nformer Casa Pasajera?",
+        "layer": "Akumal Norte property Lots",
+        "style_color": "#F4EB37",
+        "style_index": 1
+      },
+      "geometry": {
+        "type": "Polygon",
+        "coordinates": [
+          [
+            [
+              -87.3051363,
+              20.4092812
+            ],
+            [
+              -87.3051015,
+              20.4091379
+            ],
+            [
+              -87.3047501,
+              20.4092511
+            ],
+            [
+              -87.3047877,
+              20.4093868
+            ],
+            [
+              -87.3051363,
+              20.4092812
+            ]
+          ]
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "id": "1325917AD3C079B1",
+      "properties": {
+        "name": "Lot H104",
+        "description": "",
+        "layer": "Akumal Norte property Lots",
+        "style_color": "#000000",
+        "style_index": 0
+      },
+      "geometry": {
+        "type": "Polygon",
+        "coordinates": [
+          [
+            [
+              -87.3052141,
+              20.4095025
+            ],
+            [
+              -87.3051336,
+              20.4092787
+            ],
+            [
+              -87.304785,
+              20.4093843
+            ],
+            [
+              -87.3049137,
+              20.4097388
+            ],
+            [
+              -87.3052141,
+              20.4095025
+            ]
+          ]
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "id": "444EC4FE51F2F01F",
+      "properties": {
+        "name": "Lot 91 - Casa Rosse",
+        "description": "Casa Rosse\nEtapa I",
+        "layer": "Akumal Norte property Lots",
+        "style_color": "#F4EB37",
+        "style_index": 1
+      },
+      "geometry": {
+        "type": "Polygon",
+        "coordinates": [
+          [
+            [
+              -87.3065432,
+              20.4079752
+            ],
+            [
+              -87.3064385,
+              20.4080229
+            ],
+            [
+              -87.3065056,
+              20.4082593
+            ],
+            [
+              -87.3066237,
+              20.4082242
+            ],
+            [
+              -87.3065432,
+              20.4079752
+            ]
+          ]
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "id": "44541DEF3E77AAFE",
+      "properties": {
+        "name": "Lot G45A",
+        "description": "",
+        "layer": "Akumal Norte property Lots",
+        "style_color": "#000000",
+        "style_index": 0
+      },
+      "geometry": {
+        "type": "Polygon",
+        "coordinates": [
+          [
+            [
+              -87.3094788,
+              20.4059882
+            ],
+            [
+              -87.3095391,
+              20.4059222
+            ],
+            [
+              -87.3095565,
+              20.4058462
+            ],
+            [
+              -87.3094358,
+              20.4057733
+            ],
+            [
+              -87.3093313,
+              20.4059027
+            ],
+            [
+              -87.3094788,
+              20.4059882
+            ]
+          ]
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "id": "44541EECBCCF5BDA",
+      "properties": {
+        "name": "Lot G44A?",
+        "description": "",
+        "layer": "Akumal Norte property Lots",
+        "style_color": "#000000",
+        "style_index": 2
+      },
+      "geometry": {
+        "type": "Polygon",
+        "coordinates": [
+          [
+            [
+              -87.3095699,
+              20.4058411
+            ],
+            [
+              -87.309653,
+              20.4056099
+            ],
+            [
+              -87.3095832,
+              20.4055847
+            ],
+            [
+              -87.3094492,
+              20.4057682
+            ],
+            [
+              -87.3095699,
+              20.4058411
+            ]
+          ]
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "id": "445449289AC872EF",
+      "properties": {
+        "name": "Lot G42A? - Midway store",
+        "description": "Midway store",
+        "layer": "Akumal Norte property Lots",
+        "style_color": "#000000",
+        "style_index": 0
+      },
+      "geometry": {
+        "type": "Polygon",
+        "coordinates": [
+          [
+            [
+              -87.3096744,
+              20.4054163
+            ],
+            [
+              -87.3097496,
+              20.405454
+            ],
+            [
+              -87.3098316,
+              20.4052468
+            ],
+            [
+              -87.3097726,
+              20.4052242
+            ],
+            [
+              -87.3096744,
+              20.4054163
+            ]
+          ]
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "id": "44541F9C256E2A7D",
+      "properties": {
+        "name": "Lot G43A?",
+        "description": "",
+        "layer": "Akumal Norte property Lots",
+        "style_color": "#000000",
+        "style_index": 0
+      },
+      "geometry": {
+        "type": "Polygon",
+        "coordinates": [
+          [
+            [
+              -87.3096664,
+              20.4056049
+            ],
+            [
+              -87.3097469,
+              20.4054565
+            ],
+            [
+              -87.3096717,
+              20.4054188
+            ],
+            [
+              -87.3095966,
+              20.4055797
+            ],
+            [
+              -87.3096664,
+              20.4056049
+            ]
+          ]
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "id": "446A6086568A2AF1",
+      "properties": {
+        "name": "Parque Yalku",
+        "description": "",
+        "layer": "Akumal Norte property Lots",
+        "style_color": "#000000",
+        "style_index": 0
+      },
+      "geometry": {
+        "type": "Polygon",
+        "coordinates": [
+          [
+            [
+              -87.3049762,
+              20.4087517
+            ],
+            [
+              -87.3048112,
+              20.408249
+            ],
+            [
+              -87.3044478,
+              20.4081308
+            ],
+            [
+              -87.304201,
+              20.4080492
+            ],
+            [
+              -87.3038899,
+              20.4085003
+            ],
+            [
+              -87.3041634,
+              20.4089202
+            ],
+            [
+              -87.3049762,
+              20.4087517
+            ]
+          ]
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "id": "448CA6BD3D8F94BA",
+      "properties": {
+        "name": "Lot H02",
+        "description": "",
+        "layer": "Akumal Norte property Lots",
+        "style_color": "#000000",
+        "style_index": 0
+      },
+      "geometry": {
+        "type": "Polygon",
+        "coordinates": [
+          [
+            [
+              -87.3063917,
+              20.409329
+            ],
+            [
+              -87.3061033,
+              20.4093613
+            ],
+            [
+              -87.3059343,
+              20.4101984
+            ],
+            [
+              -87.3061261,
+              20.4100907
+            ],
+            [
+              -87.3063917,
+              20.409329
+            ]
+          ]
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "id": "448CA9196A21BA7C",
+      "properties": {
+        "name": "Lot H03",
+        "description": "",
+        "layer": "Akumal Norte property Lots",
+        "style_color": "#000000",
+        "style_index": 0
+      },
+      "geometry": {
+        "type": "Polygon",
+        "coordinates": [
+          [
+            [
+              -87.3061033,
+              20.4093613
+            ],
+            [
+              -87.3057707,
+              20.4094003
+            ],
+            [
+              -87.3057908,
+              20.4099458
+            ],
+            [
+              -87.3059343,
+              20.4101984
+            ],
+            [
+              -87.3061033,
+              20.4093613
+            ]
+          ]
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "id": "138699C16F6663C7",
+      "properties": {
+        "name": "Lot F9 - Casa Papagayo",
+        "description": "Casa Papagayo",
+        "layer": "Akumal Norte property Lots",
+        "style_color": "#F4EB37",
+        "style_index": 1
+      },
+      "geometry": {
+        "type": "Polygon",
+        "coordinates": [
+          [
+            [
+              -87.3100581,
+              20.3984526
+            ],
+            [
+              -87.3101253,
+              20.3983155
+            ],
+            [
+              -87.309444,
+              20.3980717
+            ],
+            [
+              -87.30946,
+              20.3982652
+            ],
+            [
+              -87.3097229,
+              20.3983482
+            ],
+            [
+              -87.3100581,
+              20.3984526
+            ]
+          ]
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "id": "448E2F3653B01E2C",
+      "properties": {
+        "name": "Lot 64",
+        "description": "",
+        "layer": "Akumal Norte property Lots",
+        "style_color": "#000000",
+        "style_index": 2
+      },
+      "geometry": {
+        "type": "Polygon",
+        "coordinates": [
+          [
+            [
+              -87.3064707,
+              20.4086037
+            ],
+            [
+              -87.3063366,
+              20.4086137
+            ],
+            [
+              -87.3063688,
+              20.4088852
+            ],
+            [
+              -87.3065029,
+              20.4088752
+            ],
+            [
+              -87.3064707,
+              20.4086037
+            ]
+          ]
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "id": "4ABA298BEFD99826",
+      "properties": {
+        "name": "Lot H42 - Nahil Condos (12)",
+        "description": "Nahil condos\n8 of 12 member owned 3/2025",
+        "layer": "Akumal Norte property Lots",
+        "style_color": "#F4EB37",
+        "style_index": 1
+      },
+      "geometry": {
+        "type": "Polygon",
+        "coordinates": [
+          [
+            [
+              -87.3064868,
+              20.4079099
+            ],
+            [
+              -87.3063353,
+              20.4072928
+            ],
+            [
+              -87.3061006,
+              20.4073455
+            ],
+            [
+              -87.3063065,
+              20.4079914
+            ],
+            [
+              -87.3064868,
+              20.4079099
+            ]
+          ]
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "id": "K31GYERMMUY412957C761B3BBB58",
+      "properties": {
+        "name": "Lots G36-41A - Del Sol",
+        "description": "Del sol beachfront",
+        "layer": "Akumal Norte property Lots",
+        "style_color": "#F8971B",
+        "style_index": 3
+      },
+      "geometry": {
+        "type": "Polygon",
+        "coordinates": [
+          [
+            [
+              -87.3096759,
+              20.4032051
+            ],
+            [
+              -87.309523,
+              20.4032341
+            ],
+            [
+              -87.3094238,
+              20.4041529
+            ],
+            [
+              -87.3097778,
+              20.4042384
+            ],
+            [
+              -87.3096759,
+              20.4032051
+            ]
+          ]
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "id": "13869FE1A0D8B328",
+      "properties": {
+        "name": "Lots F10 and 11 - Mi Casa Del Mar condos (14)",
+        "description": "Mi Casa Del Mar condos - 9 of 14 member owned 3/2025",
+        "layer": "Akumal Norte property Lots",
+        "style_color": "#F4EB37",
+        "style_index": 1
+      },
+      "geometry": {
+        "type": "Polygon",
+        "coordinates": [
+          [
+            [
+              -87.3098731,
+              20.3987919
+            ],
+            [
+              -87.3100581,
+              20.3984526
+            ],
+            [
+              -87.30946,
+              20.3982602
+            ],
+            [
+              -87.3094466,
+              20.3983558
+            ],
+            [
+              -87.3092615,
+              20.3985569
+            ],
+            [
+              -87.3098731,
+              20.3987919
+            ]
+          ]
+        ]
+      }
+    }
+  ]
+}
