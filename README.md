@@ -8,6 +8,10 @@ The extraction contains 157 lot features and 9 larger region features (165 polyg
 
 On Windows, run `./akumal-local-server.exe` from this directory, then open <http://127.0.0.1:8765/>. The server listens only on loopback. The viewer overlays the features on Esri satellite imagery and can switch to OpenStreetMap streets. Click a shape to see its source attributes.
 
+On a system with Nix flakes enabled, run `nix run` to serve the same static site on <http://127.0.0.1:8765/>. Run `nix build` to create a deployable `result/index.html`, or `nix develop` for a shell with Python. The flake pins Nixpkgs to a specific commit.
+
+Pushing `main` triggers `.github/workflows/pages.yml`, which builds the flake and deploys its output to GitHub Pages. In the GitHub repository settings, set **Pages → Build and deployment → Source** to **GitHub Actions**.
+
 The server source is in `server/akumal-local-server.cs`. It can be rebuilt with the .NET Framework C# compiler:
 
 ```powershell
@@ -23,3 +27,7 @@ The server source is in `server/akumal-local-server.cs`. It can be rebuilt with 
 - `validation/render.ps1`: regenerates the overlay from the GeoJSON and basemap.
 
 The validation image shows the lot outlines tracking the visible coastline and road. The source map marks some regions as approximate; this is a visualization of that map, not surveyed parcel data. Satellite imagery is from Esri, Maxar, Earthstar Geographics, and the GIS User Community.
+
+## Map technology and sources
+
+The viewer uses [Leaflet](https://leafletjs.com/), an open-source JavaScript map library. The street basemap uses [OpenStreetMap tiles](https://operations.osmfoundation.org/policies/tiles/); the map data is open, while the community tile service has usage limits. The default satellite basemap comes from [Esri World Imagery](https://developers.arcgis.com/rest/basemap-styles/service-data/), which is not open-source imagery. The lot and region shapes come from the linked Google My Maps map. Leaflet, the tile providers, and the lot dataset have separate terms and provenance.
