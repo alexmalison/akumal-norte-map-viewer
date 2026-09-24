@@ -6,9 +6,15 @@ Public viewer: <https://alexmalison.github.io/akumal-norte-map-viewer/>. Source 
 
 The extraction contains 157 lot features and 9 larger region features (165 polygons and one line). Each feature retains the map name, description, layer, feature ID, and style color. Coordinates are WGS84 longitude/latitude in GeoJSON order.
 
+## Donation overlay
+
+The viewer includes a September 24, 2026 snapshot of the [Akumal Norte Stakeholders workbook's Detail tab](https://docs.google.com/spreadsheets/d/1tbXRKF9f5TPvFh1nFQn1krqEmt3d2AQQxU6EMzerx7Q/edit). It uses **Stakeholder Name** for each mapped lot and sums **Donated** across its records, including unit rows for condo properties. Where a sheet lot code covers different properties, such as The Reef and La Bahia under G46, records are separated by their Detail names. The embedded data contains property names, amounts, and lot codes, without contact details.
+
+Click a lot to see its Detail name and exact donated total. As you zoom in, the name and total appear inside the polygon only when the full text fits. Lots with a matched Detail record totaling $0 are shaded red. Lots without a reliable Detail match keep their source color and have no Detail name or amount. An asterisk marks a total shown on multiple mapped shapes because the source records cover a combined property or the map has duplicate shapes; those labels must not be added together. This is a static snapshot; future workbook edits require refreshing the embedded data in `site/index.html`.
+
 ## View the map
 
-On Windows, run `./akumal-local-server.exe` from this directory, then open <http://127.0.0.1:8765/>. The server listens only on loopback. The viewer overlays the features on Esri satellite imagery and can switch to OpenStreetMap streets. Click a shape to see its source attributes.
+On Windows, run `./akumal-local-server.exe` from this directory, then open <http://127.0.0.1:8765/>. The server listens only on loopback by default. The viewer overlays the features on Esri satellite imagery and can switch to OpenStreetMap streets. Click any shape to see its source attributes; lot popups also show the recorded Detail name and donation total.
 
 On a system with Nix flakes enabled, run `nix run` to serve the same static site on <http://127.0.0.1:8765/>. Run `nix build` to create a deployable `result/index.html`, or `nix develop` for a shell with Python. The flake pins Nixpkgs to a specific commit.
 
@@ -19,6 +25,7 @@ The server source is in `server/akumal-local-server.cs`. It can be rebuilt with 
 ```powershell
 & 'C:\Windows\Microsoft.NET\Framework64\v4.0.30319\csc.exe' /nologo /out:akumal-local-server.exe server\akumal-local-server.cs
 ```
+
 
 ## Files
 

@@ -18,11 +18,14 @@
     .legend { background: rgba(255,255,255,.96); padding: 9px 12px; border-radius: 4px; box-shadow: 0 1px 5px #0003; }
     .legend div { display: flex; gap: 6px; align-items: center; margin: 2px 0; }
     .swatch { display: inline-block; width: 13px; height: 13px; border: 1px solid #697785; }
+    .lot-label { display: flex; flex-direction: column; align-items: center; justify-content: center; overflow: hidden; pointer-events: none; color: #17222c; font-weight: 700; line-height: 1.05; white-space: nowrap; text-shadow: -1px -1px 1px #fff, 1px -1px 1px #fff, -1px 1px 1px #fff, 1px 1px 1px #fff; }
+    .lot-label .lot-name { font-size: .9em; }
+    .lot-label .donation-amount { font-size: .9em; }
     @media (max-width: 600px) { #map { height: calc(100vh - 89px); } }
   </style>
 </head>
 <body>
-  <header><h1>Akumal Norte lots and regions</h1><span>Click a shape for its map name and description · 157 lots · 9 region features</span></header>
+  <header><h1>Akumal Norte lots and regions</h1><span>157 lots · 9 region features · Detail snapshot: Sep 24, 2026</span></header>
   <div id="map" role="application" aria-label="Interactive map of Akumal Norte lots and regions"></div>
   <script type="application/json" id="map-data">{
   "type": "FeatureCollection",
@@ -6666,11 +6669,163 @@
     }
   ]
 }</script>
+  <script type="application/json" id="donation-data">[
+    ["138C811A148A9155",0,"F0",0,"Casa de Espehas"],
+    ["K31GYERMMUY41290521FF42988E4",5000,"F1-3",0,"Casa Alux"],
+    ["K31GYERMMUY412905344B82C6EDC",2000,"F5",0,"Casa Cascadas"],
+    ["138697A25CF8EABC",0,"F6",0,"Casa Seagate"],
+    ["1386987029629BCA",1959.71,"F7",0,"Casa Dos Palmas"],
+    ["1386993FE456BA88",2000,"F8-9",1,"Casa Papagayo"],
+    ["1386AB1C777A0B97",0,"F12-13",0,"Casa Magna"],
+    ["K31GYERMMUY412955A6EC3DCC026",0,"F14",0,"Casa Solymar"],
+    ["K31GYERMMUY412955AFE9451AEC8",0,"F15",0,"Casa El Cielo"],
+    ["1386AEBF4BFDB8D3",0,"F16",0,"Casa Iguana"],
+    ["K31GYERMMUY412955EA66146D238",0,"F17",0,"Lot-F17"],
+    ["K31GYERMMUY41295623FA470206B",0,"F18",0,"Casa Del Mar"],
+    ["K31GYERMMUY4129562D729BC3D6B",0,"F19",0,"Casa Nicte-Ha"],
+    ["K31GYERMMUY4129563C4EC33DC8C",0,"F20",0,"Casa Redonda"],
+    ["K31GYERMMUY41295647BC1200592",0,"F21",0,"Casa Caribe"],
+    ["K31GYERMMUY41295567AB86ED04C",0,"F22-23",0,"Casa Miramar"],
+    ["K31GYERMMUY4129566B724C47D0A",0,"F24",0,"Casa Luna"],
+    ["K31GYERMMUY412956D143F1C9C72",0,"F25",0,"Casa Zama"],
+    ["K31GYERMMUY412956A046F286B0A",5000,"F26",0,"Casa Rosa"],
+    ["K31GYERMMUY412956EE0DF497CFB",1510.65,"F27",0,"Casa Balam Ek / Casa Balam Ek 2",["Casa Balam Ek","Casa Balam Ek 2"]],
+    ["K31GYERMMUY412957090BB45C658",0,"F28",0,"Villa Valhalla"],
+    ["K31GYERMMUY41295713B651A083C",0,"F29",0,"Kokobeach"],
+    ["1386B31BB21D4792",0,"F31-32",0,"M&M Desaarrollo Inmobiliario"],
+    ["K31GYERMMUY41295752DA9EA4181",0,"F33",0,"Villa de la Playa"],
+    ["K31GYERMMUY41295775EADE5923C",0,"F34, F35-37",0,"The Rock House / La Buena Vida",["The Rock House","La Buena Vida"]],
+    ["K31GYERMMUY412957D2D167E0D71",17399.52,"G41B-1, G41B-2/4",0,"Half Moon Bay / La Belle Vie",["Half Moon Bay","La Belle Vie"]],
+    ["K31GYERMMUY412957EEB2F87BF30",18839.82,"G41C",0,"Lol Ka'Naab"],
+    ["K31GYERMMUY412958010C636B4FD",0,"G41D",0,"Operadora Media Luna"],
+    ["K31GYERMMUY4129581736C535685",37780.12,"G41E",0,"Playa Blanca"],
+    ["13450DA02B9C6F85",23839.82,"G42",0,"Nikte"],
+    ["K31GYERMMUY4129582A023656180",24925.01,"G42, G43",0,"Nikte Ha"],
+    ["K31GYERMMUY4129584B993D2264B",0,"G",0,"Casa Blanca"],
+    ["K31GYERMMUY4129585FAF5FD9992",62639.35,"G44",0,"Playa Caribe",["Playa Caribe","Playa Caribe Casita Annette","Playa Caribe Casita Maria","Playa Caribe Casita Natasha"]],
+    ["134503CECD0C0441",34249.78,"G45",0,"Luna Azul",["Luna Azul","Luna Azul Bodega Norte","Luna Azul Bodega-Sur","Luna Azul Casita South"]],
+    ["1345000717FF1893",13875.95,"G46",0,"The Reef"],
+    ["1344FE5661098FE2",22800.02,"G46",0,"La Bahia"],
+    ["1344FD57387742A1",10000,"G48/49",1,"Los Flamingos"],
+    ["1344F9DA75148865",10000,"G48/49",1,"Los Flamingos"],
+    ["138CDE1C5C3FCD4B",0,"G",0,"Flamingos studios across street"],
+    ["1344F8F1079FFAD2",18350.26,"G50",0,"La Joya"],
+    ["138CDF519A78DF0E",0,"G50A",0,"Nai-Na"],
+    ["1344F66C32B695D5",12003.92,"G51",0,"Casa Fortuna"],
+    ["138CDFDF09934500",1000,"G51A",0,"Casita Fortuna"],
+    ["1344F5993152D523",0,"G52",0,"Lot-G52"],
+    ["138CE07B3C104386",0,"G52A",0,"Lot-G52A"],
+    ["K31GYERMMUY412907A7891570C8A",0,"G53",0,"Tan- Ik"],
+    ["138CE0DC8A5F1579",0,"G53A",0,"Cristal Azul"],
+    ["13452E4865929A53",0,"HA",0,"Lot-HA"],
+    ["13452DDFA9593111",0,"HB/C",1,"Lot-HB/C"],
+    ["13452C3BF1AAD0A6",0,"HB/C",1,"Lot-HB/C"],
+    ["1344F132AE486465",0,"HD",0,"La Mirage"],
+    ["K31GYERMMUY412905F5706D11B38",6964.61,"HE",0,"La Tortuga"],
+    ["1344ECB9BB0B5952",0,"HF",0,"Lot-HF"],
+    ["13259B562ABA446C",0,"H1-3",1,"Lot-H1-3"],
+    ["13259D0FE34CBAB6",0,"H4",0,"Lot-H4"],
+    ["13259E60A8B0E87B",0,"H5",0,"Lagoon Access"],
+    ["132597758F2BE663",0,"H6",0,"Casa del Sol"],
+    ["1325968FDC7E4665",0,"H7",0,"Azul Riviera"],
+    ["132595DF97276B8E",0,"H8",0,"Adventuras Mayas"],
+    ["13259513A1D72478",0,"H9",0,"Caleta Yalku"],
+    ["1325825C9A34ACF2",0,"H10",0,"Casa Romero"],
+    ["1386E7C944A479B7",0,"H11",0,"Casa Mariposa (fractional ownership)"],
+    ["132583D18B11BC9B",0,"H12",0,"Villa Las Vigas"],
+    ["132584A1ECC9BB68",0,"H13",0,"Quinta del Mar"],
+    ["1386E8A5CC43CC28",2000,"H14",0,"Casa Bella"],
+    ["1386E9858E65D78E",0,"H15",0,"Casa Aurora"],
+    ["K31GYERMMUY4129080CE9D64D196",0,"H16",0,"Villa Gaugain"],
+    ["1325A21A0729C559",0,"H17",0,"Lot-H17"],
+    ["1325A2B259DDAC6D",0,"H18",0,"Lot-H18"],
+    ["13869430C4DB46AC",0,"H19/20",1,"Casa Christiansen"],
+    ["1325A3220496545B",0,"H19/20",1,"Casa Christiansen"],
+    ["1325A449F9170121",0,"H21/22",1,"Lot-H21/22"],
+    ["1325A5073CB6F8ED",0,"H21/22",1,"Lot-H21/22"],
+    ["1325A8722110FC3D",5000,"H23",0,"Villa de los Suenos"],
+    ["1325A91B2BD88AEA",0,"H24",0,"Lot-H24"],
+    ["1325AAB0457B7585",1000,"H26",0,"Yalku Cai"],
+    ["1325B4F0792FAA49",0,"H27",0,"Lot-H27"],
+    ["1325ABB8BB3A2CB2",0,"H28",0,"Casa Jaguar"],
+    ["444AF0DB7318BC0D",0,"H29",1,"Lot-H29"],
+    ["444AF17FBADBCB09",2000,"H30",1,"Casa de Colores"],
+    ["444AF22E81564DD2",0,"H31",1,"Nah Ha"],
+    ["444AF833517D8DAE",0,"H32",0,"Lot-H32"],
+    ["13452A23C02B4F94",0,"H29",1,"Lot-H29"],
+    ["13452AC64DFBFFF9",2000,"H30",1,"Casa de Colores"],
+    ["13452B83FDDE1432",0,"H31",1,"Nah Ha"],
+    ["13452875C1F662CB",3949.27,"H32/33",0,"La Iguana"],
+    ["K31GYERMMUY41290652996ED43BB",0,"H34/35",0,"La Sirena"],
+    ["13451A9BE683C32C",0,"H36",0,"Villa Bellamar"],
+    ["13451BDF08C9F6BC",0,"H37",0,"Lot-H37"],
+    ["13451CE5F46CA6E9",0,"H38",0,"CasaTlalocan"],
+    ["1345210D01EDB312",0,"H39",0,"Lot-H39"],
+    ["13452026D6700A24",0,"H40/41",1,"Casa Mayanah (fractional ownership)"],
+    ["13451E8396D12D7E",0,"H40/41",1,"Casa Mayanah (fractional ownership)"],
+    ["4ABA2A81B247B7C1",4675.14,"H42",1,"Nahil"],
+    ["K31GYERMMUY412906380CCE36283",0,"H43",0,"Yool Canal"],
+    ["134516FEF0697D61",0,"H44",0,"Casa Maya"],
+    ["13452D6662367A88",0,"H45",0,"Lot-H45"],
+    ["1344E2278238CB63",0,"H50/51",1,"Casa Laguna"],
+    ["1344E07BACC28836",0,"H50/51",1,"Casa Laguna"],
+    ["1344DFAD027F8BA0",0,"H52",0,"Casa Las Culpas"],
+    ["1344DF136C3FA0AC",0,"H53",0,"Casa Savasana"],
+    ["1344DA5CAE07A7E7",0,"H54/55/56/57",1,"Lot-H54/55 56/57"],
+    ["1344DADDE65CC976",0,"H54/55/56/57",1,"Lot-H54/55 56/57"],
+    ["1344DB4DC84B0C95",0,"H54/55/56/57",1,"Lot-H54/55 56/57"],
+    ["1344D88B36B8B332",0,"H54/55/56/57",1,"Lot-H54/55 56/57"],
+    ["1344E2D6E63603E8",0,"H58",0,"Casa Torroella"],
+    ["1344E3ED0E2BFCB2",0,"H59",0,"Oﬃce"],
+    ["1344E470E752C43C",0,"H60",0,"Casa Ikoods"],
+    ["1344E507B00DDB0B",0,"H61",0,"Casa Alcaraz"],
+    ["1325C021B352238E",0,"H73",0,"Lot-H73"],
+    ["1325C080F1EE167C",0,"H74",0,"Casa Chile"],
+    ["1325C1C2397D5274",0,"H75/76",1,"Casa Konomi"],
+    ["1325C28F3B45EBA1",0,"H75/76",1,"Casa Konomi"],
+    ["1325C2FCA4E3AED9",0,"H77",0,"Lot-H77"],
+    ["1325C34EEBD679BF",0,"H78",0,"Lot-H78"],
+    ["1325C3B83263B303",0,"H79",0,"Casa Galeria"],
+    ["1325B76907CB337E",0,"H80/81/82",1,"Casa Orozco"],
+    ["1325B8E1D482F6F0",0,"H80/81/82",1,"Casa Orozco"],
+    ["1325B9DC3B5BE8B5",0,"H80/81/82",1,"Casa Orozco"],
+    ["1325BAEC57CECB66",0,"H83",0,"Casa Tucan y Quetzal"],
+    ["1325BB841734FC97",0,"84",0,"Lot-84"],
+    ["1325BBF613E06F69",0,"H85",0,"Casa Jimenez"],
+    ["1325BD6C735266B1",0,"H86",0,"Lot-H86"],
+    ["1325BDD6D2BBFA7A",0,"87",0,"Morningstar Restaurant"],
+    ["1325BEB9E270A761",10000,"H88",0,"Akumal Villas"],
+    ["1325BF65BC026645",0,"H89",0,"Lot-H89"],
+    ["132592DE8E4E4374",0,"H94",0,"Lot-H94"],
+    ["132592253878ED05",0,"H95",0,"Lot-H95"],
+    ["K31GYERMMUY4129080101B34655A",0,"H96",0,"VILLA SOFIA"],
+    ["1386E55A992A11EE",0,"H97",0,"Que Onda House"],
+    ["1386E3D9D86F17E1",0,"H98, H99",0,"Que Onda Restaurant / Que Onda Hotel",["Que Onda Restaurant","Que Onda Hotel"]],
+    ["K31GYERMMUY412907B6DB78C63D2",0,"H100",0,"Casa Gatos"],
+    ["1325B5B8A5723C17",1959.71,"H101",0,"Casa Ventura"],
+    ["K31GYERMMUY412907CF11421E785",0,"H102",0,"Casa Tranquilidad"],
+    ["132590D0D7F2A385",0,"H103",0,"Villa Milagro"],
+    ["1325917AD3C079B1",0,"H104",0,"Lot-H104"],
+    ["44541EECBCCF5BDA",0,"G44A",0,"Lot-G44A"],
+    ["445449289AC872EF",0,"G",0,"Midway store and building"],
+    ["448CA6BD3D8F94BA",0,"H1-3",1,"Lot-H1-3"],
+    ["448CA9196A21BA7C",0,"H1-3",1,"Lot-H1-3"],
+    ["138699C16F6663C7",2000,"F8-9",1,"Casa Papagayo"],
+    ["4ABA298BEFD99826",4675.14,"H42",1,"Nahil"],
+    ["K31GYERMMUY412957C761B3BBB58",0,"G38-41A",0,"Del Sol Condos and Hotel"],
+    ["13869FE1A0D8B328",1000,"F10",0,"Mi Casa del Mar"]
+  ]</script>
   <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
   <script>
     const geojson = JSON.parse(document.getElementById('map-data').textContent);
-    const map = L.map('map', { preferCanvas: true });
+    // Each entry is [feature ID, donated USD, Detail lot code, shared, displayed name, recorded names].
+    const donations = new Map(JSON.parse(document.getElementById('donation-data').textContent)
+      .map(([id, amount, sourceCode, shared, name, names]) =>
+        [id, { amount, sourceCode, shared: Boolean(shared), name, names: names || [name] }]));
+    const currency = new Intl.NumberFormat('en-US', { style: 'currency', currency: 'USD', minimumFractionDigits: 0, maximumFractionDigits: 2 });
+    const map = L.map('map', { preferCanvas: true, maxBoundsViscosity: 1.0 });
     const satellite = L.tileLayer('https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}', {
+      maxNativeZoom: 17,
       maxZoom: 20,
       attribution: 'Imagery &copy; Esri, Maxar, Earthstar Geographics, and the GIS User Community'
     }).addTo(map);
@@ -6691,11 +6846,13 @@
     }).addTo(map);
     const lots = L.geoJSON(null, {
       style: feature => ({
-        color: feature.properties.style_color === '#000000' ? '#ffffff' : feature.properties.style_color,
+        color: donations.get(feature.id)?.amount === 0 ? '#b91c1c' :
+          feature.properties.style_color === '#000000' ? '#ffffff' : feature.properties.style_color,
         weight: 1.5,
         opacity: 0.95,
-        fillColor: feature.properties.style_color,
-        fillOpacity: feature.properties.style_color === '#000000' ? 0.04 : 0.30
+        fillColor: donations.get(feature.id)?.amount === 0 ? '#ef4444' : feature.properties.style_color,
+        fillOpacity: donations.get(feature.id)?.amount === 0 ? 0.5 :
+          feature.properties.style_color === '#000000' ? 0.04 : 0.30
       }),
       onEachFeature: bindFeature
     }).addTo(map);
@@ -6706,27 +6863,174 @@
     function bindFeature(feature, layer) {
       const p = feature.properties;
       const description = p.description ? `<div>${escapeHtml(p.description).replace(/\n/g, '<br>')}</div>` : '';
-      layer.bindPopup(`<strong>${escapeHtml(p.name)}</strong>${description}<small>${escapeHtml(p.layer)} · ${escapeHtml(feature.id)}</small>`);
-      layer.bindTooltip(p.name, { sticky: true });
+      const isLot = p.layer === 'Akumal Norte property Lots';
+      const detail = isLot ? donations.get(feature.id) : null;
+      const id = isLot ? lotId(p.name) : null;
+      const recordedNames = detail && detail.names.length > 2
+        ? `<div><b>Recorded names:</b> ${detail.names.map(escapeHtml).join('; ')}</div>` : '';
+      const donated = detail
+        ? `<div><b>Donated:</b> ${currency.format(detail.amount)}${detail.shared ? ' *' : ''}</div>` +
+          `<small>Detail lot code: ${escapeHtml(detail.sourceCode)}${detail.shared ? ' · Total appears on multiple map shapes; do not add those labels together.' : ''}</small>`
+        : isLot ? '<div>No matching Detail record</div>' : '';
+      layer.bindPopup(`<strong>${escapeHtml(detail?.name || p.name)}</strong>` +
+        (isLot ? `<div><b>Lot:</b> ${escapeHtml(id || p.name)}</div>` : '') +
+        recordedNames + donated + description +
+        `<small>${escapeHtml(p.layer)} · ${escapeHtml(feature.id)}</small>`);
+      layer.bindTooltip(detail
+        ? `${escapeHtml(id || p.name)} · ${escapeHtml(detail.name)} · ${currency.format(detail.amount)} donated`
+        : escapeHtml(p.name), { sticky: true });
     }
     for (const feature of geojson.features) {
       (feature.properties.layer === 'Akumal Norte property Lots' ? lots : macro).addData(feature);
     }
+    map.createPane('lot-label-pane');
+    map.getPane('lot-label-pane').style.zIndex = 625;
+    map.getPane('lot-label-pane').style.pointerEvents = 'none';
+    const lotLabels = L.layerGroup().addTo(map);
+    function lotId(name) {
+      const match = name.match(/^(?:Lots?\s+)?((?:[FGH]?\d+[A-Z]?\??|H[A-F])(?:\s*(?:-|and)\s*[A-Z]?\d+[A-Z]?\??)?)/i);
+      return match ? match[1] : null;
+    }
+    const labelMeasure = document.createElement('canvas').getContext('2d');
+    function pointInRing(point, ring) {
+      let inside = false;
+      for (let i = 0, j = ring.length - 1; i < ring.length; j = i++) {
+        const a = ring[i], b = ring[j];
+        if ((a.y > point.y) !== (b.y > point.y) &&
+            point.x < (b.x - a.x) * (point.y - a.y) / (b.y - a.y) + a.x) inside = !inside;
+      }
+      return inside;
+    }
+    function segmentsCross(a, b, c, d) {
+      const cross = (p, q, r) => (q.x - p.x) * (r.y - p.y) - (q.y - p.y) * (r.x - p.x);
+      const boxesOverlap = Math.max(Math.min(a.x, b.x), Math.min(c.x, d.x)) <=
+          Math.min(Math.max(a.x, b.x), Math.max(c.x, d.x)) &&
+        Math.max(Math.min(a.y, b.y), Math.min(c.y, d.y)) <=
+          Math.min(Math.max(a.y, b.y), Math.max(c.y, d.y));
+      return boxesOverlap && cross(a, b, c) * cross(a, b, d) <= 0 &&
+        cross(c, d, a) * cross(c, d, b) <= 0;
+    }
+    function findLabelCenter(feature, width, height, bounds) {
+      const geometry = feature.geometry;
+      const polygons = geometry.type === 'Polygon' ? [geometry.coordinates] :
+        geometry.type === 'MultiPolygon' ? geometry.coordinates : [];
+      const projected = polygons.map(polygon => polygon.map(ring =>
+        ring.map(([lng, lat]) => map.latLngToLayerPoint([lat, lng]))));
+      const nw = map.latLngToLayerPoint(bounds.getNorthWest());
+      const se = map.latLngToLayerPoint(bounds.getSouthEast());
+      const offsets = [0.5, 0.35, 0.65, 0.2, 0.8];
+      for (const yFraction of offsets) for (const xFraction of offsets) {
+        const center = L.point(nw.x + (se.x - nw.x) * xFraction, nw.y + (se.y - nw.y) * yFraction);
+        const left = center.x - width / 2, right = center.x + width / 2;
+        const top = center.y - height / 2, bottom = center.y + height / 2;
+        const corners = [L.point(left, top), L.point(right, top), L.point(right, bottom), L.point(left, bottom)];
+        const fits = projected.some(polygon => {
+          if (!corners.every(p => pointInRing(p, polygon[0]) &&
+              polygon.slice(1).every(hole => !pointInRing(p, hole)))) return false;
+          const rectangleEdges = corners.map((p, i) => [p, corners[(i + 1) % 4]]);
+          return polygon.every(ring => ring.every((p, i) => {
+            const q = ring[(i + 1) % ring.length];
+            const vertexInside = p.x >= left && p.x <= right && p.y >= top && p.y <= bottom;
+            return !vertexInside && (p.x === q.x && p.y === q.y ||
+              rectangleEdges.every(([a, b]) => !segmentsCross(p, q, a, b)));
+          }));
+        });
+        if (fits) return map.layerPointToLatLng(center);
+      }
+      return null;
+    }
+    function splitLotName(name) {
+      const words = name.split(/\s+/);
+      if (words.length < 2) return null;
+      labelMeasure.font = '700 12px system-ui';
+      let best = null;
+      for (let i = 1; i < words.length; i++) {
+        const lines = [words.slice(0, i).join(' '), words.slice(i).join(' ')];
+        const width = Math.max(...lines.map(line => labelMeasure.measureText(line).width));
+        if (!best || width < best.width) best = { lines, width };
+      }
+      return best.lines;
+    }
+    function labelSize(id, nameLines, amount) {
+      labelMeasure.font = '700 13px system-ui';
+      const idWidth = labelMeasure.measureText(id).width;
+      labelMeasure.font = '700 12px system-ui';
+      const otherWidth = Math.max(0, ...nameLines.map(line => labelMeasure.measureText(line).width),
+        amount ? labelMeasure.measureText(amount).width : 0);
+      return {
+        width: Math.ceil(Math.max(idWidth, otherWidth) + 8),
+        height: Math.ceil(13 * 1.05 + (nameLines.length + (amount ? 1 : 0)) * 12 * 1.05 + 8)
+      };
+    }
+    function updateLotLabels() {
+      lotLabels.clearLayers();
+      if (!map.hasLayer(lots)) return;
+      lots.eachLayer(layer => {
+        const id = lotId(layer.feature.properties.name);
+        if (!id) return;
+        const donation = donations.get(layer.feature.id);
+        const bounds = layer.getBounds();
+        const northWest = map.latLngToLayerPoint(bounds.getNorthWest());
+        const southEast = map.latLngToLayerPoint(bounds.getSouthEast());
+        const width = Math.max(1, southEast.x - northWest.x);
+        const height = Math.max(1, southEast.y - northWest.y);
+        const amount = donation ? currency.format(donation.amount) + (donation.shared ? '*' : '') : '';
+        const name = donation?.name || '';
+        const wrappedName = name ? splitLotName(name) : null;
+        const candidates = donation ? [
+          { nameLines: [name], amount },
+          ...(wrappedName ? [{ nameLines: wrappedName, amount }] : []),
+          { nameLines: [], amount },
+          { nameLines: [name], amount: '' },
+          ...(wrappedName ? [{ nameLines: wrappedName, amount: '' }] : [])
+        ] : [];
+        let fitted = null;
+        for (const candidate of candidates) {
+          const size = labelSize(id, candidate.nameLines, candidate.amount);
+          if (size.width > width || size.height > height) continue;
+          const center = findLabelCenter(layer.feature, size.width, size.height, bounds);
+          if (center) { fitted = { ...candidate, ...size, center }; break; }
+        }
+        const iconWidth = fitted?.width || width;
+        const iconHeight = fitted?.height || height;
+        const fontSize = fitted ? 13 :
+          Math.max(1, Math.min(18, (width - 4) / (id.length * 0.62), (height - 2) * 0.75));
+        const icon = L.divIcon({
+          className: 'lot-label',
+          html: `<span>${escapeHtml(id)}</span>` +
+            (fitted ? fitted.nameLines.map(line => `<span class="lot-name">${escapeHtml(line)}</span>`).join('') : '') +
+            (fitted?.amount ? `<span class="donation-amount">${escapeHtml(fitted.amount)}</span>` : ''),
+          iconSize: [iconWidth, iconHeight],
+          iconAnchor: [iconWidth / 2, iconHeight / 2]
+        });
+        const marker = L.marker(fitted?.center || bounds.getCenter(), { icon, pane: 'lot-label-pane', interactive: false, keyboard: false });
+        marker.on('add', () => { marker.getElement().style.fontSize = `${fontSize}px`; });
+        lotLabels.addLayer(marker);
+      });
+    }
+    map.on('zoomend resize', updateLotLabels);
+    map.on('overlayadd', event => { if (event.layer === lots) { lotLabels.addTo(map); updateLotLabels(); } });
+    map.on('overlayremove', event => { if (event.layer === lots) map.removeLayer(lotLabels); });
     L.control.layers({Satellite: satellite, Streets: streets}, {'Lots': lots, 'Regions': macro}, {collapsed: false}).addTo(map);
     const legend = L.control({position: 'bottomleft'});
     legend.onAdd = () => {
       const box = L.DomUtil.create('div', 'legend');
       box.innerHTML = '<div><span class="swatch" style="background:#F4EB37"></span>Yellow · Vecinos member</div>' +
         '<div><span class="swatch" style="background:#F8971B"></span>Orange · Vecinos member owned</div>' +
+        '<div><span class="swatch" style="background:#ef4444"></span>Red lot · $0 donated</div>' +
         '<div><span class="swatch" style="background:#000000"></span>Black · no category stated</div>' +
         '<div><span class="swatch" style="background:#93D7E8"></span>Blue · M&amp;M region</div>' +
         '<div><span class="swatch" style="background:#DB4436"></span>Red · Etapa I / impact line</div>' +
-        '<div><span class="swatch" style="background:#EE9C96"></span>Pink · approximate regions</div>';
+        '<div><span class="swatch" style="background:#EE9C96"></span>Pink · approximate regions</div>' +
+        '<small>Zoom in for Detail names and totals. * Shared total; do not add labels together.</small>';
       return box;
     };
     legend.addTo(map);
-    const bounds = L.featureGroup([macro, lots]).getBounds();
-    map.fitBounds(bounds.pad(0.03));
+    const lotBounds = lots.getBounds();
+    map.fitBounds(lotBounds.pad(0.03));
+    map.setMinZoom(map.getZoom());
+    map.setMaxBounds(map.getBounds().pad(0.15));
+    updateLotLabels();
   </script>
 </body>
 </html>
