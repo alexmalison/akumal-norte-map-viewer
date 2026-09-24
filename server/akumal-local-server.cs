@@ -6,18 +6,28 @@ using System.Text;
 
 internal static class AkumalLocalServer
 {
-    private static void Main()
+    private static void Main(string[] args)
     {
+        IPAddress bindAddress = IPAddress.Loopback;
+        if (args.Length > 1 || (args.Length == 1 && !IPAddress.TryParse(args[0], out bindAddress)))
+        {
+            Console.Error.WriteLine("Usage: akumal-local-server.exe [bind-ip-address]");
+            return;
+        }
         string htmlPath = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "site", "index.html");
-        TcpListener listener = new TcpListener(IPAddress.Loopback, 8765);
+        TcpListener listener = new TcpListener(bindAddress, 8765);
         listener.Start();
-        Console.WriteLine("Serving http://127.0.0.1:8765/");
+        Console.WriteLine("Serving http://" + bindAddress + ":8765/");
         while (true)
         {
             using (TcpClient client = listener.AcceptTcpClient())
             {
                 try
                 {
+                    // Browsers may open idle connections before sending a request.
+                    // Do not let one such connection block every later visitor.
+                    client.ReceiveTimeout = 3000;
+                    client.SendTimeout = 3000;
                     NetworkStream stream = client.GetStream();
                     StreamReader reader = new StreamReader(stream, Encoding.ASCII, false, 1024, true);
                     string request = reader.ReadLine() ?? "";
