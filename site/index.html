@@ -6914,7 +6914,7 @@
         (sharedName && detail ? `<div><b>Detail name:</b> ${escapeHtml(detail.name)}</div>` : '') +
         recordedNames + donated + description +
         `<small>${escapeHtml(p.layer)} · ${escapeHtml(feature.id)}</small>` +
-        (isLot && canEdit ? `<form class="edit-lot-name"><input aria-label="Shared lot name" maxlength="120" value="${escapeHtml(sharedName || '')}" placeholder="Shared lot name"><button type="submit">Save name</button><button type="button" class="clear-lot-name">Clear name</button><small class="edit-lot-status" aria-live="polite"></small></form>` : ''));
+        (isLot && canEdit ? `<form class="edit-lot-name" data-lot-id="${escapeHtml(feature.id)}"><input aria-label="Shared lot name" maxlength="120" value="${escapeHtml(sharedName || '')}" placeholder="Shared lot name"><button type="submit">Save name</button><button type="button" class="clear-lot-name">Clear name</button><small class="edit-lot-status" aria-live="polite"></small></form>` : ''));
       layer.setTooltipContent(isLot
         ? `${escapeHtml(id || p.name)} · ${escapeHtml(sharedName || detail?.name || p.name)}` +
           (detail ? ` · ${currency.format(detail.amount)} donated` : '')
@@ -6924,24 +6924,25 @@
       layer.bindPopup('');
       layer.bindTooltip('', { sticky: true });
       renderFeature(feature, layer);
-      if (feature.properties.layer === 'Akumal Norte property Lots') {
-        layer.on('popupopen', () => {
-          const form = layer.getPopup().getElement()?.querySelector('.edit-lot-name');
-          form?.addEventListener('submit', event => {
-            event.preventDefault();
-            void saveSharedName(feature, layer, form.querySelector('input').value);
-          });
-          form?.querySelector('.clear-lot-name')?.addEventListener('click', () => {
-            void saveSharedName(feature, layer, '');
-          });
-        });
-      }
     }
     for (const feature of geojson.features) {
       (feature.properties.layer === 'Akumal Norte property Lots' ? lots : macro).addData(feature);
     }
     const lotLayers = new Map();
     lots.eachLayer(layer => lotLayers.set(layer.feature.id, layer));
+    document.addEventListener('submit', event => {
+      const form = event.target.closest?.('.edit-lot-name');
+      if (!form) return;
+      event.preventDefault();
+      const layer = lotLayers.get(form.dataset.lotId);
+      if (layer) void saveSharedName(layer.feature, layer, form.querySelector('input').value);
+    });
+    document.addEventListener('click', event => {
+      const button = event.target.closest?.('.clear-lot-name');
+      if (!button) return;
+      const layer = lotLayers.get(button.closest('.edit-lot-name').dataset.lotId);
+      if (layer) void saveSharedName(layer.feature, layer, '');
+    });
     function renderEditorStatus() {
       syncStatus.textContent = sharedLoadError ? `Shared names unavailable: ${sharedLoadError}` :
         canEdit ? 'Shared names · editing enabled' :
@@ -6968,8 +6969,6 @@
       if (name) sharedNames.set(feature.id, name);
       else sharedNames.delete(feature.id);
       refreshLotDisplays();
-      layer.closePopup();
-      layer.openPopup();
     }
     async function loadSharedNames() {
       const { data, error } = await db.from('lot_names').select('lot_id,name');
