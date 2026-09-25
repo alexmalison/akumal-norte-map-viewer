@@ -6928,7 +6928,8 @@
     const wholeDollars = new Intl.NumberFormat('en-US', { style: 'currency', currency: 'USD', maximumFractionDigits: 0 });
     const withCents = new Intl.NumberFormat('en-US', { style: 'currency', currency: 'USD', minimumFractionDigits: 2 });
     const currency = { format: amount => (Number.isInteger(amount) ? wholeDollars : withCents).format(amount) };
-    const map = L.map('map', { preferCanvas: true, maxBoundsViscosity: 1.0 });
+    const map = L.map('map', { preferCanvas: true, maxBoundsViscosity: 1.0, zoomControl: false });
+    L.control.zoom({ position: 'topright' }).addTo(map);
     const satellite = L.tileLayer('https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}', {
       maxNativeZoom: 17,
       maxZoom: 20,
