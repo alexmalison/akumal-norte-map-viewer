@@ -17,7 +17,10 @@
     header form[hidden] { display: none; }
     header form input { width: min(210px, 45vw); padding: 5px; }
     header form button { margin-left: 0; }
-    .edit-lot-name { margin-top: 8px; }
+    .edit-lot-name { display: flex; flex-wrap: wrap; gap: 5px; margin-top: 8px; }
+    .edit-lot-name input { box-sizing: border-box; width: 100%; padding: 5px; }
+    .edit-lot-name button { cursor: pointer; }
+    .edit-lot-status { width: 100%; }
     #map { height: calc(100vh - 58px); min-height: 480px; width: 100%; background: #dce8ee; }
     .leaflet-popup-content { max-width: 300px; white-space: normal; }
     .leaflet-popup-content strong { display: block; margin-bottom: 4px; }
@@ -6911,7 +6914,7 @@
         (sharedName && detail ? `<div><b>Detail name:</b> ${escapeHtml(detail.name)}</div>` : '') +
         recordedNames + donated + description +
         `<small>${escapeHtml(p.layer)} · ${escapeHtml(feature.id)}</small>` +
-        (isLot && canEdit ? '<button type="button" class="edit-lot-name">Edit shared name</button>' : ''));
+        (isLot && canEdit ? `<form class="edit-lot-name"><input aria-label="Shared lot name" maxlength="120" value="${escapeHtml(sharedName || '')}" placeholder="Shared lot name"><button type="submit">Save name</button><button type="button" class="clear-lot-name">Clear name</button><small class="edit-lot-status" aria-live="polite"></small></form>` : ''));
       layer.setTooltipContent(isLot
         ? `${escapeHtml(id || p.name)} · ${escapeHtml(sharedName || detail?.name || p.name)}` +
           (detail ? ` · ${currency.format(detail.amount)} donated` : '')
@@ -6923,8 +6926,14 @@
       renderFeature(feature, layer);
       if (feature.properties.layer === 'Akumal Norte property Lots') {
         layer.on('popupopen', () => {
-          layer.getPopup().getElement()?.querySelector('.edit-lot-name')
-            ?.addEventListener('click', () => { void editSharedName(feature, layer); }, { once: true });
+          const form = layer.getPopup().getElement()?.querySelector('.edit-lot-name');
+          form?.addEventListener('submit', event => {
+            event.preventDefault();
+            void saveSharedName(feature, layer, form.querySelector('input').value);
+          });
+          form?.querySelector('.clear-lot-name')?.addEventListener('click', () => {
+            void saveSharedName(feature, layer, '');
+          });
         });
       }
     }
@@ -6946,20 +6955,20 @@
       updateVisibleDetails();
       updateLotLabels();
     }
-    async function editSharedName(feature, layer) {
+    async function saveSharedName(feature, layer, entered) {
       if (!canEdit) return;
-      const currentName = sharedNames.get(feature.id) || '';
-      const entered = window.prompt(`Shared name for ${feature.properties.name} (blank clears it):`, currentName);
-      if (entered === null) return;
       const name = entered.trim();
-      if (name.length > 120) { window.alert('Use 120 characters or fewer.'); return; }
+      const status = layer.getPopup().getElement()?.querySelector('.edit-lot-status');
+      if (name.length > 120) { if (status) status.textContent = 'Use 120 characters or fewer.'; return; }
+      if (status) status.textContent = 'Saving…';
       const result = name
         ? await db.from('lot_names').upsert({ lot_id: feature.id, name })
         : await db.from('lot_names').delete().eq('lot_id', feature.id);
-      if (result.error) { window.alert(`Could not save the name: ${result.error.message}`); return; }
+      if (result.error) { if (status) status.textContent = `Could not save: ${result.error.message}`; return; }
       if (name) sharedNames.set(feature.id, name);
       else sharedNames.delete(feature.id);
       refreshLotDisplays();
+      layer.closePopup();
       layer.openPopup();
     }
     async function loadSharedNames() {
