@@ -47,7 +47,7 @@ function readDetail() {
   for (let i = 1; i < length; i++) {
     const name = String(columns[0][i] || '').trim().replace(/\s+/g, ' ');
     const code = normalizeCode(columns[2][i]);
-    if (name && code) rows.push([name, cents(columns[1][i]), code]);
+    if (name) rows.push([name, cents(columns[1][i]), code]);
   }
   if (rows.length < 100) throw new Error('Too few named Detail rows');
   return rows;
@@ -69,6 +69,7 @@ function buildDonations(rows) {
 
   const ambiguous = [];
   rows.forEach(([name, amount, code]) => {
+    if (!code) return;
     const candidates = [...(byCode.get(code) || [])];
     const named = candidates.filter(key => JSON.parse(key)[1].includes(normalizeName(name)));
     const key = named.length === 1 ? named[0] :
@@ -106,9 +107,26 @@ function buildDonations(rows) {
   });
 }
 
+// Donors with no lot code (businesses and friends), largest first.
+function buildContributors(rows) {
+  const totals = new Map();
+  rows.forEach(([name, amount, code]) => {
+    if (!code && amount > 0) totals.set(name, (totals.get(name) || 0) + amount);
+  });
+  return [...totals].sort((a, b) => b[1] - a[1] || a[0].localeCompare(b[0]))
+    .map(([name, amount]) => [name, amount / 100]);
+}
+
 function doGet() {
-  const donations = buildDonations(readDetail());
-  const payload = { generatedAt: new Date().toISOString(), donations };
+  const rows = readDetail();
+  const donations = buildDonations(rows);
+  const contributors = buildContributors(rows);
+  const ownerRows = rows.filter(([, amount, code]) => code && amount > 0);
+  const ownerSummary = {
+    contributors: ownerRows.length,
+    amount: ownerRows.reduce((sum, row) => sum + row[1], 0) / 100
+  };
+  const payload = { generatedAt: new Date().toISOString(), donations, contributors, ownerSummary };
   const json = JSON.stringify(payload).replace(/</g, '\\u003c');
   return ContentService.createTextOutput('akumalReceiveDonations(' + json + ');')
     .setMimeType(ContentService.MimeType.JAVASCRIPT);

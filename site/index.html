@@ -9,7 +9,8 @@
   <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css">
   <style>
     * { box-sizing: border-box; }
-    body { margin: 0; font: 14px/1.4 system-ui, sans-serif; color: #17222c; background: #f7f9fb; }
+    body { display: flex; flex-direction: column; height: 100vh; margin: 0; font: 14px/1.4 system-ui, sans-serif; color: #17222c; background: #f7f9fb; }
+    #page-title { margin: 0; padding: 12px 18px 0; text-align: center; font-size: clamp(24px, 4vw, 38px); font-weight: 700; line-height: 1.15; }
     header { display: flex; align-items: baseline; gap: 16px; flex-wrap: wrap; padding: 12px 18px; }
     h1 { margin: 0; font-size: 18px; font-weight: 600; }
     header span { color: #536372; }
@@ -24,13 +25,20 @@
     .edit-lot-name input { box-sizing: border-box; width: 100%; padding: 5px; }
     .edit-lot-name button { cursor: pointer; }
     .edit-lot-status { width: 100%; }
-    #map { height: calc(100vh - 58px); min-height: 480px; width: 100%; background: #dce8ee; }
+    #map { flex: 1; min-height: 480px; width: 100%; background: #dce8ee; }
     .leaflet-popup-content { max-width: 300px; white-space: normal; }
     .leaflet-popup-content strong { display: block; margin-bottom: 4px; }
     .leaflet-popup-content small { color: #526271; }
     .legend { background: rgba(255,255,255,.96); padding: 9px 12px; border-radius: 4px; box-shadow: 0 1px 5px #0003; }
     .legend div { display: flex; gap: 6px; align-items: center; margin: 2px 0; }
     .display-options label { display: flex; gap: 6px; align-items: center; margin: 2px 0; cursor: pointer; }
+    .display-options h3 { margin: 8px 0 2px; font-size: 13px; }
+    .contributors { width: min(290px, calc(100vw - 80px)); max-height: 46vh; overflow: auto; }
+    .contributors h2 { margin: 0 0 4px; font-size: 14px; }
+    .legend .contributor { justify-content: space-between; gap: 10px; margin: 1px 0; }
+    .contributor span:last-child { white-space: nowrap; }
+    .legend .contributor-total { position: sticky; bottom: -9px; margin: 4px 0 -9px; padding: 4px 0 9px; border-top: 1px solid #c9d2da; background: #fff; font-weight: 700; }
+    .contributors p { margin: 0; }
     .swatch { display: inline-block; width: 13px; height: 13px; border: 1px solid #697785; }
     .lot-label { display: flex; flex-direction: column; align-items: center; justify-content: center; overflow: hidden; pointer-events: none; color: #17222c; font-weight: 700; line-height: 1.05; white-space: nowrap; text-shadow: -1px -1px 1px #fff, 1px -1px 1px #fff, -1px 1px 1px #fff, 1px 1px 1px #fff; }
     .lot-label .lot-name { font-size: .9em; }
@@ -43,10 +51,10 @@
     .visible-lot span { grid-column: 1 / -1; overflow-wrap: anywhere; }
     .visible-lot strong { grid-column: 2; grid-row: 1; white-space: nowrap; }
     .visible-details p { margin: 0; padding: 8px 10px; }
-    @media (max-width: 600px) { #map { height: calc(100vh - 89px); } }
   </style>
 </head>
 <body>
+  <p id="page-title" aria-live="polite">Barrier Purchase</p>
   <header><h1>Akumal Norte lots and regions</h1><span id="data-status">157 lots · 9 region features</span><span id="sync-status" aria-live="polite">Loading shared names…</span><button id="refresh-donations" type="button" hidden>Refresh donations</button><button id="editor-button" type="button" hidden>Editor sign in</button><form id="editor-form" hidden><input id="editor-email" type="email" aria-label="Editor email" placeholder="Editor email" required><button type="submit">Send link</button></form></header>
   <div id="map" role="application" aria-label="Interactive map of Akumal Norte lots and regions"></div>
   <script type="application/json" id="map-data">{
@@ -6837,6 +6845,26 @@
     ["K31GYERMMUY412957C761B3BBB58",0,"G38-41A",0,"Del Sol Condos and Hotel"],
     ["13869FE1A0D8B328",1000,"F10",0,"Mi Casa del Mar"]
   ]</script>
+  <script type="application/json" id="contributor-data">[
+    ["Akumal Direct / LocoGringo",25000],
+    ["Akumal Bay Resort",10000],
+    ["Buy Playa Real Estate Advisors",5000],
+    ["Akumal Dive Center",2000],
+    ["Patricia Conrad",1500],
+    ["Michaela Vargas",1000],
+    ["Peter & Connie",600],
+    ["Gilles Bacquet",500],
+    ["Laura Bush Wolfe",500],
+    ["Robert Newman",500],
+    ["Michelle Rodriguez",489.56],
+    ["Turtle Bay Café & Bakery",489.56],
+    ["Eric Sherman",200],
+    ["Guy Wiggins",125],
+    ["Nancy Cedar",100],
+    ["Tania Malison",100],
+    ["Steve Gianotsos",97.52]
+  ]</script>
+  <script type="application/json" id="owner-summary-data">{"contributors":91,"amount":353722.66}</script>
   <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
   <script>
@@ -6896,7 +6924,10 @@
       if (legendStatus) legendStatus.textContent = `Detail data: ${message}. Zoom in for lot names and totals. * Lot drawn twice on the map; each shows the full total.`;
     }
     showDonationStatus(dataRefreshed);
-    const currency = new Intl.NumberFormat('en-US', { style: 'currency', currency: 'USD', minimumFractionDigits: 0, maximumFractionDigits: 2 });
+    // Whole-dollar amounts show no cents; others always show two decimals ($401,924.30).
+    const wholeDollars = new Intl.NumberFormat('en-US', { style: 'currency', currency: 'USD', maximumFractionDigits: 0 });
+    const withCents = new Intl.NumberFormat('en-US', { style: 'currency', currency: 'USD', minimumFractionDigits: 2 });
+    const currency = { format: amount => (Number.isInteger(amount) ? wholeDollars : withCents).format(amount) };
     const map = L.map('map', { preferCanvas: true, maxBoundsViscosity: 1.0 });
     const satellite = L.tileLayer('https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}', {
       maxNativeZoom: 17,
@@ -7234,11 +7265,16 @@
     map.on('overlayadd', event => { if (event.layer === lots) { lotLabels.addTo(map); updateLotLabels(); updateVisibleDetails(); } });
     map.on('overlayremove', event => { if (event.layer === lots) { map.removeLayer(lotLabels); updateVisibleDetails(); } });
     L.control.layers({Satellite: satellite, Streets: streets}, {'Lots': lots}, {collapsed: false}).addTo(map);
-    const displayOptions = L.control({ position: 'topleft' });
+    const displayOptions = L.control({ position: 'topright' });
     displayOptions.onAdd = () => {
       const box = L.DomUtil.create('div', 'legend display-options');
       box.innerHTML = '<label><input type="checkbox" id="show-lot-numbers"> Show Lot Numbers</label>' +
-        '<label><input type="checkbox" id="show-boundaries"> Show additional boundaries</label>';
+        '<label><input type="checkbox" id="show-boundaries"> Show additional boundaries</label>' +
+        '<label><input type="checkbox" id="show-legend"> Show Legend</label>';
+      box.querySelector('#show-legend').addEventListener('change', event => {
+        if (event.target.checked) legend.addTo(map);
+        else legend.remove();
+      });
       L.DomEvent.disableClickPropagation(box);
       box.querySelector('#show-lot-numbers').addEventListener('change', event => {
         showLotNumbers = event.target.checked;
@@ -7255,7 +7291,93 @@
       return box;
     };
     displayOptions.addTo(map);
-    const legend = L.control({position: 'bottomleft'});
+    // Placeholder: choosing a contribution set only changes the page title so far.
+    const contributionSets = L.control({ position: 'topright' });
+    contributionSets.onAdd = () => {
+      const box = L.DomUtil.create('div', 'legend display-options');
+      const option = (label, checked = false) =>
+        `<label><input type="radio" name="contribution-set" value="${escapeHtml(label)}"${checked ? ' checked' : ''}> ${escapeHtml(label)}</label>`;
+      box.innerHTML = option('Barrier Purchase', true) +
+        '<h3>Barrier Operations</h3>' +
+        ['2023 Contributions', '2024 Contributions', '2025 Contributions'].map(label => option(label)).join('') +
+        '<h3>Barrier and Beach Operations</h3>' + option('2026 Contributions');
+      L.DomEvent.disableClickPropagation(box);
+      box.addEventListener('change', event => {
+        document.getElementById('page-title').textContent = event.target.value;
+      });
+      return box;
+    };
+    contributionSets.addTo(map);
+    // Detail donors with no lot code, as [name, donated USD], largest first.
+    let contributors = liveDonationsUrl ? null : JSON.parse(document.getElementById('contributor-data').textContent);
+    // Detail donors with a lot code: number of donating records and their total.
+    let ownerSummary = liveDonationsUrl ? null : JSON.parse(document.getElementById('owner-summary-data').textContent);
+    let ownerBox;
+    let contributorsBox;
+    let allContributorsBox;
+    // Map lots with a donation; a lot drawn more than once counts once.
+    function lotsRepresented() {
+      const lotKeys = new Set();
+      donations.forEach((entry, id) => {
+        if (entry.amount > 0) lotKeys.add(entry.shared ? JSON.stringify([entry.sourceCode, entry.name]) : id);
+      });
+      return lotKeys.size;
+    }
+    function contributorRow(label, value, className = 'contributor') {
+      return `<div class="${className}"><span>${escapeHtml(label)}</span><span>${escapeHtml(value)}</span></div>`;
+    }
+    function renderContributors() {
+      const placeholder = `<p>${escapeHtml(donationPlaceholder)}</p>`;
+      const otherCents = contributors ? contributors.reduce((sum, [, amount]) => sum + Math.round(amount * 100), 0) : 0;
+      if (ownerBox) {
+        ownerBox.innerHTML = '<h2>Property (Lot) Owner Contributors</h2>' + (ownerSummary
+          ? contributorRow('Contributors', ownerSummary.contributors.toLocaleString('en-US')) +
+            contributorRow('Lots represented', lotsRepresented().toLocaleString('en-US')) +
+            contributorRow('Total', currency.format(ownerSummary.amount), 'contributor contributor-total')
+          : placeholder);
+      }
+      if (contributorsBox) {
+        contributorsBox.innerHTML = '<h2>Businesses and Other Contributors</h2>' + (contributors
+          ? contributors.map(([name, amount]) => contributorRow(name, currency.format(amount))).join('') +
+            contributorRow('Total', currency.format(otherCents / 100), 'contributor contributor-total')
+          : placeholder);
+      }
+      if (allContributorsBox) {
+        allContributorsBox.innerHTML = '<h2>All Contributors</h2>' + (ownerSummary && contributors
+          ? contributorRow('Property owners', currency.format(ownerSummary.amount)) +
+            contributorRow('Businesses and other contributors', currency.format(otherCents / 100)) +
+            contributorRow('Contributors', (ownerSummary.contributors + contributors.length).toLocaleString('en-US')) +
+            contributorRow('Total', currency.format((Math.round(ownerSummary.amount * 100) + otherCents) / 100),
+              'contributor contributor-total')
+          : placeholder);
+      }
+    }
+    const ownerControl = L.control({ position: 'topleft' });
+    ownerControl.onAdd = () => {
+      ownerBox = L.DomUtil.create('section', 'legend contributors');
+      L.DomEvent.disableClickPropagation(ownerBox);
+      renderContributors();
+      return ownerBox;
+    };
+    ownerControl.addTo(map);
+    const contributorsControl = L.control({ position: 'topleft' });
+    contributorsControl.onAdd = () => {
+      contributorsBox = L.DomUtil.create('section', 'legend contributors');
+      L.DomEvent.disableClickPropagation(contributorsBox);
+      L.DomEvent.disableScrollPropagation(contributorsBox);
+      renderContributors();
+      return contributorsBox;
+    };
+    contributorsControl.addTo(map);
+    const allContributorsControl = L.control({ position: 'topleft' });
+    allContributorsControl.onAdd = () => {
+      allContributorsBox = L.DomUtil.create('section', 'legend contributors');
+      L.DomEvent.disableClickPropagation(allContributorsBox);
+      renderContributors();
+      return allContributorsBox;
+    };
+    allContributorsControl.addTo(map);
+    const legend = L.control({position: 'bottomright'});
     legend.onAdd = () => {
       const box = L.DomUtil.create('div', 'legend');
       box.innerHTML = '<div><span class="swatch" style="background:#F4EB37"></span>Yellow · Vecinos member</div>' +
@@ -7269,7 +7391,6 @@
         '. Zoom in for lot names and totals. * Lot drawn twice on the map; each shows the full total.</small>';
       return box;
     };
-    legend.addTo(map);
     const expectedDonationIds = new Set(JSON.parse(document.getElementById('donation-data').textContent)
       .map(entry => entry[0]));
     let donationRequestActive = false;
@@ -7283,6 +7404,7 @@
       donationPlaceholder = 'Detail data unavailable';
       showDonationStatus(donationDataReady ? `${dataRefreshed} (refresh failed)` : 'unavailable');
       refreshLotDisplays();
+      renderContributors();
     }
     window.akumalReceiveDonations = payload => {
       if (!donationRequestActive) return;
@@ -7304,13 +7426,24 @@
           entries.push({ id, amount, sourceCode, shared: Boolean(shared), name, names: names || [name] });
         }
         splitSharedTotals(entries).forEach(entry => next.set(entry.id, entry));
+        if (!Array.isArray(payload.contributors) || !payload.contributors.every(entry =>
+            Array.isArray(entry) && typeof entry[0] === 'string' && typeof entry[1] === 'number' &&
+            Number.isFinite(entry[1]) && entry[1] > 0)) throw new Error('Invalid contributors');
+        const owners = payload.ownerSummary;
+        if (!owners || !Number.isInteger(owners.contributors) || owners.contributors < 0 ||
+            typeof owners.amount !== 'number' || !Number.isFinite(owners.amount) || owners.amount < 0) {
+          throw new Error('Invalid owner summary');
+        }
         donations = next;
+        contributors = payload.contributors;
+        ownerSummary = owners;
         dataRefreshed = new Date(payload.generatedAt).toLocaleString('en-US', { timeZone: 'UTC' }) + ' UTC';
         donationDataReady = true;
         donationPlaceholder = '';
         lots.eachLayer(layer => layer.setStyle(lotStyle(layer.feature)));
         refreshLotDisplays();
         showDonationStatus(dataRefreshed);
+        renderContributors();
         donationRequestActive = false;
         clearTimeout(donationRequestTimer);
         refreshButton.disabled = false;
