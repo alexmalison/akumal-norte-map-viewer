@@ -8,9 +8,9 @@ The extraction contains 157 lot features and 9 larger region features (165 polyg
 
 ## Donation overlay
 
-The viewer includes a September 24, 2026 snapshot of the [Akumal Norte Stakeholders workbook's Detail tab](https://docs.google.com/spreadsheets/d/1tbXRKF9f5TPvFh1nFQn1krqEmt3d2AQQxU6EMzerx7Q/edit). It uses **Stakeholder Name** for each mapped lot and sums **Donated** across its records, including unit rows for condo properties. Where a sheet lot code covers different properties, such as The Reef and La Bahia under G46, records are separated by their Detail names. The embedded data contains property names, amounts, and lot codes, without contact details.
+The viewer uses the [Akumal Norte Stakeholders workbook's Detail tab](https://docs.google.com/spreadsheets/d/1tbXRKF9f5TPvFh1nFQn1krqEmt3d2AQQxU6EMzerx7Q/edit). The Pages build reads **Stakeholder Name**, **Donated**, and **S-N Sequence**, totals all records for each mapped lot, and embeds only property names, amounts, and lot codes in the public page. Unit rows for condo properties are included. Where a sheet lot code covers different properties, such as The Reef and La Bahia under G46, records are separated by their Detail names. The checked-in page contains a September 24, 2026 starting snapshot for local viewing; the deployed artifact is refreshed from the sheet on each build.
 
-Click a lot to see its Detail name and exact donated total. As you zoom in, the name and total appear inside the polygon only when the full text fits. Lots with a matched Detail record totaling $0 are shaded red. Lots without a reliable Detail match keep their source color and have no Detail name or amount. An asterisk marks a total shown on multiple mapped shapes because the source records cover a combined property or the map has duplicate shapes; those labels must not be added together. This is a static snapshot; future workbook edits require refreshing the embedded data in `site/index.html`.
+A box below the zoom buttons has two checkboxes, both off by default: **Show Lot Numbers** adds lot numbers to the map labels, and **Show additional boundaries** draws the region features (M&M land, Etapa I, and approximate regions) in addition to the lot outlines. Click a lot to see its Detail name and exact donated total. As you zoom in, the name and total appear inside the polygon only when the full text fits. Lots with a matched Detail record totaling $0 are shaded red. Lots without a reliable Detail match keep their source color and have no Detail name or amount. Where the source records cover a combined property drawn as several mapped lots, such as Los Flamingos on G48/49, the total is split evenly across those lots, and the popup shows the full total. Where the map draws the same single lot more than once, such as H30 and H42, each shape shows the full total with an asterisk. The page shows when its Detail data was last refreshed.
 
 ## View the map
 
@@ -18,7 +18,16 @@ On Windows, run `./akumal-local-server.exe` from this directory, then open <http
 
 On a system with Nix flakes enabled, run `nix run` to serve the same static site on <http://127.0.0.1:8765/>. Run `nix build` to create a deployable `result/index.html`, or `nix develop` for a shell with Python. The flake pins Nixpkgs to a specific commit.
 
-Pushing `main` triggers `.github/workflows/pages.yml`, which builds the flake and deploys its output to GitHub Pages. In the GitHub repository settings, set **Pages → Build and deployment → Source** to **GitHub Actions**.
+Pushing `main`, manually dispatching the workflow, and the hourly schedule trigger `.github/workflows/pages.yml`. The build reads the private Sheet, replaces the embedded donation data in the Pages artifact, and deploys it. GitHub's scheduled runs can be delayed; the timestamp on the page shows the actual refresh time. If authentication or matching fails, the build fails and leaves the prior deployment in place. In the GitHub repository settings, set **Pages → Build and deployment → Source** to **GitHub Actions**.
+
+### Enable automatic Detail refreshes
+
+1. In a Google Cloud project, enable the Google Sheets API and create a dedicated service account. Share the workbook with that service account as a **Viewer**.
+2. Configure [Workload Identity Federation for GitHub Actions](https://docs.cloud.google.com/iam/docs/workload-identity-federation-with-deployment-pipelines). Limit the trust to this repository and its `main` branch, and allow that identity to impersonate the dedicated service account. No service-account key is needed.
+3. In GitHub **Settings → Secrets and variables → Actions → Variables**, set `GOOGLE_WORKLOAD_IDENTITY_PROVIDER` to the provider resource name and `GOOGLE_SHEETS_SERVICE_ACCOUNT` to the service-account email. These are identifiers, not credentials.
+4. Run the **Build and deploy map** workflow once and verify the displayed refresh time and several donation totals. Thereafter it runs hourly, as well as on pushes to `main`.
+
+Only the build job receives Google credentials. The browser gets the generated names and totals, which are public to anyone who can view the Pages site. The checked-in `site/index.html` is not automatically rewritten; `scripts/refresh_donations.py` generates the current deployment artifact from it. If Detail names or codes change in a way the matching guide cannot resolve, the job stops rather than publishing a potentially wrong total.
 
 The server source is in `server/akumal-local-server.cs`. It can be rebuilt with the .NET Framework C# compiler:
 
@@ -30,7 +39,8 @@ The server source is in `server/akumal-local-server.cs`. It can be rebuilt with 
 ## Files
 
 - `data/akumal_norte_lots_2025.geojson`: extracted machine-readable geometry and attributes.
-- `site/index.html`: standalone viewer with the GeoJSON embedded, so no separate data request is needed.
+- `site/index.html`: standalone viewer with the GeoJSON and a starting Detail matching guide embedded, so no browser request to the private workbook is needed.
+- `scripts/refresh_donations.py`: build-time Detail reader and public overlay generator.
 - `validation/basemap.png`: satellite image used for an independent alignment check.
 - `validation/overlay.png`: rendered geometry over that image.
 - `validation/render.ps1`: regenerates the overlay from the GeoJSON and basemap.

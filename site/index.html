@@ -4,6 +4,7 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <meta name="donation-data-refreshed" content="2026-09-24">
+  <meta name="donation-feed-url" content="">
   <title>Akumal Norte lot map preview</title>
   <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css">
   <style>
@@ -13,6 +14,8 @@
     h1 { margin: 0; font-size: 18px; font-weight: 600; }
     header span { color: #536372; }
     header button { margin-left: auto; padding: 5px 10px; cursor: pointer; }
+    #refresh-donations[hidden] { display: none; }
+    #editor-button { margin-left: 0; }
     header form { display: flex; gap: 6px; }
     header form[hidden] { display: none; }
     header form input { width: min(210px, 45vw); padding: 5px; }
@@ -27,6 +30,7 @@
     .leaflet-popup-content small { color: #526271; }
     .legend { background: rgba(255,255,255,.96); padding: 9px 12px; border-radius: 4px; box-shadow: 0 1px 5px #0003; }
     .legend div { display: flex; gap: 6px; align-items: center; margin: 2px 0; }
+    .display-options label { display: flex; gap: 6px; align-items: center; margin: 2px 0; cursor: pointer; }
     .swatch { display: inline-block; width: 13px; height: 13px; border: 1px solid #697785; }
     .lot-label { display: flex; flex-direction: column; align-items: center; justify-content: center; overflow: hidden; pointer-events: none; color: #17222c; font-weight: 700; line-height: 1.05; white-space: nowrap; text-shadow: -1px -1px 1px #fff, 1px -1px 1px #fff, -1px 1px 1px #fff, 1px 1px 1px #fff; }
     .lot-label .lot-name { font-size: .9em; }
@@ -43,7 +47,7 @@
   </style>
 </head>
 <body>
-  <header><h1>Akumal Norte lots and regions</h1><span id="data-status">157 lots · 9 region features</span><span id="sync-status" aria-live="polite">Loading shared names…</span><button id="editor-button" type="button" hidden>Editor sign in</button><form id="editor-form" hidden><input id="editor-email" type="email" aria-label="Editor email" placeholder="Editor email" required><button type="submit">Send link</button></form></header>
+  <header><h1>Akumal Norte lots and regions</h1><span id="data-status">157 lots · 9 region features</span><span id="sync-status" aria-live="polite">Loading shared names…</span><button id="refresh-donations" type="button" hidden>Refresh donations</button><button id="editor-button" type="button" hidden>Editor sign in</button><form id="editor-form" hidden><input id="editor-email" type="email" aria-label="Editor email" placeholder="Editor email" required><button type="submit">Send link</button></form></header>
   <div id="map" role="application" aria-label="Interactive map of Akumal Norte lots and regions"></div>
   <script type="application/json" id="map-data">{
   "type": "FeatureCollection",
@@ -6851,13 +6855,47 @@
     const editorButton = document.getElementById('editor-button');
     const editorForm = document.getElementById('editor-form');
     const editorEmail = document.getElementById('editor-email');
+    const refreshButton = document.getElementById('refresh-donations');
     const geojson = JSON.parse(document.getElementById('map-data').textContent);
+    const liveDonationsUrl = document.querySelector('meta[name="donation-feed-url"]').content;
     // Each entry is [feature ID, donated USD, Detail lot code, shared, displayed name, recorded names].
-    const donations = new Map(JSON.parse(document.getElementById('donation-data').textContent)
+    // A shared total covering several lots (a code like G48/49 or F8-9) is split evenly across
+    // their shapes. A single-lot code on several shapes is a duplicate drawing and keeps the full total.
+    function splitSharedTotals(entries) {
+      const groups = new Map();
+      entries.forEach(entry => {
+        if (!entry.shared || !/[\/-]/.test(entry.sourceCode)) return;
+        const key = JSON.stringify([entry.sourceCode, entry.name]);
+        if (!groups.has(key)) groups.set(key, []);
+        groups.get(key).push(entry);
+      });
+      groups.forEach(group => {
+        const totalCents = Math.round(group[0].amount * 100);
+        group.forEach((entry, index) => {
+          entry.total = entry.amount;
+          entry.shapes = group.length;
+          entry.amount = (Math.floor(totalCents / group.length) +
+            (index < totalCents % group.length ? 1 : 0)) / 100;
+          entry.shared = false;
+        });
+      });
+      return entries;
+    }
+    let donations = new Map(splitSharedTotals((liveDonationsUrl ? [] : JSON.parse(document.getElementById('donation-data').textContent))
       .map(([id, amount, sourceCode, shared, name, names]) =>
-        [id, { amount, sourceCode, shared: Boolean(shared), name, names: names || [name] }]));
-    const dataRefreshed = document.querySelector('meta[name="donation-data-refreshed"]').content;
-    document.getElementById('data-status').textContent += ` · Detail data: ${dataRefreshed}`;
+        ({ id, amount, sourceCode, shared: Boolean(shared), name, names: names || [name] })))
+      .map(entry => [entry.id, entry]));
+    let dataRefreshed = liveDonationsUrl ? 'loading…' :
+      document.querySelector('meta[name="donation-data-refreshed"]').content;
+    let donationDataReady = !liveDonationsUrl;
+    let donationPlaceholder = 'Loading…';
+    const dataStatus = document.getElementById('data-status');
+    function showDonationStatus(message) {
+      dataStatus.textContent = `157 lots · 9 region features · Detail data: ${message}`;
+      const legendStatus = document.getElementById('donation-status');
+      if (legendStatus) legendStatus.textContent = `Detail data: ${message}. Zoom in for lot names and totals. * Lot drawn twice on the map; each shows the full total.`;
+    }
+    showDonationStatus(dataRefreshed);
     const currency = new Intl.NumberFormat('en-US', { style: 'currency', currency: 'USD', minimumFractionDigits: 0, maximumFractionDigits: 2 });
     const map = L.map('map', { preferCanvas: true, maxBoundsViscosity: 1.0 });
     const satellite = L.tileLayer('https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}', {
@@ -6879,9 +6917,9 @@
         opacity: 0.95
       }),
       onEachFeature: bindFeature
-    }).addTo(map);
-    const lots = L.geoJSON(null, {
-      style: feature => ({
+    });
+    function lotStyle(feature) {
+      return {
         color: donations.get(feature.id)?.amount === 0 ? '#b91c1c' :
           feature.properties.style_color === '#000000' ? '#ffffff' : feature.properties.style_color,
         weight: 1.5,
@@ -6889,7 +6927,10 @@
         fillColor: donations.get(feature.id)?.amount === 0 ? '#ef4444' : feature.properties.style_color,
         fillOpacity: donations.get(feature.id)?.amount === 0 ? 0.5 :
           feature.properties.style_color === '#000000' ? 0.04 : 0.30
-      }),
+      };
+    }
+    const lots = L.geoJSON(null, {
+      style: lotStyle,
       onEachFeature: bindFeature
     }).addTo(map);
 
@@ -6907,8 +6948,8 @@
         ? `<div><b>Recorded names:</b> ${detail.names.map(escapeHtml).join('; ')}</div>` : '';
       const donated = detail
         ? `<div><b>Donated:</b> ${currency.format(detail.amount)}${detail.shared ? ' *' : ''}</div>` +
-          `<small>Detail lot code: ${escapeHtml(detail.sourceCode)}${detail.shared ? ' · Total appears on multiple map shapes; do not add those labels together.' : ''}</small>`
-        : isLot ? '<div>No matching Detail record</div>' : '';
+          `<small>Detail lot code: ${escapeHtml(detail.sourceCode)}${detail.shapes > 1 ? ` · Share of the ${escapeHtml(currency.format(detail.total))} total, split across ${detail.shapes} map shapes.` : detail.shared ? ' · This lot is drawn more than once on the map; each shape shows the full total.' : ''}</small>`
+        : isLot ? `<div>${donationDataReady ? 'No matching Detail record' : donationPlaceholder}</div>` : '';
       layer.setPopupContent(`<strong>${escapeHtml(sharedName || detail?.name || p.name)}</strong>` +
         (isLot ? `<div><b>Lot:</b> ${escapeHtml(id || p.name)}</div>` : '') +
         (sharedName && detail ? `<div><b>Detail name:</b> ${escapeHtml(detail.name)}</div>` : '') +
@@ -7057,7 +7098,7 @@
           return `<button type="button" class="visible-lot" data-lot-id="${escapeHtml(feature.id)}">` +
             `<b>${escapeHtml(lotId(feature.properties.name) || feature.properties.name)}</b>` +
             `<span>${escapeHtml(sharedNames.get(feature.id) || detail?.name || feature.properties.name)}</span>` +
-            `<strong>${detail ? escapeHtml(currency.format(detail.amount) + (detail.shared ? '*' : '')) : 'No Detail record'}</strong></button>`;
+            `<strong>${detail ? escapeHtml(currency.format(detail.amount) + (detail.shared ? '*' : '')) : donationDataReady ? 'No Detail record' : donationPlaceholder}</strong></button>`;
         }).join('') : '<p>No lots in view. Pan toward the shoreline.</p>');
     }
     map.createPane('lot-label-pane');
@@ -7136,15 +7177,17 @@
         amount ? labelMeasure.measureText(amount).width : 0);
       return {
         width: Math.ceil(Math.max(idWidth, otherWidth) + 8),
-        height: Math.ceil(13 * 1.05 + (nameLines.length + (amount ? 1 : 0)) * 12 * 1.05 + 8)
+        height: Math.ceil((id ? 13 * 1.05 : 0) + (nameLines.length + (amount ? 1 : 0)) * 12 * 1.05 + 8)
       };
     }
+    let showLotNumbers = false;
     function updateLotLabels() {
       lotLabels.clearLayers();
       if (!map.hasLayer(lots)) return;
       lots.eachLayer(layer => {
-        const id = lotId(layer.feature.properties.name);
-        if (!id) return;
+        const lotNumber = lotId(layer.feature.properties.name);
+        if (!lotNumber) return;
+        const id = showLotNumbers ? lotNumber : '';
         const donation = donations.get(layer.feature.id);
         const bounds = layer.getBounds();
         const northWest = map.latLngToLayerPoint(bounds.getNorthWest());
@@ -7168,13 +7211,14 @@
           const center = findLabelCenter(layer.feature, size.width, size.height, bounds);
           if (center) { fitted = { ...candidate, ...size, center }; break; }
         }
+        if (!fitted && !id) return;
         const iconWidth = fitted?.width || width;
         const iconHeight = fitted?.height || height;
         const fontSize = fitted ? 13 :
           Math.max(1, Math.min(18, (width - 4) / (id.length * 0.62), (height - 2) * 0.75));
         const icon = L.divIcon({
           className: 'lot-label',
-          html: `<span>${escapeHtml(id)}</span>` +
+          html: (id ? `<span>${escapeHtml(id)}</span>` : '') +
             (fitted ? fitted.nameLines.map(line => `<span class="lot-name">${escapeHtml(line)}</span>`).join('') : '') +
             (fitted?.amount ? `<span class="donation-amount">${escapeHtml(fitted.amount)}</span>` : ''),
           iconSize: [iconWidth, iconHeight],
@@ -7189,7 +7233,28 @@
     map.on('moveend zoomend', updateVisibleDetails);
     map.on('overlayadd', event => { if (event.layer === lots) { lotLabels.addTo(map); updateLotLabels(); updateVisibleDetails(); } });
     map.on('overlayremove', event => { if (event.layer === lots) { map.removeLayer(lotLabels); updateVisibleDetails(); } });
-    L.control.layers({Satellite: satellite, Streets: streets}, {'Lots': lots, 'Regions': macro}, {collapsed: false}).addTo(map);
+    L.control.layers({Satellite: satellite, Streets: streets}, {'Lots': lots}, {collapsed: false}).addTo(map);
+    const displayOptions = L.control({ position: 'topleft' });
+    displayOptions.onAdd = () => {
+      const box = L.DomUtil.create('div', 'legend display-options');
+      box.innerHTML = '<label><input type="checkbox" id="show-lot-numbers"> Show Lot Numbers</label>' +
+        '<label><input type="checkbox" id="show-boundaries"> Show additional boundaries</label>';
+      L.DomEvent.disableClickPropagation(box);
+      box.querySelector('#show-lot-numbers').addEventListener('change', event => {
+        showLotNumbers = event.target.checked;
+        updateLotLabels();
+      });
+      box.querySelector('#show-boundaries').addEventListener('change', event => {
+        if (event.target.checked) {
+          macro.addTo(map);
+          lots.bringToFront();
+        } else {
+          map.removeLayer(macro);
+        }
+      });
+      return box;
+    };
+    displayOptions.addTo(map);
     const legend = L.control({position: 'bottomleft'});
     legend.onAdd = () => {
       const box = L.DomUtil.create('div', 'legend');
@@ -7200,11 +7265,76 @@
         '<div><span class="swatch" style="background:#93D7E8"></span>Blue · M&amp;M region</div>' +
         '<div><span class="swatch" style="background:#DB4436"></span>Red · Etapa I / impact line</div>' +
         '<div><span class="swatch" style="background:#EE9C96"></span>Pink · approximate regions</div>' +
-        '<small>Detail data: ' + escapeHtml(dataRefreshed) +
-        '. Zoom in for lot names and totals. * Shared total; do not add labels together.</small>';
+        '<small id="donation-status">Detail data: ' + escapeHtml(dataRefreshed) +
+        '. Zoom in for lot names and totals. * Lot drawn twice on the map; each shows the full total.</small>';
       return box;
     };
     legend.addTo(map);
+    const expectedDonationIds = new Set(JSON.parse(document.getElementById('donation-data').textContent)
+      .map(entry => entry[0]));
+    let donationRequestActive = false;
+    let donationRequestTimer;
+    let donationScript;
+    function donationRequestFailed() {
+      if (!donationRequestActive) return;
+      donationRequestActive = false;
+      clearTimeout(donationRequestTimer);
+      refreshButton.disabled = false;
+      donationPlaceholder = 'Detail data unavailable';
+      showDonationStatus(donationDataReady ? `${dataRefreshed} (refresh failed)` : 'unavailable');
+      refreshLotDisplays();
+    }
+    window.akumalReceiveDonations = payload => {
+      if (!donationRequestActive) return;
+      try {
+        if (!payload || !Array.isArray(payload.donations) ||
+            payload.donations.length !== expectedDonationIds.size ||
+            !Number.isFinite(Date.parse(payload.generatedAt))) throw new Error('Invalid feed');
+        const next = new Map();
+        const entries = [];
+        for (const entry of payload.donations) {
+          const [id, amount, sourceCode, shared, name, names] = entry;
+          if (!expectedDonationIds.has(id) || next.has(id) ||
+              typeof amount !== 'number' || !Number.isFinite(amount) || amount < 0 ||
+              typeof sourceCode !== 'string' || typeof name !== 'string' ||
+              (names && (!Array.isArray(names) || !names.every(item => typeof item === 'string')))) {
+            throw new Error('Invalid lot record');
+          }
+          next.set(id, null);
+          entries.push({ id, amount, sourceCode, shared: Boolean(shared), name, names: names || [name] });
+        }
+        splitSharedTotals(entries).forEach(entry => next.set(entry.id, entry));
+        donations = next;
+        dataRefreshed = new Date(payload.generatedAt).toLocaleString('en-US', { timeZone: 'UTC' }) + ' UTC';
+        donationDataReady = true;
+        donationPlaceholder = '';
+        lots.eachLayer(layer => layer.setStyle(lotStyle(layer.feature)));
+        refreshLotDisplays();
+        showDonationStatus(dataRefreshed);
+        donationRequestActive = false;
+        clearTimeout(donationRequestTimer);
+        refreshButton.disabled = false;
+      } catch (_error) {
+        donationRequestFailed();
+      }
+    };
+    function loadLiveDonations() {
+      if (!liveDonationsUrl || donationRequestActive) return;
+      donationRequestActive = true;
+      refreshButton.disabled = true;
+      if (!donationDataReady) showDonationStatus('loading…');
+      donationScript?.remove();
+      donationScript = document.createElement('script');
+      donationScript.src = liveDonationsUrl + (liveDonationsUrl.includes('?') ? '&' : '?') + '_=' + Date.now();
+      donationScript.onerror = donationRequestFailed;
+      donationScript.onload = () => { if (donationRequestActive) donationRequestFailed(); };
+      donationRequestTimer = setTimeout(donationRequestFailed, 20000);
+      document.head.appendChild(donationScript);
+    }
+    if (liveDonationsUrl) {
+      refreshButton.hidden = false;
+      refreshButton.addEventListener('click', loadLiveDonations);
+    }
     const lotBounds = lots.getBounds();
     let overviewZoom = null;
     map.on('zoomend', () => {
@@ -7225,6 +7355,7 @@
     updateLotLabels();
     updateVisibleDetails();
     void startSharedNames();
+    loadLiveDonations();
   </script>
 </body>
 </html>
