@@ -51,6 +51,27 @@
     .visible-lot span { grid-column: 1 / -1; overflow-wrap: anywhere; }
     .visible-lot strong { grid-column: 2; grid-row: 1; white-space: nowrap; }
     .visible-details p { margin: 0; padding: 8px 10px; }
+    /* Mobile: collapse the side panels behind toggle buttons so the map stays visible. */
+    .panel-toggle { display: none; }
+    @media (max-width: 640px) {
+      body { height: 100vh; height: 100dvh; }
+      #page-title { padding: 8px 12px 0; }
+      header { padding: 8px 12px; gap: 8px; }
+      h1 { font-size: 16px; }
+      #map { min-height: 0; }
+      .panel-toggle { display: block; }
+      .panel-toggle button {
+        display: block; padding: 9px 12px; font: inherit; font-weight: 600; color: #17222c;
+        background: #fff; border: 2px solid rgba(0,0,0,.2); border-radius: 4px;
+        box-shadow: 0 1px 5px rgba(0,0,0,.2); cursor: pointer;
+      }
+      .leaflet-top.leaflet-left .collapsible,
+      .leaflet-top.leaflet-right .collapsible { display: none; }
+      body.panels-open .leaflet-top.leaflet-left .collapsible { display: block; }
+      body.options-open .leaflet-top.leaflet-right .collapsible { display: block; }
+      .contributors { max-height: 30vh; }
+      .leaflet-top.leaflet-right .display-options { max-width: calc(100vw - 90px); }
+    }
   </style>
 </head>
 <body>
@@ -6930,6 +6951,28 @@
     const currency = { format: amount => (Number.isInteger(amount) ? wholeDollars : withCents).format(amount) };
     const map = L.map('map', { preferCanvas: true, maxBoundsViscosity: 1.0, zoomControl: false });
     L.control.zoom({ position: 'topright' }).addTo(map);
+    // Mobile: collapse the side panels behind toggle buttons so the map stays usable.
+    // The buttons are only visible on small screens (see the media query in <style>);
+    // the panels they reveal carry the `collapsible` class.
+    function panelToggleControl(position, label, bodyClass) {
+      const toggle = L.control({ position });
+      toggle.onAdd = () => {
+        const wrapper = L.DomUtil.create('div', 'panel-toggle');
+        const button = L.DomUtil.create('button', '', wrapper);
+        button.type = 'button';
+        button.textContent = label;
+        button.setAttribute('aria-expanded', 'false');
+        button.addEventListener('click', () => {
+          const open = document.body.classList.toggle(bodyClass);
+          button.setAttribute('aria-expanded', String(open));
+        });
+        L.DomEvent.disableClickPropagation(wrapper);
+        return wrapper;
+      };
+      toggle.addTo(map);
+    }
+    panelToggleControl('topleft', 'Contributors', 'panels-open');
+    panelToggleControl('topright', 'Options', 'options-open');
     const satellite = L.tileLayer('https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}', {
       maxNativeZoom: 17,
       maxZoom: 20,
@@ -7265,10 +7308,13 @@
     map.on('moveend zoomend', updateVisibleDetails);
     map.on('overlayadd', event => { if (event.layer === lots) { lotLabels.addTo(map); updateLotLabels(); updateVisibleDetails(); } });
     map.on('overlayremove', event => { if (event.layer === lots) { map.removeLayer(lotLabels); updateVisibleDetails(); } });
-    L.control.layers({Satellite: satellite, Streets: streets}, {'Lots': lots}, {collapsed: false}).addTo(map);
+    L.control.layers({Satellite: satellite, Streets: streets}, {'Lots': lots}, {
+      // Keep the layers control expanded on desktop, collapsed behind its toggle on mobile.
+      collapsed: window.matchMedia('(max-width: 640px)').matches
+    }).addTo(map);
     const displayOptions = L.control({ position: 'topright' });
     displayOptions.onAdd = () => {
-      const box = L.DomUtil.create('div', 'legend display-options');
+      const box = L.DomUtil.create('div', 'legend display-options collapsible');
       box.innerHTML = '<label><input type="checkbox" id="show-lot-numbers"> Show Lot Numbers</label>' +
         '<label><input type="checkbox" id="show-boundaries"> Show additional boundaries</label>' +
         '<label><input type="checkbox" id="show-legend"> Show Legend</label>';
@@ -7295,7 +7341,7 @@
     // Placeholder: choosing a contribution set only changes the page title so far.
     const contributionSets = L.control({ position: 'topright' });
     contributionSets.onAdd = () => {
-      const box = L.DomUtil.create('div', 'legend display-options');
+      const box = L.DomUtil.create('div', 'legend display-options collapsible');
       const option = (label, checked = false) =>
         `<label><input type="radio" name="contribution-set" value="${escapeHtml(label)}"${checked ? ' checked' : ''}> ${escapeHtml(label)}</label>`;
       box.innerHTML = option('Barrier Purchase', true) +
@@ -7355,7 +7401,7 @@
     }
     const ownerControl = L.control({ position: 'topleft' });
     ownerControl.onAdd = () => {
-      ownerBox = L.DomUtil.create('section', 'legend contributors');
+      ownerBox = L.DomUtil.create('section', 'legend contributors collapsible');
       L.DomEvent.disableClickPropagation(ownerBox);
       renderContributors();
       return ownerBox;
@@ -7363,7 +7409,7 @@
     ownerControl.addTo(map);
     const contributorsControl = L.control({ position: 'topleft' });
     contributorsControl.onAdd = () => {
-      contributorsBox = L.DomUtil.create('section', 'legend contributors');
+      contributorsBox = L.DomUtil.create('section', 'legend contributors collapsible');
       L.DomEvent.disableClickPropagation(contributorsBox);
       L.DomEvent.disableScrollPropagation(contributorsBox);
       renderContributors();
@@ -7372,7 +7418,7 @@
     contributorsControl.addTo(map);
     const allContributorsControl = L.control({ position: 'topleft' });
     allContributorsControl.onAdd = () => {
-      allContributorsBox = L.DomUtil.create('section', 'legend contributors');
+      allContributorsBox = L.DomUtil.create('section', 'legend contributors collapsible');
       L.DomEvent.disableClickPropagation(allContributorsBox);
       renderContributors();
       return allContributorsBox;
