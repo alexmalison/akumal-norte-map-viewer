@@ -7159,10 +7159,13 @@
       const bounds = map.getBounds();
       return [...lotLayers.values()].filter(layer => bounds.contains(layer.getBounds().getCenter()));
     }
-    function updateVisibleDetails() {
-      const show = map.getZoom() >= 17 && map.hasLayer(lots);
-      detailsBox.hidden = !show;
-      if (!show) return;
+    // The details panel must never pop open because of a zoom; only panning (or
+    // toggling the lots layer) may reveal it. Leaflet fires both zoomend and
+    // moveend for a zoom, in either order, so the first event of a zoom gesture
+    // marks it and the trailing one is ignored.
+    let lastZoomForDetails = map.getZoom();
+    let detailsZoomGesture = false;
+    function renderVisibleDetails() {
       const visible = visibleLotLayers().sort((a, b) =>
         (lotId(a.feature.properties.name) || a.feature.properties.name).localeCompare(
           lotId(b.feature.properties.name) || b.feature.properties.name, undefined, { numeric: true }));
@@ -7175,6 +7178,26 @@
             `<span>${escapeHtml(sharedNames.get(feature.id) || detail?.name || feature.properties.name)}</span>` +
             `<strong>${detail ? escapeHtml(currency.format(detail.amount) + (detail.shared ? '*' : '')) : donationDataReady ? 'No Detail record' : donationPlaceholder}</strong></button>`;
         }).join('') : '<p>No lots in view. Pan toward the shoreline.</p>');
+    }
+    function updateVisibleDetails() {
+      const zoom = map.getZoom();
+      if (zoom !== lastZoomForDetails) {
+        lastZoomForDetails = zoom;
+        detailsZoomGesture = true;
+        if (zoom < 17 || !map.hasLayer(lots)) {
+          detailsBox.hidden = true;
+        } else if (!detailsBox.hidden) {
+          renderVisibleDetails();
+        }
+        return;
+      }
+      if (detailsZoomGesture) {
+        detailsZoomGesture = false;
+        return;
+      }
+      const show = zoom >= 17 && map.hasLayer(lots);
+      detailsBox.hidden = !show;
+      if (show) renderVisibleDetails();
     }
     map.createPane('lot-label-pane');
     map.getPane('lot-label-pane').style.zIndex = 625;
