@@ -11,6 +11,7 @@
     * { box-sizing: border-box; }
     body { display: flex; flex-direction: column; height: 100vh; margin: 0; font: 14px/1.4 system-ui, sans-serif; color: #17222c; background: #f7f9fb; }
     #page-title { margin: 0; padding: 12px 18px 0; text-align: center; font-size: clamp(24px, 4vw, 38px); font-weight: 700; line-height: 1.15; }
+    .pending-tag { color: #b91c1c; font-size: .65em; }
     header { display: flex; align-items: baseline; gap: 16px; flex-wrap: wrap; padding: 12px 18px; }
     h1 { margin: 0; font-size: 18px; font-weight: 600; }
     header span { color: #536372; }
@@ -34,6 +35,7 @@
     .display-options label { display: flex; gap: 6px; align-items: center; margin: 2px 0; cursor: pointer; }
     .display-options h3 { margin: 8px 0 2px; font-size: 13px; }
     .contributors { width: min(290px, calc(100vw - 80px)); max-height: 46vh; overflow: auto; }
+    .contributors[hidden] { display: none !important; }
     .contributors h2 { margin: 0 0 4px; font-size: 14px; }
     .legend .contributor { justify-content: space-between; gap: 10px; margin: 1px 0; }
     .contributor span:last-child { white-space: nowrap; }
@@ -53,6 +55,7 @@
     .visible-details p { margin: 0; padding: 8px 10px; }
     /* Mobile: collapse the side panels behind toggle buttons so the map stays visible. */
     .panel-toggle { display: none; }
+    .panel-toggle[hidden] { display: none !important; }
     @media (max-width: 640px) {
       body { height: 100vh; height: 100dvh; }
       #page-title { padding: 8px 12px 0; }
@@ -6866,6 +6869,158 @@
     ["K31GYERMMUY412957C761B3BBB58",0,"G38-41A",0,"Del Sol Condos and Hotel"],
     ["13869FE1A0D8B328",1000,"F10",0,"Mi Casa del Mar"]
   ]</script>
+  <script type="application/json" id="contributions-2026-data">[
+    ["138C811A148A9155",0,"F0",0,"Casa de Espehas"],
+    ["K31GYERMMUY41290521FF42988E4",278,"F1-3",0,"Casa Alux"],
+    ["K31GYERMMUY412905344B82C6EDC",2000,"F5",0,"Casa Cascadas"],
+    ["138697A25CF8EABC",0,"F6",0,"Casa Seagate"],
+    ["1386987029629BCA",0,"F7",0,"Casa Dos Palmas"],
+    ["1386993FE456BA88",500,"F8-9",1,"Casa Papagayo"],
+    ["1386AB1C777A0B97",0,"F12-13",0,"Casa Magna"],
+    ["K31GYERMMUY412955A6EC3DCC026",0,"F14",0,"Casa Solymar"],
+    ["K31GYERMMUY412955AFE9451AEC8",0,"F15",0,"Casa El Cielo"],
+    ["1386AEBF4BFDB8D3",0,"F16",0,"Casa Iguana"],
+    ["K31GYERMMUY412955EA66146D238",0,"F17",0,"Lot-F17"],
+    ["K31GYERMMUY41295623FA470206B",0,"F18",0,"Casa Del Mar"],
+    ["K31GYERMMUY4129562D729BC3D6B",0,"F19",0,"Casa Nicte-Ha"],
+    ["K31GYERMMUY4129563C4EC33DC8C",0,"F20",0,"Casa Redonda"],
+    ["K31GYERMMUY41295647BC1200592",0,"F21",0,"Casa Caribe"],
+    ["K31GYERMMUY41295567AB86ED04C",0,"F22-23",0,"Casa Miramar"],
+    ["K31GYERMMUY4129566B724C47D0A",1000,"F24",0,"Casa Luna"],
+    ["K31GYERMMUY412956D143F1C9C72",0,"F25",0,"Casa Zama"],
+    ["K31GYERMMUY412956EE0DF497CFB",0,"F27",0,"Casa Balam Ek / Casa Balam Ek 2"],
+    ["K31GYERMMUY412957090BB45C658",1000,"F28",0,"Villa Valhalla"],
+    ["K31GYERMMUY41295713B651A083C",0,"F29",0,"Kokobeach"],
+    ["1386B31BB21D4792",0,"F31-32",0,"M&M Desaarrollo Inmobiliario"],
+    ["K31GYERMMUY41295752DA9EA4181",0,"F33",0,"Villa de la Playa"],
+    ["K31GYERMMUY41295775EADE5923C",0,"F34, F35-37",0,"The Rock House / La Buena Vida"],
+    ["K31GYERMMUY412957D2D167E0D71",5000,"G41B-1, G41B-2/4",0,"Half Moon Bay / La Belle Vie"],
+    ["K31GYERMMUY412957EEB2F87BF30",9753,"G41C",0,"Lol Ka'Naab"],
+    ["K31GYERMMUY412958010C636B4FD",0,"G41D",0,"Operadora Media Luna"],
+    ["K31GYERMMUY4129581736C535685",14030.24,"G41E",0,"Playa Blanca"],
+    ["13450DA02B9C6F85",11000,"G42",0,"Nikte"],
+    ["K31GYERMMUY4129582A023656180",6950,"G42, G43",0,"Nikte Ha"],
+    ["K31GYERMMUY4129584B993D2264B",0,"G",0,"Casa Blanca"],
+    ["K31GYERMMUY4129585FAF5FD9992",17500,"G44",0,"Playa Caribe"],
+    ["134503CECD0C0441",16045.78,"G45",0,"Luna Azul"],
+    ["1345000717FF1893",7346.36,"G46",0,"The Reef"],
+    ["1344FE5661098FE2",4000,"G46",0,"La Bahia"],
+    ["1344FD57387742A1",6000,"G48/49",1,"Los Flamingos"],
+    ["1344F9DA75148865",6000,"G48/49",1,"Los Flamingos"],
+    ["138CDE1C5C3FCD4B",0,"G",0,"Flamingos studios across street"],
+    ["1344F8F1079FFAD2",12243,"G50",0,"La Joya"],
+    ["138CDF519A78DF0E",0,"G50A",0,"Nai-Na"],
+    ["1344F66C32B695D5",12250,"G51",0,"Casa Fortuna"],
+    ["138CDFDF09934500",0,"G51A",0,"Casita Fortuna"],
+    ["1344F5993152D523",0,"G52",0,"Lot-G52"],
+    ["138CE07B3C104386",0,"G52A",0,"Lot-G52A"],
+    ["K31GYERMMUY412907A7891570C8A",0,"G53",0,"Tan- Ik"],
+    ["138CE0DC8A5F1579",0,"G53A",0,"Cristal Azul"],
+    ["13452E4865929A53",0,"HA",0,"Lot-HA"],
+    ["13452DDFA9593111",0,"HB/C",1,"Lot-HB/C"],
+    ["13452C3BF1AAD0A6",0,"HB/C",1,"Lot-HB/C"],
+    ["1344F132AE486465",3625.64,"HD",0,"La Mirage"],
+    ["K31GYERMMUY412905F5706D11B38",4122.15,"HE",0,"La Tortuga"],
+    ["1344ECB9BB0B5952",0,"HF",0,"Lot-HF"],
+    ["13259B562ABA446C",0,"H1-3",1,"Lot-H1-3"],
+    ["13259D0FE34CBAB6",0,"H4",0,"Lot-H4"],
+    ["13259E60A8B0E87B",0,"H5",0,"Lagoon Access"],
+    ["132597758F2BE663",0,"H6",0,"Casa del Sol"],
+    ["1325968FDC7E4665",0,"H7",0,"Azul Riviera"],
+    ["132595DF97276B8E",0,"H8",0,"Adventuras Mayas"],
+    ["13259513A1D72478",0,"H9",0,"Caleta Yalku"],
+    ["1325825C9A34ACF2",0,"H10",0,"Casa Romero"],
+    ["1386E7C944A479B7",510.65,"H11",0,"Casa Mariposa (fractional ownership)"],
+    ["132583D18B11BC9B",300,"H12",0,"Villa Las Vigas"],
+    ["132584A1ECC9BB68",0,"H13",0,"Quinta del Mar"],
+    ["1386E8A5CC43CC28",0,"H14",0,"Casa Bella"],
+    ["1386E9858E65D78E",0,"H15",0,"Casa Aurora"],
+    ["K31GYERMMUY4129080CE9D64D196",0,"H16",0,"Villa Gaugain"],
+    ["1325A21A0729C559",0,"H17",0,"Lot-H17"],
+    ["1325A2B259DDAC6D",0,"H18",0,"Lot-H18"],
+    ["13869430C4DB46AC",0,"H19/20",1,"Casa Christiansen"],
+    ["1325A3220496545B",0,"H19/20",1,"Casa Christiansen"],
+    ["1325A449F9170121",0,"H21/22",1,"Lot-H21/22"],
+    ["1325A5073CB6F8ED",0,"H21/22",1,"Lot-H21/22"],
+    ["1325A8722110FC3D",2000,"H23",0,"Villa de los Suenos"],
+    ["1325A91B2BD88AEA",0,"H24",0,"Lot-H24"],
+    ["1325AAB0457B7585",0,"H26",0,"Yalku Cai"],
+    ["1325B4F0792FAA49",0,"H27",0,"Lot-H27"],
+    ["1325ABB8BB3A2CB2",0,"H28",0,"Casa Jaguar"],
+    ["444AF0DB7318BC0D",0,"H29",1,"Lot-H29"],
+    ["444AF17FBADBCB09",500,"H30",1,"Casa de Colores"],
+    ["444AF22E81564DD2",0,"H31",1,"Nah Ha"],
+    ["444AF833517D8DAE",0,"H32",0,"Lot-H32"],
+    ["13452A23C02B4F94",0,"H29",1,"Lot-H29"],
+    ["13452AC64DFBFFF9",500,"H30",1,"Casa de Colores"],
+    ["13452B83FDDE1432",0,"H31",1,"Nah Ha"],
+    ["13452875C1F662CB",415,"H32/33",0,"La Iguana"],
+    ["K31GYERMMUY41290652996ED43BB",1010,"H34/35",0,"La Sirena"],
+    ["13451A9BE683C32C",0,"H36",0,"Villa Bellamar"],
+    ["13451BDF08C9F6BC",0,"H37",0,"Lot-H37"],
+    ["13451CE5F46CA6E9",0,"H38",0,"CasaTlalocan"],
+    ["1345210D01EDB312",0,"H39",0,"Lot-H39"],
+    ["13452026D6700A24",0,"H40/41",1,"Casa Mayanah (fractional ownership)"],
+    ["13451E8396D12D7E",0,"H40/41",1,"Casa Mayanah (fractional ownership)"],
+    ["4ABA2A81B247B7C1",3152.16,"H42",1,"Nahil"],
+    ["K31GYERMMUY412906380CCE36283",0,"H43",0,"Yool Canal"],
+    ["134516FEF0697D61",0,"H44",0,"Casa Maya"],
+    ["13452D6662367A88",0,"H45",0,"Lot-H45"],
+    ["1344E2278238CB63",0,"H50/51",1,"Casa Laguna"],
+    ["1344E07BACC28836",0,"H50/51",1,"Casa Laguna"],
+    ["1344DFAD027F8BA0",0,"H52",0,"Casa Las Culpas"],
+    ["1344DF136C3FA0AC",0,"H53",0,"Casa Savasana"],
+    ["1344DA5CAE07A7E7",0,"H54/55/56/57",1,"Lot-H54/55 56/57"],
+    ["1344DADDE65CC976",0,"H54/55/56/57",1,"Lot-H54/55 56/57"],
+    ["1344DB4DC84B0C95",0,"H54/55/56/57",1,"Lot-H54/55 56/57"],
+    ["1344D88B36B8B332",0,"H54/55/56/57",1,"Lot-H54/55 56/57"],
+    ["1344E2D6E63603E8",0,"H58",0,"Casa Torroella"],
+    ["1344E3ED0E2BFCB2",0,"H59",0,"Oﬃce"],
+    ["1344E470E752C43C",0,"H60",0,"Casa Ikoods"],
+    ["1344E507B00DDB0B",0,"H61",0,"Casa Alcaraz"],
+    ["1325C021B352238E",0,"H73",0,"Lot-H73"],
+    ["1325C080F1EE167C",0,"H74",0,"Casa Chile"],
+    ["1325C1C2397D5274",0,"H75/76",1,"Casa Konomi"],
+    ["1325C28F3B45EBA1",0,"H75/76",1,"Casa Konomi"],
+    ["1325C2FCA4E3AED9",0,"H77",0,"Lot-H77"],
+    ["1325C34EEBD679BF",0,"H78",0,"Lot-H78"],
+    ["1325C3B83263B303",4897.96,"H79",0,"Casa Galeria"],
+    ["1325B76907CB337E",0,"H80/81/82",1,"Casa Orozco"],
+    ["1325B8E1D482F6F0",0,"H80/81/82",1,"Casa Orozco"],
+    ["1325B9DC3B5BE8B5",0,"H80/81/82",1,"Casa Orozco"],
+    ["1325BAEC57CECB66",0,"H83",0,"Casa Tucan y Quetzal"],
+    ["1325BB841734FC97",0,"84",0,"Lot-84"],
+    ["1325BBF613E06F69",0,"H85",0,"Casa Jimenez"],
+    ["1325BD6C735266B1",0,"H86",0,"Lot-H86"],
+    ["1325BEB9E270A761",2500,"H88",0,"Akumal Villas"],
+    ["1325BF65BC026645",0,"H89",0,"Lot-H89"],
+    ["132592DE8E4E4374",0,"H94",0,"Lot-H94"],
+    ["132592253878ED05",0,"H95",0,"Lot-H95"],
+    ["K31GYERMMUY4129080101B34655A",0,"H96",0,"VILLA SOFIA"],
+    ["1386E55A992A11EE",0,"H97",0,"Que Onda House"],
+    ["1386E3D9D86F17E1",0,"H98, H99",0,"Que Onda Restaurant / Que Onda Hotel"],
+    ["K31GYERMMUY412907B6DB78C63D2",0,"H100",0,"Casa Gatos"],
+    ["1325B5B8A5723C17",2500,"H101",0,"Casa Ventura"],
+    ["K31GYERMMUY412907CF11421E785",0,"H102",0,"Casa Tranquilidad"],
+    ["132590D0D7F2A385",0,"H103",0,"Villa Milagro"],
+    ["1325917AD3C079B1",0,"H104",0,"Lot-H104"],
+    ["44541EECBCCF5BDA",0,"G44A",0,"Lot-G44A"],
+    ["445449289AC872EF",0,"G",0,"Midway store and building"],
+    ["448CA6BD3D8F94BA",0,"H1-3",1,"Lot-H1-3"],
+    ["448CA9196A21BA7C",0,"H1-3",1,"Lot-H1-3"],
+    ["138699C16F6663C7",500,"F8-9",1,"Casa Papagayo"],
+    ["4ABA298BEFD99826",3152.16,"H42",1,"Nahil"],
+    ["K31GYERMMUY412957C761B3BBB58",0,"G38-41A",0,"Del Sol Condos and Hotel"],
+    ["13869FE1A0D8B328",2000,"F10",0,"Mi Casa del Mar"]
+  ]</script>
+  <script type="application/json" id="contributors-2026-data">[
+    ["Playa Caribe Beach Concession",17500],
+    ["Akumal Direct / LocoGringo",9000],
+    ["Casa Azanik",7200],
+    ["Buy Playa Real Estate Advisors",3600],
+    ["Casa Josefina",300]
+  ]</script>
+  <script type="application/json" id="owner-summary-2026-data">{"contributors":65,"amount":154429.94}</script>
   <script type="application/json" id="contributor-data">[
     ["Akumal Direct / LocoGringo",25000],
     ["Akumal Bay Resort",10000],
@@ -6907,6 +7062,10 @@
     const refreshButton = document.getElementById('refresh-donations');
     const geojson = JSON.parse(document.getElementById('map-data').textContent);
     const liveDonationsUrl = document.querySelector('meta[name="donation-feed-url"]').content;
+    let selectedContributionSet = 'Barrier Purchase';
+    const pendingContributionSets = new Set(['2023 Contributions', '2024 Contributions', '2025 Contributions']);
+    const isPendingSet = () => pendingContributionSets.has(selectedContributionSet);
+    const is2026Set = () => selectedContributionSet === '2026 Contributions';
     // Each entry is [feature ID, donated USD, Detail lot code, shared, displayed name, recorded names].
     // A shared total covering several lots (a code like G48/49 or F8-9) is split evenly across
     // their shapes. A single-lot code on several shapes is a duplicate drawing and keeps the full total.
@@ -6940,9 +7099,11 @@
     let donationPlaceholder = 'Loading…';
     const dataStatus = document.getElementById('data-status');
     function showDonationStatus(message) {
-      dataStatus.textContent = `157 lots · 9 region features · Detail data: ${message}`;
+      const label = isPendingSet() ? 'Contributions' : is2026Set() ? '2026 payments' : 'Detail data';
+      dataStatus.textContent = `157 lots · 9 region features · ${label}: ${message}`;
       const legendStatus = document.getElementById('donation-status');
-      if (legendStatus) legendStatus.textContent = `Detail data: ${message}. Zoom in for lot names and totals. * Lot drawn twice on the map; each shows the full total.`;
+      if (legendStatus) legendStatus.textContent = isPendingSet() ? 'Contribution data pending.' :
+        `${label}: ${message}. Zoom in for lot names and totals. * Lot drawn twice on the map; each shows the full total.`;
     }
     showDonationStatus(dataRefreshed);
     // Whole-dollar amounts show no cents; others always show two decimals ($401,924.30).
@@ -6970,8 +7131,9 @@
         return wrapper;
       };
       toggle.addTo(map);
+      return toggle;
     }
-    panelToggleControl('topleft', 'Contributors', 'panels-open');
+    const contributorsToggle = panelToggleControl('topleft', 'Contributors', 'panels-open');
     panelToggleControl('topright', 'Options', 'options-open');
     const satellite = L.tileLayer('https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}', {
       maxNativeZoom: 17,
@@ -6994,6 +7156,9 @@
       onEachFeature: bindFeature
     });
     function lotStyle(feature) {
+      if (isPendingSet()) return {
+        color: '#b91c1c', weight: 1.5, opacity: 0.95, fillColor: '#ef4444', fillOpacity: 0.5
+      };
       return {
         color: donations.get(feature.id)?.amount === 0 ? '#b91c1c' :
           feature.properties.style_color === '#000000' ? '#ffffff' : feature.properties.style_color,
@@ -7014,7 +7179,8 @@
     }
     function renderFeature(feature, layer) {
       const p = feature.properties;
-      const description = p.description ? `<div>${escapeHtml(p.description).replace(/\n/g, '<br>')}</div>` : '';
+      const description = !is2026Set() && !isPendingSet() && p.description
+        ? `<div>${escapeHtml(p.description).replace(/\n/g, '<br>')}</div>` : '';
       const isLot = p.layer === 'Akumal Norte property Lots';
       const detail = isLot ? donations.get(feature.id) : null;
       const id = isLot ? lotId(p.name) : null;
@@ -7022,18 +7188,18 @@
       const recordedNames = detail && detail.names.length > 2
         ? `<div><b>Recorded names:</b> ${detail.names.map(escapeHtml).join('; ')}</div>` : '';
       const donated = detail
-        ? `<div><b>Donated:</b> ${currency.format(detail.amount)}${detail.shared ? ' *' : ''}</div>` +
-          `<small>Detail lot code: ${escapeHtml(detail.sourceCode)}${detail.shapes > 1 ? ` · Share of the ${escapeHtml(currency.format(detail.total))} total, split across ${detail.shapes} map shapes.` : detail.shared ? ' · This lot is drawn more than once on the map; each shape shows the full total.' : ''}</small>`
-        : isLot ? `<div>${donationDataReady ? 'No matching Detail record' : donationPlaceholder}</div>` : '';
+        ? `<div><b>${is2026Set() ? 'Paid' : 'Donated'}:</b> ${currency.format(detail.amount)}${detail.shared ? ' *' : ''}</div>` +
+          `<small>${is2026Set() ? 'Map lot' : 'Detail lot code'}: ${escapeHtml(detail.sourceCode)}${detail.shapes > 1 ? ` · Share of the ${escapeHtml(currency.format(detail.total))} total, split across ${detail.shapes} map shapes.` : detail.shared ? ' · This lot is drawn more than once on the map; each shape shows the full total.' : ''}</small>`
+        : isLot ? `<div>${donationDataReady ? is2026Set() ? 'No matching Summary Contributions row' : 'No matching Detail record' : donationPlaceholder}</div>` : '';
       layer.setPopupContent(`<strong>${escapeHtml(sharedName || detail?.name || p.name)}</strong>` +
         (isLot ? `<div><b>Lot:</b> ${escapeHtml(id || p.name)}</div>` : '') +
-        (sharedName && detail ? `<div><b>Detail name:</b> ${escapeHtml(detail.name)}</div>` : '') +
+        (sharedName && detail ? `<div><b>${is2026Set() ? 'Property name' : 'Detail name'}:</b> ${escapeHtml(detail.name)}</div>` : '') +
         recordedNames + donated + description +
         `<small>${escapeHtml(p.layer)} · ${escapeHtml(feature.id)}</small>` +
         (isLot && canEdit ? `<form class="edit-lot-name" data-lot-id="${escapeHtml(feature.id)}"><input aria-label="Shared lot name" maxlength="120" value="${escapeHtml(sharedName || '')}" placeholder="Shared lot name"><button type="submit">Save name</button><button type="button" class="clear-lot-name">Clear name</button><small class="edit-lot-status" aria-live="polite"></small></form>` : ''));
       layer.setTooltipContent(isLot
         ? `${escapeHtml(id || p.name)} · ${escapeHtml(sharedName || detail?.name || p.name)}` +
-          (detail ? ` · ${currency.format(detail.amount)} donated` : '')
+          (detail ? ` · ${currency.format(detail.amount)} ${is2026Set() ? 'paid' : 'donated'}` : '')
         : escapeHtml(p.name));
     }
     function bindFeature(feature, layer) {
@@ -7176,10 +7342,11 @@
           return `<button type="button" class="visible-lot" data-lot-id="${escapeHtml(feature.id)}">` +
             `<b>${escapeHtml(lotId(feature.properties.name) || feature.properties.name)}</b>` +
             `<span>${escapeHtml(sharedNames.get(feature.id) || detail?.name || feature.properties.name)}</span>` +
-            `<strong>${detail ? escapeHtml(currency.format(detail.amount) + (detail.shared ? '*' : '')) : donationDataReady ? 'No Detail record' : donationPlaceholder}</strong></button>`;
+            `<strong>${detail ? escapeHtml(currency.format(detail.amount) + (detail.shared ? '*' : '')) : donationDataReady ? is2026Set() ? 'No 2026 record' : 'No Detail record' : donationPlaceholder}</strong></button>`;
         }).join('') : '<p>No lots in view. Pan toward the shoreline.</p>');
     }
     function updateVisibleDetails() {
+      if (isPendingSet()) { detailsBox.hidden = true; return; }
       const zoom = map.getZoom();
       if (zoom !== lastZoomForDetails) {
         lastZoomForDetails = zoom;
@@ -7361,7 +7528,6 @@
       return box;
     };
     displayOptions.addTo(map);
-    // Placeholder: choosing a contribution set only changes the page title so far.
     const contributionSets = L.control({ position: 'topright' });
     contributionSets.onAdd = () => {
       const box = L.DomUtil.create('div', 'legend display-options collapsible');
@@ -7373,7 +7539,7 @@
         '<h3>Barrier and Beach Operations</h3>' + option('2026 Contributions');
       L.DomEvent.disableClickPropagation(box);
       box.addEventListener('change', event => {
-        document.getElementById('page-title').textContent = event.target.value;
+        if (event.target.matches('input[name="contribution-set"]')) selectContributionSet(event.target.value);
       });
       return box;
     };
@@ -7382,6 +7548,40 @@
     let contributors = liveDonationsUrl ? null : JSON.parse(document.getElementById('contributor-data').textContent);
     // Detail donors with a lot code: number of donating records and their total.
     let ownerSummary = liveDonationsUrl ? null : JSON.parse(document.getElementById('owner-summary-data').textContent);
+    const purchaseState = { donations, contributors, ownerSummary, dataRefreshed, donationDataReady, donationPlaceholder };
+    const contributions2026 = {
+      donations: new Map(splitSharedTotals(JSON.parse(document.getElementById('contributions-2026-data').textContent)
+        .map(([id, amount, sourceCode, shared, name]) =>
+          ({ id, amount, sourceCode, shared: Boolean(shared), name, names: [name] })))
+        .map(entry => [entry.id, entry])),
+      contributors: JSON.parse(document.getElementById('contributors-2026-data').textContent),
+      ownerSummary: JSON.parse(document.getElementById('owner-summary-2026-data').textContent),
+      dataRefreshed: '2026-09-27 snapshot',
+      donationDataReady: true,
+      donationPlaceholder: ''
+    };
+    function selectContributionSet(label) {
+      selectedContributionSet = label;
+      const state = isPendingSet() ? {
+        donations: new Map(), contributors: null, ownerSummary: null,
+        dataRefreshed: 'Pending', donationDataReady: false, donationPlaceholder: 'Pending'
+      } : is2026Set() ? contributions2026 : purchaseState;
+      ({ donations, contributors, ownerSummary, dataRefreshed, donationDataReady, donationPlaceholder } = state);
+      const title = document.getElementById('page-title');
+      title.textContent = label;
+      if (isPendingSet()) {
+        const tag = document.createElement('span');
+        tag.className = 'pending-tag';
+        tag.textContent = 'Pending';
+        title.append(' ', tag);
+      }
+      refreshButton.hidden = !liveDonationsUrl || is2026Set() || isPendingSet();
+      contributorsToggle.getContainer().hidden = isPendingSet();
+      lots.eachLayer(layer => layer.setStyle(lotStyle(layer.feature)));
+      refreshLotDisplays();
+      showDonationStatus(dataRefreshed);
+      renderContributors();
+    }
     let ownerBox;
     let contributorsBox;
     let allContributorsBox;
@@ -7397,6 +7597,11 @@
       return `<div class="${className}"><span>${escapeHtml(label)}</span><span>${escapeHtml(value)}</span></div>`;
     }
     function renderContributors() {
+      const pending = isPendingSet();
+      if (ownerBox) ownerBox.hidden = pending;
+      if (contributorsBox) contributorsBox.hidden = pending;
+      if (allContributorsBox) allContributorsBox.hidden = pending;
+      if (pending) return;
       const placeholder = `<p>${escapeHtml(donationPlaceholder)}</p>`;
       const otherCents = contributors ? contributors.reduce((sum, [, amount]) => sum + Math.round(amount * 100), 0) : 0;
       if (ownerBox) {
@@ -7452,7 +7657,7 @@
       const box = L.DomUtil.create('div', 'legend');
       box.innerHTML = '<div><span class="swatch" style="background:#F4EB37"></span>Yellow · Vecinos member</div>' +
         '<div><span class="swatch" style="background:#F8971B"></span>Orange · Vecinos member owned</div>' +
-        '<div><span class="swatch" style="background:#ef4444"></span>Red lot · $0 donated</div>' +
+        '<div><span class="swatch" style="background:#ef4444"></span>Red lot · $0 recorded or pending</div>' +
         '<div><span class="swatch" style="background:#000000"></span>Black · no category stated</div>' +
         '<div><span class="swatch" style="background:#93D7E8"></span>Blue · M&amp;M region</div>' +
         '<div><span class="swatch" style="background:#DB4436"></span>Red · Etapa I / impact line</div>' +
@@ -7471,10 +7676,13 @@
       donationRequestActive = false;
       clearTimeout(donationRequestTimer);
       refreshButton.disabled = false;
-      donationPlaceholder = 'Detail data unavailable';
-      showDonationStatus(donationDataReady ? `${dataRefreshed} (refresh failed)` : 'unavailable');
-      refreshLotDisplays();
-      renderContributors();
+      purchaseState.donationPlaceholder = 'Detail data unavailable';
+      if (selectedContributionSet === 'Barrier Purchase') {
+        donationPlaceholder = purchaseState.donationPlaceholder;
+        showDonationStatus(donationDataReady ? `${dataRefreshed} (refresh failed)` : 'unavailable');
+        refreshLotDisplays();
+        renderContributors();
+      }
     }
     window.akumalReceiveDonations = payload => {
       if (!donationRequestActive) return;
@@ -7504,16 +7712,15 @@
             typeof owners.amount !== 'number' || !Number.isFinite(owners.amount) || owners.amount < 0) {
           throw new Error('Invalid owner summary');
         }
-        donations = next;
-        contributors = payload.contributors;
-        ownerSummary = owners;
-        dataRefreshed = new Date(payload.generatedAt).toLocaleString('en-US', { timeZone: 'UTC' }) + ' UTC';
-        donationDataReady = true;
-        donationPlaceholder = '';
-        lots.eachLayer(layer => layer.setStyle(lotStyle(layer.feature)));
-        refreshLotDisplays();
-        showDonationStatus(dataRefreshed);
-        renderContributors();
+        Object.assign(purchaseState, {
+          donations: next,
+          contributors: payload.contributors,
+          ownerSummary: owners,
+          dataRefreshed: new Date(payload.generatedAt).toLocaleString('en-US', { timeZone: 'UTC' }) + ' UTC',
+          donationDataReady: true,
+          donationPlaceholder: ''
+        });
+        if (selectedContributionSet === 'Barrier Purchase') selectContributionSet('Barrier Purchase');
         donationRequestActive = false;
         clearTimeout(donationRequestTimer);
         refreshButton.disabled = false;
@@ -7525,7 +7732,7 @@
       if (!liveDonationsUrl || donationRequestActive) return;
       donationRequestActive = true;
       refreshButton.disabled = true;
-      if (!donationDataReady) showDonationStatus('loading…');
+      if (selectedContributionSet === 'Barrier Purchase' && !purchaseState.donationDataReady) showDonationStatus('loading…');
       donationScript?.remove();
       donationScript = document.createElement('script');
       donationScript.src = liveDonationsUrl + (liveDonationsUrl.includes('?') ? '&' : '?') + '_=' + Date.now();
