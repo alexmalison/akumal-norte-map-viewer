@@ -48,14 +48,17 @@
     .lot-label { display: flex; flex-direction: column; align-items: center; justify-content: center; overflow: hidden; pointer-events: none; color: #17222c; font-weight: 700; line-height: 1.05; white-space: nowrap; text-shadow: -1px -1px 1px #fff, 1px -1px 1px #fff, -1px 1px 1px #fff, 1px 1px 1px #fff; }
     .lot-label .lot-name { font-size: .9em; }
     .lot-label .donation-amount { font-size: .9em; }
-    .visible-details { width: min(310px, calc(100vw - 80px)); max-height: 42vh; overflow: auto; background: rgba(255,255,255,.97); border-radius: 4px; box-shadow: 0 1px 5px #0003; }
-    .visible-details[hidden] { display: none; }
-    .visible-details h2 { position: sticky; top: 0; margin: 0; padding: 8px 10px; background: #fff; font-size: 14px; z-index: 1; }
+    .lot-browser { display: flex; flex-direction: column; align-items: flex-start; gap: 6px; }
+    .lot-browser-toggle { padding: 9px 12px; border: 2px solid rgba(0,0,0,.2); border-radius: 4px; background: #fff; color: #17222c; font: inherit; font-weight: 600; box-shadow: 0 1px 5px #0003; cursor: pointer; }
+    .lot-browser-list { width: min(320px, calc(100vw - 20px)); max-height: min(60vh, 520px); overflow-y: auto; overscroll-behavior: contain; -webkit-overflow-scrolling: touch; touch-action: pan-y; background: #fff; border-radius: 4px; box-shadow: 0 1px 5px #0003; }
+    .lot-browser-list[hidden] { display: none; }
+    .lot-browser-list h2 { position: sticky; top: 0; margin: 0; padding: 8px 10px; background: #fff; font-size: 14px; z-index: 1; }
     .visible-lot { display: grid; grid-template-columns: minmax(0, 1fr) auto; align-items: start; gap: 2px 6px; width: 100%; padding: 7px 10px; border: 0; border-top: 1px solid #e3e8ed; background: transparent; color: inherit; font: inherit; text-align: left; cursor: pointer; }
     .visible-lot:hover, .visible-lot:focus-visible { background: #e9f3fa; }
     .visible-lot span { grid-column: 1 / -1; overflow-wrap: anywhere; }
     .visible-lot strong { grid-column: 2; grid-row: 1; white-space: nowrap; }
-    .visible-details p { margin: 0; padding: 8px 10px; }
+    .lot-browser-list p { margin: 0; padding: 8px 10px; }
+    .lot-browser-focus .leaflet-top.leaflet-left .contributors { display: none; }
     /* Mobile: collapse the side panels behind toggle buttons so the map stays visible. */
     .panel-toggle { display: none; }
     .panel-toggle[hidden] { display: none !important; }
@@ -77,6 +80,8 @@
       body.options-open .leaflet-top.leaflet-right .collapsible { display: block; }
       .contributors { max-height: 30vh; }
       .leaflet-top.leaflet-right .display-options { max-width: calc(100vw - 90px); }
+      .leaflet-bottom.leaflet-left .lot-browser { margin-bottom: 44px; }
+      .lot-browser-list { max-height: 55dvh; }
     }
   </style>
 </head>
@@ -7242,7 +7247,7 @@
     }
     function refreshLotDisplays() {
       lots.eachLayer(layer => renderFeature(layer.feature, layer));
-      updateVisibleDetails();
+      renderLotBrowser();
       updateLotLabels();
     }
     async function saveSharedName(feature, layer, entered) {
@@ -7315,63 +7320,71 @@
       });
     }
     let detailsBox;
-    const detailsControl = L.control({ position: 'topright' });
+    let browseLotsButton;
+    const detailsControl = L.control({ position: 'bottomleft' });
     detailsControl.onAdd = () => {
-      detailsBox = L.DomUtil.create('section', 'visible-details');
-      detailsBox.setAttribute('aria-label', 'Visible lot details');
-      L.DomEvent.disableClickPropagation(detailsBox);
-      L.DomEvent.disableScrollPropagation(detailsBox);
+      const wrapper = L.DomUtil.create('div', 'lot-browser');
+      detailsBox = L.DomUtil.create('section', 'lot-browser-list', wrapper);
+      detailsBox.id = 'lot-browser-list';
+      detailsBox.setAttribute('aria-label', 'All lot details');
+      detailsBox.hidden = true;
+      browseLotsButton = L.DomUtil.create('button', 'lot-browser-toggle', wrapper);
+      browseLotsButton.type = 'button';
+      browseLotsButton.textContent = 'Browse all lots';
+      browseLotsButton.setAttribute('aria-controls', detailsBox.id);
+      browseLotsButton.setAttribute('aria-expanded', 'false');
+      browseLotsButton.addEventListener('click', () => {
+        const open = detailsBox.hidden;
+        detailsBox.hidden = !open;
+        browseLotsButton.textContent = open ? 'Close lot list' : 'Browse all lots';
+        browseLotsButton.setAttribute('aria-expanded', String(open));
+        if (open) {
+          if (window.matchMedia('(max-width: 640px)').matches) {
+            document.body.classList.remove('panels-open', 'options-open');
+            document.querySelectorAll('.panel-toggle button').forEach(button =>
+              button.setAttribute('aria-expanded', 'false'));
+          }
+          renderLotBrowser();
+        }
+      });
       detailsBox.addEventListener('click', event => {
         const button = event.target.closest('button[data-lot-id]');
-        if (button) lotLayers.get(button.dataset.lotId)?.openPopup();
+        if (!button) return;
+        const layer = lotLayers.get(button.dataset.lotId);
+        if (!layer) return;
+        detailsBox.hidden = true;
+        browseLotsButton.textContent = 'Browse all lots';
+        browseLotsButton.setAttribute('aria-expanded', 'false');
+        if (!map.hasLayer(lots)) lots.addTo(map);
+        map.closePopup();
+        map.fitBounds(layer.getBounds(), { maxZoom: 18, animate: false });
+        document.body.classList.add('lot-browser-focus');
+        map.once('popupclose', () => document.body.classList.remove('lot-browser-focus'));
+        layer.openPopup();
       });
-      return detailsBox;
+      L.DomEvent.disableClickPropagation(wrapper);
+      L.DomEvent.disableScrollPropagation(wrapper);
+      return wrapper;
     };
     detailsControl.addTo(map);
     function visibleLotLayers() {
       const bounds = map.getBounds();
       return [...lotLayers.values()].filter(layer => bounds.contains(layer.getBounds().getCenter()));
     }
-    // The details panel must never pop open because of a zoom; only panning (or
-    // toggling the lots layer) may reveal it. Leaflet fires both zoomend and
-    // moveend for a zoom, in either order, so the first event of a zoom gesture
-    // marks it and the trailing one is ignored.
-    let lastZoomForDetails = map.getZoom();
-    let detailsZoomGesture = false;
-    function renderVisibleDetails() {
-      const visible = visibleLotLayers().sort((a, b) =>
+    function renderLotBrowser() {
+      if (!detailsBox || detailsBox.hidden) return;
+      const allLots = [...lotLayers.values()].sort((a, b) =>
         (lotId(a.feature.properties.name) || a.feature.properties.name).localeCompare(
           lotId(b.feature.properties.name) || b.feature.properties.name, undefined, { numeric: true }));
-      detailsBox.innerHTML = `<h2>Visible lot details (${visible.length})</h2>` +
-        (visible.length ? visible.map(layer => {
+      detailsBox.innerHTML = `<h2>All lots (${allLots.length})</h2>` +
+        allLots.map(layer => {
           const feature = layer.feature;
           const detail = donations.get(feature.id);
           return `<button type="button" class="visible-lot" data-lot-id="${escapeHtml(feature.id)}">` +
             `<b>${escapeHtml(lotId(feature.properties.name) || feature.properties.name)}</b>` +
             `<span>${escapeHtml(sharedNames.get(feature.id) || detail?.name || feature.properties.name)}</span>` +
             `<strong>${detail ? escapeHtml(currency.format(detail.amount) + (detail.shared ? '*' : '')) : donationDataReady ? is2026Set() ? 'No 2026 record' : 'No Detail record' : donationPlaceholder}</strong></button>`;
-        }).join('') : '<p>No lots in view. Pan toward the shoreline.</p>');
-    }
-    function updateVisibleDetails() {
-      if (isPendingSet()) { detailsBox.hidden = true; return; }
-      const zoom = map.getZoom();
-      if (zoom !== lastZoomForDetails) {
-        lastZoomForDetails = zoom;
-        detailsZoomGesture = true;
-        if (zoom < 17 || !map.hasLayer(lots)) {
-          detailsBox.hidden = true;
-        } else if (!detailsBox.hidden) {
-          renderVisibleDetails();
-        }
-        return;
-      }
-      if (detailsZoomGesture) {
-        detailsZoomGesture = false;
-        return;
-      }
-      const show = zoom >= 17 && map.hasLayer(lots);
-      detailsBox.hidden = !show;
-      if (show) renderVisibleDetails();
+        }).join('');
     }
     map.createPane('lot-label-pane');
     map.getPane('lot-label-pane').style.zIndex = 625;
@@ -7502,9 +7515,8 @@
       });
     }
     map.on('zoomend resize', updateLotLabels);
-    map.on('moveend zoomend', updateVisibleDetails);
-    map.on('overlayadd', event => { if (event.layer === lots) { lotLabels.addTo(map); updateLotLabels(); updateVisibleDetails(); } });
-    map.on('overlayremove', event => { if (event.layer === lots) { map.removeLayer(lotLabels); updateVisibleDetails(); } });
+    map.on('overlayadd', event => { if (event.layer === lots) { lotLabels.addTo(map); updateLotLabels(); } });
+    map.on('overlayremove', event => { if (event.layer === lots) map.removeLayer(lotLabels); });
     L.control.layers({Satellite: satellite, Streets: streets}, {'Lots': lots}, {
       // Keep the layers control expanded on desktop, collapsed behind its toggle on mobile.
       collapsed: window.matchMedia('(max-width: 640px)').matches
@@ -7814,7 +7826,6 @@
     map.setMinZoom(map.getZoom());
     map.setMaxBounds(map.getBounds().pad(0.15));
     updateLotLabels();
-    updateVisibleDetails();
     void startSharedNames();
     loadLiveDonations();
   </script>
