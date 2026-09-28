@@ -34,15 +34,15 @@
     .legend div { display: flex; gap: 6px; align-items: center; margin: 2px 0; }
     .display-options label { display: flex; gap: 6px; align-items: center; margin: 2px 0; cursor: pointer; }
     .display-options h3 { margin: 8px 0 2px; font-size: 13px; }
-    .contributors { width: min(290px, calc(100vw - 80px)); max-height: 46vh; overflow: auto; }
-    .other-contributors-box { max-height: 26vh; }
+    .leaflet-top.leaflet-left { width: min(310px, calc(100vw - 60px)); max-height: calc(100% - 76px); overflow-x: hidden; overflow-y: auto; overscroll-behavior: contain; -webkit-overflow-scrolling: touch; touch-action: pan-y; pointer-events: auto; padding-right: 5px; }
+    .contributors { width: min(290px, calc(100vw - 80px)); }
     .contributors[hidden] { display: none !important; }
     .contributors h2 { margin: 0 0 4px; font-size: 14px; }
     .funding-box small { display: block; color: #536372; }
     .legend.funding-box .funding-deficit { position: static; margin: 4px 0; padding: 4px 0; color: #b91c1c; background: #fff1f2; border-top-color: #fca5a5; }
     .legend .contributor { justify-content: space-between; gap: 10px; margin: 1px 0; }
     .contributor span:last-child { white-space: nowrap; }
-    .legend .contributor-total { position: sticky; bottom: -9px; margin: 4px 0 -9px; padding: 4px 0 9px; border-top: 1px solid #c9d2da; background: #fff; font-weight: 700; }
+    .legend .contributor-total { margin: 4px 0 -9px; padding: 4px 0 9px; border-top: 1px solid #c9d2da; background: #fff; font-weight: 700; }
     .contributors p { margin: 0; }
     .swatch { display: inline-block; width: 13px; height: 13px; border: 1px solid #697785; }
     .lot-label { display: flex; flex-direction: column; align-items: center; justify-content: center; overflow: hidden; pointer-events: none; color: #17222c; font-weight: 700; line-height: 1.05; white-space: nowrap; text-shadow: -1px -1px 1px #fff, 1px -1px 1px #fff, -1px 1px 1px #fff, 1px 1px 1px #fff; }
@@ -78,7 +78,9 @@
       .leaflet-top.leaflet-right .collapsible { display: none; }
       body.panels-open .leaflet-top.leaflet-left .collapsible { display: block; }
       body.options-open .leaflet-top.leaflet-right .collapsible { display: block; }
-      .contributors { max-height: 30vh; }
+      .leaflet-top.leaflet-left { max-height: calc(100% - 110px); pointer-events: none; }
+      body.panels-open .leaflet-top.leaflet-left { pointer-events: auto; }
+      .leaflet-top.leaflet-left > .panel-toggle { position: sticky; top: 0; z-index: 900; }
       .leaflet-top.leaflet-right .display-options { max-width: calc(100vw - 90px); }
       .leaflet-bottom.leaflet-left .lot-browser { margin-bottom: 44px; }
       .lot-browser-list { max-height: 55dvh; }
@@ -7145,7 +7147,7 @@
       return toggle;
     }
     const contributorsToggle = panelToggleControl('topleft', 'Contributors', 'panels-open');
-    panelToggleControl('topright', 'Options', 'options-open');
+    const optionsToggle = panelToggleControl('topright', 'Options', 'options-open');
     const satellite = L.tileLayer('https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}', {
       maxNativeZoom: 17,
       maxZoom: 20,
@@ -7558,7 +7560,10 @@
         '<h3>Barrier and Beach Operations</h3>' + option('2026 Contributions');
       L.DomEvent.disableClickPropagation(box);
       box.addEventListener('change', event => {
-        if (event.target.matches('input[name="contribution-set"]')) selectContributionSet(event.target.value);
+        if (!event.target.matches('input[name="contribution-set"]')) return;
+        selectContributionSet(event.target.value);
+        document.body.classList.remove('options-open');
+        optionsToggle.getContainer().querySelector('button').setAttribute('aria-expanded', 'false');
       });
       return box;
     };
@@ -7691,9 +7696,8 @@
     ownerControl.addTo(map);
     const contributorsControl = L.control({ position: 'topleft' });
     contributorsControl.onAdd = () => {
-      contributorsBox = L.DomUtil.create('section', 'legend contributors collapsible other-contributors-box');
+      contributorsBox = L.DomUtil.create('section', 'legend contributors collapsible');
       L.DomEvent.disableClickPropagation(contributorsBox);
-      L.DomEvent.disableScrollPropagation(contributorsBox);
       renderContributors();
       return contributorsBox;
     };
@@ -7714,6 +7718,9 @@
       return fundingBox;
     };
     fundingControl.addTo(map);
+    const contributorColumn = map.getContainer().querySelector('.leaflet-top.leaflet-left');
+    L.DomEvent.disableScrollPropagation(contributorColumn);
+    L.DomEvent.on(contributorColumn, 'touchstart touchmove', L.DomEvent.stopPropagation);
     const legend = L.control({position: 'bottomright'});
     legend.onAdd = () => {
       const box = L.DomUtil.create('div', 'legend');

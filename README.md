@@ -24,6 +24,8 @@ In the Barrier Purchase and 2026 views, a lot with a positive contribution has a
 
 The **Browse all lots** button at the lower left opens a scrollable list of all 157 lot shapes at any zoom level, including on mobile and in Pending views. Select a lot in the list to center it and open its popup. Hovering over an individual lot on desktop still shows its tooltip; tapping a lot on mobile opens its popup.
 
+The contributor and Funding boxes scroll together as one column, so the Funding box remains reachable on smaller screens. On mobile, open **Contributors** to scroll that column. Choosing a contribution radio option closes the mobile **Options** panel.
+
 ## View the map
 
 On Windows, run `./akumal-local-server.exe` from this directory, then open <http://127.0.0.1:8765/>. The server listens only on loopback by default. The viewer overlays the features on Esri satellite imagery and can switch to OpenStreetMap streets. Click any shape to see its source attributes; lot popups also show the recorded Detail name and donation total.
