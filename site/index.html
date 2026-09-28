@@ -10,18 +10,18 @@
   <style>
     * { box-sizing: border-box; }
     body { display: flex; flex-direction: column; height: 100vh; margin: 0; font: 14px/1.4 system-ui, sans-serif; color: #17222c; background: #f7f9fb; }
-    #page-title { margin: 0; padding: 12px 18px 0; text-align: center; font-size: clamp(24px, 4vw, 38px); font-weight: 700; line-height: 1.15; }
+    #page-title { margin: 0; font-size: clamp(24px, 4vw, 38px); font-weight: 700; line-height: 1.15; }
     .pending-tag { color: #b91c1c; font-size: .65em; }
-    header { display: flex; align-items: baseline; gap: 16px; flex-wrap: wrap; padding: 12px 18px; }
-    h1 { margin: 0; font-size: 18px; font-weight: 600; }
-    header span { color: #536372; }
-    header button { margin-left: auto; padding: 5px 10px; cursor: pointer; }
+    header { padding: 12px 18px; text-align: center; }
+    header p { margin: 2px 0 0; font-size: 18px; color: #536372; }
+    .map-tools { margin-top: 8px; padding-top: 6px; border-top: 1px solid #c9d2da; }
+    .map-tools summary { cursor: pointer; }
+    .map-tools span { display: block; margin-top: 5px; color: #536372; }
+    .map-tools button { margin-top: 5px; padding: 5px 10px; cursor: pointer; }
     #refresh-donations[hidden] { display: none; }
-    #editor-button { margin-left: 0; }
-    header form { display: flex; gap: 6px; }
-    header form[hidden] { display: none; }
-    header form input { width: min(210px, 45vw); padding: 5px; }
-    header form button { margin-left: 0; }
+    .map-tools form { display: flex; gap: 6px; }
+    .map-tools form[hidden] { display: none; }
+    .map-tools form input { width: min(210px, 45vw); padding: 5px; }
     .edit-lot-name { display: flex; flex-wrap: wrap; gap: 5px; margin-top: 8px; }
     .edit-lot-name input { box-sizing: border-box; width: 100%; padding: 5px; }
     .edit-lot-name button { cursor: pointer; }
@@ -70,9 +70,8 @@
     .panel-toggle[hidden] { display: none !important; }
     @media (max-width: 640px) {
       body { height: 100vh; height: 100dvh; }
-      #page-title { padding: 8px 12px 0; }
-      header { padding: 8px 12px; gap: 8px; }
-      h1 { font-size: 16px; }
+      header { padding: 8px 12px; }
+      header p { font-size: 16px; }
       #map { min-height: 0; }
       .panel-toggle { display: block; }
       .panel-toggle button {
@@ -94,8 +93,8 @@
   </style>
 </head>
 <body>
-  <p id="page-title" aria-live="polite">Barrier Purchase</p>
-  <header><h1>Akumal Norte lots and regions</h1><span id="data-status">157 lots · 9 region features</span><span id="sync-status" aria-live="polite">Loading shared names…</span><button id="refresh-donations" type="button" hidden>Refresh donations</button><button id="editor-button" type="button" hidden>Editor sign in</button><form id="editor-form" hidden><input id="editor-email" type="email" aria-label="Editor email" placeholder="Editor email" required><button type="submit">Send link</button></form></header>
+  <header><h1 id="page-title" aria-live="polite">Barrier Purchase</h1><p>Akumal Norte</p></header>
+  <details id="map-tools" class="map-tools"><summary>Map data &amp; editing</summary><span id="data-status">157 lots · 9 region features</span><span id="sync-status" aria-live="polite">Loading shared names…</span><button id="refresh-donations" type="button" hidden>Refresh donations</button><button id="editor-button" type="button" hidden>Editor sign in</button><form id="editor-form" hidden><input id="editor-email" type="email" aria-label="Editor email" placeholder="Editor email" required><button type="submit">Send link</button></form></details>
   <div id="map" role="application" aria-label="Interactive map of Akumal Norte lots and regions"></div>
   <script type="application/json" id="map-data">{
   "type": "FeatureCollection",
@@ -7579,6 +7578,7 @@
       box.innerHTML = '<label><input type="checkbox" id="show-lot-numbers"> Show Lot Numbers</label>' +
         '<label><input type="checkbox" id="show-boundaries"> Show additional boundaries</label>' +
         '<label><input type="checkbox" id="show-legend"> Show Legend</label>';
+      box.appendChild(document.getElementById('map-tools'));
       box.querySelector('#show-legend').addEventListener('change', event => {
         if (event.target.checked) legend.addTo(map);
         else legend.remove();
@@ -7598,7 +7598,6 @@
       });
       return box;
     };
-    displayOptions.addTo(map);
     const contributionSets = L.control({ position: 'topright' });
     contributionSets.onAdd = () => {
       const box = L.DomUtil.create('div', 'legend display-options collapsible');
@@ -7618,6 +7617,7 @@
       return box;
     };
     contributionSets.addTo(map);
+    displayOptions.addTo(map);
     // Detail donors with no lot code, as [name, donated USD], largest first.
     let contributors = liveDonationsUrl ? null : JSON.parse(document.getElementById('contributor-data').textContent);
     // Detail donors with a lot code: number of donating records and their total.
