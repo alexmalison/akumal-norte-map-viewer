@@ -37,6 +37,8 @@
     .contributors { width: min(290px, calc(100vw - 80px)); max-height: 46vh; overflow: auto; }
     .contributors[hidden] { display: none !important; }
     .contributors h2 { margin: 0 0 4px; font-size: 14px; }
+    .funding-box small { display: block; color: #536372; }
+    .legend.funding-box .funding-deficit { position: static; margin: 4px 0; padding: 4px 0; color: #b91c1c; background: #fff1f2; border-top-color: #fca5a5; }
     .legend .contributor { justify-content: space-between; gap: 10px; margin: 1px 0; }
     .contributor span:last-child { white-space: nowrap; }
     .legend .contributor-total { position: sticky; bottom: -9px; margin: 4px 0 -9px; padding: 4px 0 9px; border-top: 1px solid #c9d2da; background: #fff; font-weight: 700; }
@@ -7014,13 +7016,15 @@
     ["13869FE1A0D8B328",2000,"F10",0,"Mi Casa del Mar"]
   ]</script>
   <script type="application/json" id="contributors-2026-data">[
-    ["Playa Caribe Beach Concession",17500],
     ["Akumal Direct / LocoGringo",9000],
+    ["Buy Playa Real Estate Advisors",3600]
+  ]</script>
+  <script type="application/json" id="property-2026-extra-data">[
+    ["Playa Caribe Beach Concession",17500],
     ["Casa Azanik",7200],
-    ["Buy Playa Real Estate Advisors",3600],
     ["Casa Josefina",300]
   ]</script>
-  <script type="application/json" id="owner-summary-2026-data">{"contributors":65,"amount":154429.94}</script>
+  <script type="application/json" id="owner-summary-2026-data">{"contributors":68,"amount":179429.94}</script>
   <script type="application/json" id="contributor-data">[
     ["Akumal Direct / LocoGringo",25000],
     ["Akumal Bay Resort",10000],
@@ -7106,10 +7110,10 @@
         `${label}: ${message}. Zoom in for lot names and totals. * Lot drawn twice on the map; each shows the full total.`;
     }
     showDonationStatus(dataRefreshed);
-    // Whole-dollar amounts show no cents; others always show two decimals ($401,924.30).
-    const wholeDollars = new Intl.NumberFormat('en-US', { style: 'currency', currency: 'USD', maximumFractionDigits: 0 });
-    const withCents = new Intl.NumberFormat('en-US', { style: 'currency', currency: 'USD', minimumFractionDigits: 2 });
-    const currency = { format: amount => (Number.isInteger(amount) ? wholeDollars : withCents).format(amount) };
+    // Keep cents in the data, but display every USD amount rounded to the nearest dollar.
+    const currency = new Intl.NumberFormat('en-US', {
+      style: 'currency', currency: 'USD', maximumFractionDigits: 0
+    });
     const map = L.map('map', { preferCanvas: true, maxBoundsViscosity: 1.0, zoomControl: false });
     L.control.zoom({ position: 'topright' }).addTo(map);
     // Mobile: collapse the side panels behind toggle buttons so the map stays usable.
@@ -7560,6 +7564,18 @@
       donationDataReady: true,
       donationPlaceholder: ''
     };
+    const property2026Extra = JSON.parse(document.getElementById('property-2026-extra-data').textContent);
+    const additionalFunding2026 = 18864;
+    // Summary!C13:D14, rounded to whole pesos as displayed in the workbook.
+    const funding2026Rounds = [
+      { budgetPesos: 3780000, fundedPesos: 3168997 },
+      { budgetPesos: 1440000, fundedPesos: 627095 }
+    ];
+    const funding2026 = funding2026Rounds.reduce((total, round) => ({
+      budgetPesos: total.budgetPesos + round.budgetPesos,
+      fundedPesos: total.fundedPesos + round.fundedPesos
+    }), { budgetPesos: 0, fundedPesos: 0 });
+    const pesosPerUsd = 18;
     function selectContributionSet(label) {
       selectedContributionSet = label;
       const state = isPendingSet() ? {
@@ -7585,6 +7601,7 @@
     let ownerBox;
     let contributorsBox;
     let allContributorsBox;
+    let fundingBox;
     // Map lots with a donation; a lot drawn more than once counts once.
     function lotsRepresented() {
       const lotKeys = new Set();
@@ -7601,14 +7618,18 @@
       if (ownerBox) ownerBox.hidden = pending;
       if (contributorsBox) contributorsBox.hidden = pending;
       if (allContributorsBox) allContributorsBox.hidden = pending;
+      if (fundingBox) fundingBox.hidden = !is2026Set();
       if (pending) return;
       const placeholder = `<p>${escapeHtml(donationPlaceholder)}</p>`;
       const otherCents = contributors ? contributors.reduce((sum, [, amount]) => sum + Math.round(amount * 100), 0) : 0;
+      const ownerAmount = ownerSummary
+        ? ownerSummary.amount + (is2026Set() ? additionalFunding2026 : 0) : 0;
       if (ownerBox) {
         ownerBox.innerHTML = '<h2>Property (Lot) Owner Contributors</h2>' + (ownerSummary
           ? contributorRow('Contributors', ownerSummary.contributors.toLocaleString('en-US')) +
-            contributorRow('Lots represented', lotsRepresented().toLocaleString('en-US')) +
-            contributorRow('Total', currency.format(ownerSummary.amount), 'contributor contributor-total')
+            contributorRow('Lots represented', (lotsRepresented() +
+              (is2026Set() ? property2026Extra.length : 0)).toLocaleString('en-US')) +
+            contributorRow('Total', currency.format(ownerAmount), 'contributor contributor-total')
           : placeholder);
       }
       if (contributorsBox) {
@@ -7619,12 +7640,21 @@
       }
       if (allContributorsBox) {
         allContributorsBox.innerHTML = '<h2>All Contributors</h2>' + (ownerSummary && contributors
-          ? contributorRow('Property owners', currency.format(ownerSummary.amount)) +
+          ? contributorRow('Property owners', currency.format(ownerAmount)) +
             contributorRow('Businesses and other contributors', currency.format(otherCents / 100)) +
             contributorRow('Contributors', (ownerSummary.contributors + contributors.length).toLocaleString('en-US')) +
-            contributorRow('Total', currency.format((Math.round(ownerSummary.amount * 100) + otherCents) / 100),
+            contributorRow('Total', currency.format((Math.round(ownerAmount * 100) + otherCents) / 100),
               'contributor contributor-total')
           : placeholder);
+      }
+      if (fundingBox && is2026Set()) {
+        fundingBox.innerHTML = '<h2>Funding</h2><small>2026 rounds 1 + 2 · USD</small>' +
+          contributorRow('Budget', currency.format(funding2026.budgetPesos / pesosPerUsd)) +
+          contributorRow('Funded (contributions)', currency.format(funding2026.fundedPesos / pesosPerUsd)) +
+          contributorRow('Deficit', currency.format(
+            (funding2026.budgetPesos - funding2026.fundedPesos) / pesosPerUsd),
+            'contributor contributor-total funding-deficit') +
+          '<small>Summary updated June 30, 2026 · 18 MXN/USD</small>';
       }
     }
     const ownerControl = L.control({ position: 'topleft' });
@@ -7652,6 +7682,14 @@
       return allContributorsBox;
     };
     allContributorsControl.addTo(map);
+    const fundingControl = L.control({ position: 'topleft' });
+    fundingControl.onAdd = () => {
+      fundingBox = L.DomUtil.create('section', 'legend contributors collapsible funding-box');
+      L.DomEvent.disableClickPropagation(fundingBox);
+      renderContributors();
+      return fundingBox;
+    };
+    fundingControl.addTo(map);
     const legend = L.control({position: 'bottomright'});
     legend.onAdd = () => {
       const box = L.DomUtil.create('div', 'legend');
