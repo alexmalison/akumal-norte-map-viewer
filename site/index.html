@@ -7017,14 +7017,15 @@
   ]</script>
   <script type="application/json" id="contributors-2026-data">[
     ["Akumal Direct / LocoGringo",9000],
-    ["Buy Playa Real Estate Advisors",3600]
+    ["Buy Playa Real Estate Advisors",3600],
+    ["Akumal Villas",2500]
   ]</script>
   <script type="application/json" id="property-2026-extra-data">[
     ["Playa Caribe Beach Concession",17500],
     ["Casa Azanik",7200],
     ["Casa Josefina",300]
   ]</script>
-  <script type="application/json" id="owner-summary-2026-data">{"contributors":68,"amount":179429.94}</script>
+  <script type="application/json" id="owner-summary-2026-data">{"contributors":67,"amount":176929.94}</script>
   <script type="application/json" id="contributor-data">[
     ["Akumal Direct / LocoGringo",25000],
     ["Akumal Bay Resort",10000],
@@ -7565,6 +7566,7 @@
       donationPlaceholder: ''
     };
     const property2026Extra = JSON.parse(document.getElementById('property-2026-extra-data').textContent);
+    const otherMapped2026Ids = new Set(['1325BEB9E270A761']); // Akumal Villas stays on the map.
     const additionalFunding2026 = 18864;
     // Summary!C13:D14, rounded to whole pesos as displayed in the workbook.
     const funding2026Rounds = [
@@ -7606,7 +7608,9 @@
     function lotsRepresented() {
       const lotKeys = new Set();
       donations.forEach((entry, id) => {
-        if (entry.amount > 0) lotKeys.add(entry.shared ? JSON.stringify([entry.sourceCode, entry.name]) : id);
+        if (entry.amount > 0 && !(is2026Set() && otherMapped2026Ids.has(id))) {
+          lotKeys.add(entry.shared ? JSON.stringify([entry.sourceCode, entry.name]) : id);
+        }
       });
       return lotKeys.size;
     }
