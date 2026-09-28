@@ -52,9 +52,15 @@
     .lot-browser-toggle { padding: 9px 12px; border: 2px solid rgba(0,0,0,.2); border-radius: 4px; background: #fff; color: #17222c; font: inherit; font-weight: 600; box-shadow: 0 1px 5px #0003; cursor: pointer; }
     .lot-browser-list { width: min(320px, calc(100vw - 20px)); max-height: min(60vh, 520px); overflow-y: auto; overscroll-behavior: contain; -webkit-overflow-scrolling: touch; touch-action: pan-y; background: #fff; border-radius: 4px; box-shadow: 0 1px 5px #0003; }
     .lot-browser-list[hidden] { display: none; }
-    .lot-browser-list h2 { position: sticky; top: 0; margin: 0; padding: 8px 10px; background: #fff; font-size: 14px; z-index: 1; }
-    .visible-lot { display: grid; grid-template-columns: minmax(0, 1fr) auto; align-items: start; gap: 2px 6px; width: 100%; padding: 7px 10px; border: 0; border-top: 1px solid #e3e8ed; background: transparent; color: inherit; font: inherit; text-align: left; cursor: pointer; }
-    .visible-lot:hover, .visible-lot:focus-visible { background: #e9f3fa; }
+    .lot-browser-header { position: sticky; top: 0; padding: 8px 10px; background: #fff; border-bottom: 1px solid #e3e8ed; z-index: 1; }
+    .lot-browser-header h2 { margin: 0 0 6px; font-size: 14px; }
+    .lot-browser-header label { display: flex; align-items: center; gap: 8px; font-size: 12px; }
+    .lot-browser-header select { flex: 1; min-width: 0; padding: 5px; color: inherit; font: inherit; }
+    .visible-lot { display: grid; grid-template-columns: minmax(0, 1fr) auto; align-items: start; gap: 2px 6px; width: 100%; padding: 7px 10px; border: 0; border-top: 1px solid #e3e8ed; background: transparent; color: inherit; font: inherit; text-align: left; }
+    button.visible-lot { cursor: pointer; }
+    button.visible-lot:hover, button.visible-lot:focus-visible { background: #e9f3fa; }
+    .visible-lot.other-contributor { background: #f5f8fb; }
+    .visible-lot b { overflow-wrap: anywhere; }
     .visible-lot span { grid-column: 1 / -1; overflow-wrap: anywhere; }
     .visible-lot strong { grid-column: 2; grid-row: 1; white-space: nowrap; }
     .lot-browser-list p { margin: 0; padding: 8px 10px; }
@@ -7323,22 +7329,24 @@
     }
     let detailsBox;
     let browseLotsButton;
+    let lotBrowserSort = 'name';
+    const browseLotsLabel = 'Browse lots & contributors';
     const detailsControl = L.control({ position: 'bottomleft' });
     detailsControl.onAdd = () => {
       const wrapper = L.DomUtil.create('div', 'lot-browser');
       detailsBox = L.DomUtil.create('section', 'lot-browser-list', wrapper);
       detailsBox.id = 'lot-browser-list';
-      detailsBox.setAttribute('aria-label', 'All lot details');
+      detailsBox.setAttribute('aria-label', 'Lots and other contributors');
       detailsBox.hidden = true;
       browseLotsButton = L.DomUtil.create('button', 'lot-browser-toggle', wrapper);
       browseLotsButton.type = 'button';
-      browseLotsButton.textContent = 'Browse all lots';
+      browseLotsButton.textContent = browseLotsLabel;
       browseLotsButton.setAttribute('aria-controls', detailsBox.id);
       browseLotsButton.setAttribute('aria-expanded', 'false');
       browseLotsButton.addEventListener('click', () => {
         const open = detailsBox.hidden;
         detailsBox.hidden = !open;
-        browseLotsButton.textContent = open ? 'Close lot list' : 'Browse all lots';
+        browseLotsButton.textContent = open ? 'Close list' : browseLotsLabel;
         browseLotsButton.setAttribute('aria-expanded', String(open));
         if (open) {
           if (window.matchMedia('(max-width: 640px)').matches) {
@@ -7349,13 +7357,19 @@
           renderLotBrowser();
         }
       });
+      detailsBox.addEventListener('change', event => {
+        if (!event.target.matches('#lot-browser-sort')) return;
+        lotBrowserSort = event.target.value;
+        renderLotBrowser();
+        detailsBox.scrollTop = 0;
+      });
       detailsBox.addEventListener('click', event => {
         const button = event.target.closest('button[data-lot-id]');
         if (!button) return;
         const layer = lotLayers.get(button.dataset.lotId);
         if (!layer) return;
         detailsBox.hidden = true;
-        browseLotsButton.textContent = 'Browse all lots';
+        browseLotsButton.textContent = browseLotsLabel;
         browseLotsButton.setAttribute('aria-expanded', 'false');
         if (!map.hasLayer(lots)) lots.addTo(map);
         map.closePopup();
@@ -7375,18 +7389,54 @@
     }
     function renderLotBrowser() {
       if (!detailsBox || detailsBox.hidden) return;
-      const allLots = [...lotLayers.values()].sort((a, b) =>
-        (lotId(a.feature.properties.name) || a.feature.properties.name).localeCompare(
-          lotId(b.feature.properties.name) || b.feature.properties.name, undefined, { numeric: true }));
-      detailsBox.innerHTML = `<h2>All lots (${allLots.length})</h2>` +
-        allLots.map(layer => {
-          const feature = layer.feature;
-          const detail = donations.get(feature.id);
-          return `<button type="button" class="visible-lot" data-lot-id="${escapeHtml(feature.id)}">` +
-            `<b>${escapeHtml(lotId(feature.properties.name) || feature.properties.name)}</b>` +
-            `<span>${escapeHtml(sharedNames.get(feature.id) || detail?.name || feature.properties.name)}</span>` +
-            `<strong>${detail ? escapeHtml(currency.format(detail.amount) + (detail.shared ? '*' : '')) : donationDataReady ? is2026Set() ? 'No 2026 record' : 'No Detail record' : donationPlaceholder}</strong></button>`;
-        }).join('');
+      const otherContributions = contributors || [];
+      // Akumal Villas is both an Other contributor and a mapped lot; list it once.
+      const mappedOtherNames = new Set();
+      const entries = [...lotLayers.values()].map(layer => {
+        const feature = layer.feature;
+        const detail = donations.get(feature.id);
+        const mappedOther = is2026Set() && otherMapped2026Ids.has(feature.id);
+        if (mappedOther && detail) mappedOtherNames.add(detail.name);
+        const otherAmount = mappedOther
+          ? otherContributions.find(([name]) => name === detail?.name)?.[1] : undefined;
+        const code = lotId(feature.properties.name);
+        return {
+          layer,
+          name: sharedNames.get(feature.id) || detail?.name || feature.properties.name,
+          amount: otherAmount ?? detail?.amount,
+          amountSuffix: detail?.shared ? '*' : '',
+          note: (code ? `Lot ${code}` : feature.properties.name) +
+            (mappedOther ? ' · Other contributor' : ''),
+          other: mappedOther
+        };
+      });
+      otherContributions.forEach(([name, amount]) => {
+        if (!mappedOtherNames.has(name)) entries.push({ name, amount, note: 'Other contributor', other: true });
+      });
+      const byName = (a, b) => a.name.localeCompare(b.name, undefined,
+        { sensitivity: 'base', numeric: true }) || a.note.localeCompare(b.note, undefined, { numeric: true });
+      entries.sort((a, b) => lotBrowserSort === 'amount'
+        ? ((b.amount ?? -1) - (a.amount ?? -1)) || byName(a, b) : byName(a, b));
+      if (!detailsBox.querySelector('.lot-browser-header')) {
+        detailsBox.innerHTML = '<div class="lot-browser-header"><h2></h2>' +
+          '<label for="lot-browser-sort">Sort by <select id="lot-browser-sort">' +
+          '<option value="name">Name (A–Z)</option>' +
+          '<option value="amount">Contribution (highest first)</option>' +
+          '</select></label></div><div class="lot-browser-rows"></div>';
+      }
+      detailsBox.querySelector('.lot-browser-header h2').textContent =
+        `Lots & other contributors (${entries.length})`;
+      detailsBox.querySelector('#lot-browser-sort').value = lotBrowserSort;
+      detailsBox.querySelector('.lot-browser-rows').innerHTML = entries.map(entry => {
+        const amount = entry.amount == null
+          ? donationDataReady ? is2026Set() ? 'No 2026 record' : 'No Detail record' : donationPlaceholder
+          : currency.format(entry.amount) + (entry.amountSuffix || '');
+        const content = `<b>${escapeHtml(entry.name)}</b><strong>${escapeHtml(amount)}</strong>` +
+          `<span>${escapeHtml(entry.note)}</span>`;
+        return entry.layer
+          ? `<button type="button" class="visible-lot${entry.other ? ' other-contributor' : ''}" data-lot-id="${escapeHtml(entry.layer.feature.id)}">${content}</button>`
+          : `<div class="visible-lot other-contributor">${content}</div>`;
+      }).join('');
     }
     map.createPane('lot-label-pane');
     map.getPane('lot-label-pane').style.zIndex = 625;
