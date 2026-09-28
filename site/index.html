@@ -7164,13 +7164,14 @@
       if (isPendingSet()) return {
         color: '#b91c1c', weight: 1.5, opacity: 0.95, fillColor: '#ef4444', fillOpacity: 0.5
       };
+      const amount = donations.get(feature.id)?.amount;
       return {
-        color: donations.get(feature.id)?.amount === 0 ? '#b91c1c' :
+        color: amount > 0 ? '#22c55e' : amount === 0 ? '#b91c1c' :
           feature.properties.style_color === '#000000' ? '#ffffff' : feature.properties.style_color,
-        weight: 1.5,
+        weight: amount > 0 ? 2.25 : 1.5,
         opacity: 0.95,
-        fillColor: donations.get(feature.id)?.amount === 0 ? '#ef4444' : feature.properties.style_color,
-        fillOpacity: donations.get(feature.id)?.amount === 0 ? 0.5 :
+        fillColor: amount === 0 ? '#ef4444' : feature.properties.style_color,
+        fillOpacity: amount === 0 ? 0.5 :
           feature.properties.style_color === '#000000' ? 0.04 : 0.30
       };
     }
@@ -7699,6 +7700,7 @@
       const box = L.DomUtil.create('div', 'legend');
       box.innerHTML = '<div><span class="swatch" style="background:#F4EB37"></span>Yellow · Vecinos member</div>' +
         '<div><span class="swatch" style="background:#F8971B"></span>Orange · Vecinos member owned</div>' +
+        '<div><span class="swatch" style="background:transparent;border:3px solid #22c55e"></span>Green outline · contributed</div>' +
         '<div><span class="swatch" style="background:#ef4444"></span>Red lot · $0 recorded or pending</div>' +
         '<div><span class="swatch" style="background:#000000"></span>Black · no category stated</div>' +
         '<div><span class="swatch" style="background:#93D7E8"></span>Blue · M&amp;M region</div>' +
