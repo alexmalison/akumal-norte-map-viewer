@@ -35,6 +35,7 @@
     .display-options label { display: flex; gap: 6px; align-items: center; margin: 2px 0; cursor: pointer; }
     .display-options h3 { margin: 8px 0 2px; font-size: 13px; }
     .contributors { width: min(290px, calc(100vw - 80px)); max-height: 46vh; overflow: auto; }
+    .other-contributors-box { max-height: 26vh; }
     .contributors[hidden] { display: none !important; }
     .contributors h2 { margin: 0 0 4px; font-size: 14px; }
     .funding-box small { display: block; color: #536372; }
@@ -7165,13 +7166,13 @@
         color: '#b91c1c', weight: 1.5, opacity: 0.95, fillColor: '#ef4444', fillOpacity: 0.5
       };
       const amount = donations.get(feature.id)?.amount;
+      const contributed = amount > 0;
       return {
-        color: amount > 0 ? '#22c55e' : amount === 0 ? '#b91c1c' :
-          feature.properties.style_color === '#000000' ? '#ffffff' : feature.properties.style_color,
-        weight: amount > 0 ? 2.25 : 1.5,
+        color: contributed ? '#22c55e' : '#b91c1c',
+        weight: contributed ? 2.25 : 1.5,
         opacity: 0.95,
-        fillColor: amount === 0 ? '#ef4444' : feature.properties.style_color,
-        fillOpacity: amount === 0 ? 0.5 :
+        fillColor: contributed ? feature.properties.style_color : '#ef4444',
+        fillOpacity: !contributed ? 0.5 :
           feature.properties.style_color === '#000000' ? 0.04 : 0.30
       };
     }
@@ -7569,6 +7570,7 @@
     const property2026Extra = JSON.parse(document.getElementById('property-2026-extra-data').textContent);
     const otherMapped2026Ids = new Set(['1325BEB9E270A761']); // Akumal Villas stays on the map.
     const additionalFunding2026 = 18864;
+    const barrierPurchaseBudget = 475000;
     // Summary!C13:D14, rounded to whole pesos as displayed in the workbook.
     const funding2026Rounds = [
       { budgetPesos: 3780000, fundedPesos: 3168997 },
@@ -7623,12 +7625,13 @@
       if (ownerBox) ownerBox.hidden = pending;
       if (contributorsBox) contributorsBox.hidden = pending;
       if (allContributorsBox) allContributorsBox.hidden = pending;
-      if (fundingBox) fundingBox.hidden = !is2026Set();
+      if (fundingBox) fundingBox.hidden = pending;
       if (pending) return;
       const placeholder = `<p>${escapeHtml(donationPlaceholder)}</p>`;
       const otherCents = contributors ? contributors.reduce((sum, [, amount]) => sum + Math.round(amount * 100), 0) : 0;
       const ownerAmount = ownerSummary
         ? ownerSummary.amount + (is2026Set() ? additionalFunding2026 : 0) : 0;
+      const totalFunded = (Math.round(ownerAmount * 100) + otherCents) / 100;
       if (ownerBox) {
         ownerBox.innerHTML = '<h2>Property (Lot) Owner Contributors</h2>' + (ownerSummary
           ? contributorRow('Contributors', ownerSummary.contributors.toLocaleString('en-US')) +
@@ -7648,18 +7651,22 @@
           ? contributorRow('Property owners', currency.format(ownerAmount)) +
             contributorRow('Businesses and other contributors', currency.format(otherCents / 100)) +
             contributorRow('Contributors', (ownerSummary.contributors + contributors.length).toLocaleString('en-US')) +
-            contributorRow('Total', currency.format((Math.round(ownerAmount * 100) + otherCents) / 100),
+            contributorRow('Total', currency.format(totalFunded),
               'contributor contributor-total')
           : placeholder);
       }
-      if (fundingBox && is2026Set()) {
-        fundingBox.innerHTML = '<h2>Funding</h2><small>2026 rounds 1 + 2 · USD</small>' +
-          contributorRow('Budget', currency.format(funding2026.budgetPesos / pesosPerUsd)) +
-          contributorRow('Funded (contributions)', currency.format(funding2026.fundedPesos / pesosPerUsd)) +
-          contributorRow('Deficit', currency.format(
-            (funding2026.budgetPesos - funding2026.fundedPesos) / pesosPerUsd),
-            'contributor contributor-total funding-deficit') +
-          '<small>Summary updated June 30, 2026 · 18 MXN/USD</small>';
+      if (fundingBox) {
+        const budget = is2026Set() ? funding2026.budgetPesos / pesosPerUsd : barrierPurchaseBudget;
+        const funded = is2026Set() ? funding2026.fundedPesos / pesosPerUsd : totalFunded;
+        fundingBox.innerHTML = '<h2>Funding</h2>' + (ownerSummary && contributors
+          ? '<small>' + (is2026Set() ? '2026 rounds 1 + 2' : 'Barrier Purchase') + ' · USD</small>' +
+            contributorRow('Budget', currency.format(budget)) +
+            contributorRow('Funded (contributions)', currency.format(funded)) +
+            contributorRow('Deficit', currency.format(budget - funded),
+              'contributor contributor-total funding-deficit') +
+            (is2026Set() ? '<small>Summary updated June 30, 2026 · 18 MXN/USD</small>' :
+              '<small>Funded amount matches All Contributors above.</small>')
+          : placeholder);
       }
     }
     const ownerControl = L.control({ position: 'topleft' });
@@ -7672,7 +7679,7 @@
     ownerControl.addTo(map);
     const contributorsControl = L.control({ position: 'topleft' });
     contributorsControl.onAdd = () => {
-      contributorsBox = L.DomUtil.create('section', 'legend contributors collapsible');
+      contributorsBox = L.DomUtil.create('section', 'legend contributors collapsible other-contributors-box');
       L.DomEvent.disableClickPropagation(contributorsBox);
       L.DomEvent.disableScrollPropagation(contributorsBox);
       renderContributors();
@@ -7701,7 +7708,7 @@
       box.innerHTML = '<div><span class="swatch" style="background:#F4EB37"></span>Yellow · Vecinos member</div>' +
         '<div><span class="swatch" style="background:#F8971B"></span>Orange · Vecinos member owned</div>' +
         '<div><span class="swatch" style="background:transparent;border:3px solid #22c55e"></span>Green outline · contributed</div>' +
-        '<div><span class="swatch" style="background:#ef4444"></span>Red lot · $0 recorded or pending</div>' +
+        '<div><span class="swatch" style="background:#ef4444"></span>Red lot · no contribution or pending</div>' +
         '<div><span class="swatch" style="background:#000000"></span>Black · no category stated</div>' +
         '<div><span class="swatch" style="background:#93D7E8"></span>Blue · M&amp;M region</div>' +
         '<div><span class="swatch" style="background:#DB4436"></span>Red · Etapa I / impact line</div>' +
