@@ -7242,7 +7242,7 @@
     const pendingContributionSets = new Set(['2023 Contributions', '2024 Contributions', '2025 Contributions']);
     const isPendingSet = () => pendingContributionSets.has(selectedContributionSet);
     const is2026Set = () => selectedContributionSet === '2026 Contributions';
-    const isFullSet = () => selectedContributionSet === 'Full Participation Funding';
+    const isFullSet = () => selectedContributionSet === 'Funding Proposal';
     // Each entry is [feature ID, donated USD, Detail lot code, shared, displayed name, recorded names].
     // A shared total covering several lots (a code like G48/49 or F8-9) is split evenly across
     // their shapes. A single-lot code on several shapes is a duplicate drawing and keeps the full total.
@@ -7899,7 +7899,7 @@
       box.innerHTML = '<h2>Map Views</h2>' + option('Barrier Purchase', true) +
         '<h3>Barrier Operations</h3>' +
         ['2023 Contributions', '2024 Contributions', '2025 Contributions'].map(label => option(label)).join('') +
-        '<h3>Barrier and Beach Operations</h3>' + option('2026 Contributions') + option('Full Participation Funding');
+        '<h3>Barrier and Beach Operations</h3>' + option('2026 Contributions') + option('Funding Proposal');
       L.DomEvent.disableClickPropagation(box);
       box.addEventListener('change', event => {
         if (!event.target.matches('input[name="contribution-set"]')) return;
@@ -7957,7 +7957,6 @@
       ['Akumal Vacations', 10000],
       ['Aventuras Cancun', 10000],
       ['Akumal Villas', 5000],
-      ['Buy Playa', 5000],
       ['Buy Playa Real Estate Advisors', 5000],
       ['La Lunita', 5000]
     ];
@@ -8079,7 +8078,7 @@
             contributorRow('Total', currency.format(businessFlatTotal), 'contributor contributor-total');
         }
         if (fundingBox) {
-          fundingBox.innerHTML = '<h2>Full Participation Funding</h2>' +
+          fundingBox.innerHTML = '<h2>Funding Proposal</h2>' +
             '<small>Fees System 3 · USD · share per lot</small>' +
             fullParticipation.categories.map(({ label, count, each }) =>
               contributorRow(`${label} (${count})`, currency.format(each))).join('') +
