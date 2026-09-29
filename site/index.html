@@ -7971,22 +7971,28 @@
     // code, shared, name]. Every lot in a map shape's lot ID range pays the per-lot share for its
     // zone: land plus building fee if the property is built, otherwise the land fee. A lot drawn
     // twice on the map shows its share on both shapes but counts once toward the budget.
+    // Fees tab "Property Type Overrides": individual lots whose type differs from their property's.
+    const propertyTypeOverrides = new Map([['G37', 'empty lot'], ['G38', 'empty lot']]);
     const fullParticipation = (() => {
-      const featureNames = new Map(geojson.features.map(feature => [feature.id, feature.properties.name]));
+      const featureNames = new Map(lotFeatures.map(feature => [feature.id, feature.properties.name]));
+      const sourceNames = new Map(geojson.features.map(feature => [feature.id, feature.properties.name]));
       const counted = new Set();
+      // A range divided into lots is charged per piece, so each lot can take its own override.
       const rows = JSON.parse(document.getElementById('full-participation-data').textContent)
-        .map(([id, zone, buildings, , , name]) => {
+        .flatMap(([id, zone, buildings, , , name]) => (lotPieces.get(id) || [id]).map(shapeId => {
           const fees = feesSystem3[zone];
-          const sourceCode = lotId(featureNames.get(id));
+          const sourceCode = lotId(featureNames.get(shapeId) || sourceNames.get(id));
           const lots = lotCount(sourceCode);
+          const override = propertyTypeOverrides.get(sourceCode);
+          const built = override ? override === 'building' : buildings > 0;
           const duplicate = counted.has(sourceCode);
           counted.add(sourceCode);
           return {
-            id, sourceCode, shared: duplicate, name, names: [name], place: fees.place, built: buildings > 0, lots,
-            weight: lots * (buildings ? fees.land + fees.building : fees.land),
-            category: `${fees.place} ${buildings ? 'building' : 'empty lot'}`
+            id: shapeId, sourceCode, shared: duplicate, name, names: [name], place: fees.place, built, lots,
+            weight: lots * (built ? fees.land + fees.building : fees.land),
+            category: `${fees.place} ${built ? 'building' : 'empty lot'}` + (override ? ' (Fees tab override)' : '')
           };
-        });
+        }));
       // Mark the first drawing of a duplicated lot too, so both shapes carry the same note.
       rows.forEach(row => { if (row.shared) rows.find(other => other.sourceCode === row.sourceCode).shared = true; });
       const flat = new Map(businessFlatContributions);
