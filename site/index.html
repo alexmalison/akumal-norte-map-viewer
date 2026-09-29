@@ -65,6 +65,11 @@
     .visible-lot span { grid-column: 1 / -1; overflow-wrap: anywhere; }
     .visible-lot strong { grid-column: 2; grid-row: 1; white-space: nowrap; }
     .lot-browser-list p { margin: 0; padding: 8px 10px; }
+    .funding-row { display: flex; align-items: stretch; border-top: 1px solid #e3e8ed; }
+    .funding-row .visible-lot { flex: 1; min-width: 0; border-top: 0; }
+    .funding-check { display: flex; align-items: flex-start; flex: 0 0 30px; padding: 8px 0 0 10px; cursor: pointer; }
+    .funding-check input { margin: 0; width: 16px; height: 16px; cursor: pointer; }
+    .funding-row.unchecked .visible-lot { color: #6b7785; }
     .lot-browser-focus .leaflet-top.leaflet-left .contributors { display: none; }
     /* Mobile: collapse the side panels behind toggle buttons so the map stays visible. */
     .panel-toggle { display: none; }
@@ -7650,6 +7655,12 @@
         }
       });
       detailsBox.addEventListener('change', event => {
+        if (event.target.matches('.funding-toggle')) {
+          const key = event.target.dataset.payer;
+          setFundingProposalPayer(key, event.target.checked);
+          detailsBox.querySelector(`.funding-toggle[data-payer="${CSS.escape(key)}"]`)?.focus();
+          return;
+        }
         if (!event.target.matches('#lot-browser-sort')) return;
         lotBrowserSort = event.target.value;
         renderLotBrowser();
@@ -7699,11 +7710,13 @@
           amountSuffix: detail?.shared ? '*' : '',
           note: (code ? `Lot ${code}` : feature.properties.name) +
             (mappedOther ? ' · Other contributor' : ''),
-          other: mappedOther
+          other: mappedOther,
+          payerKey: isFullSet() ? detail?.payerKey : undefined
         };
       });
       otherContributions.forEach(([name, amount]) => {
-        if (!mappedOtherNames.has(name)) entries.push({ name, amount, note: 'Other contributor', other: true });
+        if (!mappedOtherNames.has(name)) entries.push({ name, amount, note: 'Other contributor', other: true,
+          payerKey: isFullSet() ? `business:${name}` : undefined });
       });
       const byName = (a, b) => a.name.localeCompare(b.name, undefined,
         { sensitivity: 'base', numeric: true }) || a.note.localeCompare(b.note, undefined, { numeric: true });
@@ -7720,14 +7733,21 @@
         `Lots & other contributors (${entries.length})`;
       detailsBox.querySelector('#lot-browser-sort').value = lotBrowserSort;
       detailsBox.querySelector('.lot-browser-rows').innerHTML = entries.map(entry => {
-        const amount = entry.amount == null
+        const paying = !entry.payerKey || !fundingProposalExcluded.has(entry.payerKey);
+        const amount = !paying ? 'Not charged' : entry.amount == null
           ? donationDataReady ? is2026Set() ? 'No 2026 record' : isFullSet() ? 'No share' : 'No Detail record' : donationPlaceholder
           : currency.format(entry.amount) + (entry.amountSuffix || '');
         const content = `<b>${escapeHtml(entry.name)}</b><strong>${escapeHtml(amount)}</strong>` +
           `<span>${escapeHtml(entry.note)}</span>`;
-        return entry.layer
+        const row = entry.layer
           ? `<button type="button" class="visible-lot${entry.other ? ' other-contributor' : ''}" data-lot-id="${escapeHtml(entry.layer.feature.id)}">${content}</button>`
           : `<div class="visible-lot other-contributor">${content}</div>`;
+        if (!isFullSet()) return row;
+        // Funding Proposal: a checkbox per contributor decides whether it is charged.
+        const toggle = entry.payerKey
+          ? `<input type="checkbox" class="funding-toggle" data-payer="${escapeHtml(entry.payerKey)}"${paying ? ' checked' : ''} aria-label="Charge ${escapeHtml(entry.name)}">`
+          : '';
+        return `<div class="funding-row${paying ? '' : ' unchecked'}"><label class="funding-check">${toggle}</label>${row}</div>`;
       }).join('');
     }
     map.createPane('lot-label-pane');
@@ -7960,7 +7980,6 @@
       ['Buy Playa Real Estate Advisors', 5000],
       ['La Lunita', 5000]
     ];
-    const businessFlatTotal = businessFlatContributions.reduce((sum, [, amount]) => sum + amount, 0);
     // Lots covered by a map lot ID: F33-35 is 3 lots, F10 and 11 is 2, G36-41A is 6.
     function lotCount(id) {
       const [start, end] = id.split(/\s*(?:-|and)\s*/).map(part => parseInt(part.replace(/^[A-Z]/i, ''), 10));
@@ -7972,6 +7991,12 @@
     // twice on the map shows its share on both shapes but counts once toward the budget.
     // Fees tab "Property Type Overrides": individual lots whose type differs from their property's.
     const propertyTypeOverrides = new Map([['G37', 'empty lot'], ['G38', 'empty lot']]);
+    // Funding Proposal contributors unchecked in the lot browser, as "lot:<lot ID>" or
+    // "business:<name>" keys, saved in this browser's local storage.
+    const fundingProposalStorageKey = 'akumal-funding-proposal-unchecked';
+    const fundingProposalExcluded = new Set((() => {
+      try { return JSON.parse(localStorage.getItem(fundingProposalStorageKey)) || []; } catch (_error) { return []; }
+    })());
     const fullParticipation = (() => {
       const featureNames = new Map(lotFeatures.map(feature => [feature.id, feature.properties.name]));
       const sourceNames = new Map(geojson.features.map(feature => [feature.id, feature.properties.name]));
@@ -7995,34 +8020,60 @@
       // Mark the first drawing of a duplicated lot too, so both shapes carry the same note.
       rows.forEach(row => { if (row.shared) rows.find(other => other.sourceCode === row.sourceCode).shared = true; });
       const flat = new Map(businessFlatContributions);
-      const charged = rows.filter(row => !flat.has(row.name) &&
-        (!row.shared || rows.find(other => other.sourceCode === row.sourceCode) === row));
-      const totalWeight = charged.reduce((sum, row) => sum + row.weight, 0);
-      const unit = (fullParticipationBudget - businessFlatTotal) / totalWeight;
       rows.forEach(row => {
-        if (flat.has(row.name)) {
-          row.amount = flat.get(row.name);
-          row.category = 'Business flat contribution';
-        } else {
-          row.amount = Math.round(row.weight * unit * 100) / 100;
-        }
+        row.payerKey = flat.has(row.name) ? `business:${row.name}` : `lot:${row.sourceCode}`;
+        row.baseCategory = flat.has(row.name) ? 'Business flat contribution' : row.category;
       });
-      const categories = [...feesSystem3].reverse().flatMap(fees => ['building', 'empty lot'].map(kind => ({
-        label: `${fees.place} ${kind}`,
-        count: charged.filter(row => row.place === fees.place && row.built === (kind === 'building'))
-          .reduce((sum, row) => sum + row.lots, 0),
-        each: (kind === 'building' ? fees.land + fees.building : fees.land) * unit
-      })));
-      return {
+      const state = {
         donations: new Map(rows.map(entry => [entry.id, entry])),
-        contributors: businessFlatContributions,
         ownerSummary: null,
         dataRefreshed: 'Stakeholders Fees tab, September 29, 2026',
         donationDataReady: true,
-        donationPlaceholder: '',
-        categories
+        donationPlaceholder: ''
       };
+      // Charge only checked contributors: checked businesses pay their flat amount, and checked lots
+      // share what remains of the budget by Fees System 3 weight.
+      state.recompute = () => {
+        const included = key => !fundingProposalExcluded.has(key);
+        const activeFlat = businessFlatContributions.filter(([name]) => included(`business:${name}`));
+        state.flatTotal = activeFlat.reduce((sum, [, amount]) => sum + amount, 0);
+        state.contributors = businessFlatContributions.map(([name, amount]) =>
+          [name, included(`business:${name}`) ? amount : 0]);
+        const charged = rows.filter(row => !flat.has(row.name) && included(row.payerKey) &&
+          (!row.shared || rows.find(other => other.sourceCode === row.sourceCode) === row));
+        const totalWeight = charged.reduce((sum, row) => sum + row.weight, 0);
+        state.lotTotal = totalWeight ? fullParticipationBudget - state.flatTotal : 0;
+        const unit = totalWeight ? state.lotTotal / totalWeight : 0;
+        rows.forEach(row => {
+          const paying = included(row.payerKey);
+          row.amount = !paying ? 0 : flat.has(row.name) ? flat.get(row.name) :
+            Math.round(row.weight * unit * 100) / 100;
+          row.category = row.baseCategory + (paying ? '' : ' · unchecked, not charged');
+        });
+        state.categories = [...feesSystem3].reverse().flatMap(fees => ['building', 'empty lot'].map(kind => ({
+          label: `${fees.place} ${kind}`,
+          count: charged.filter(row => row.place === fees.place && row.built === (kind === 'building'))
+            .reduce((sum, row) => sum + row.lots, 0),
+          each: (kind === 'building' ? fees.land + fees.building : fees.land) * unit
+        })));
+      };
+      state.recompute();
+      return state;
     })();
+    // Toggle a Funding Proposal contributor, keep the choice in this browser, and recompute.
+    function setFundingProposalPayer(key, paying) {
+      if (paying) fundingProposalExcluded.delete(key);
+      else fundingProposalExcluded.add(key);
+      try {
+        localStorage.setItem(fundingProposalStorageKey, JSON.stringify([...fundingProposalExcluded]));
+      } catch (_error) { /* Storage unavailable: the choice lasts until reload. */ }
+      fullParticipation.recompute();
+      if (!isFullSet()) return;
+      contributors = fullParticipation.contributors;
+      lots.eachLayer(layer => layer.setStyle(lotStyle(layer.feature)));
+      refreshLotDisplays();
+      renderContributors();
+    }
     function selectContributionSet(label) {
       selectedContributionSet = label;
       const state = isPendingSet() ? {
@@ -8074,18 +8125,22 @@
       if (full) {
         if (contributorsBox) {
           contributorsBox.innerHTML = '<h2>Business Flat Contributions</h2>' +
-            businessFlatContributions.map(([name, amount]) => contributorRow(name, currency.format(amount))).join('') +
-            contributorRow('Total', currency.format(businessFlatTotal), 'contributor contributor-total');
+            fullParticipation.contributors.map(([name, amount]) =>
+              contributorRow(name, amount ? currency.format(amount) : 'Unchecked')).join('') +
+            contributorRow('Total', currency.format(fullParticipation.flatTotal), 'contributor contributor-total');
         }
         if (fundingBox) {
+          const shortfall = fullParticipationBudget - fullParticipation.flatTotal - fullParticipation.lotTotal;
           fundingBox.innerHTML = '<h2>Funding Proposal</h2>' +
-            '<small>Fees System 3 · USD · share per lot</small>' +
+            '<small>Fees System 3 · USD · share per checked lot</small>' +
             fullParticipation.categories.map(({ label, count, each }) =>
               contributorRow(`${label} (${count})`, currency.format(each))).join('') +
-            contributorRow('Lot shares', currency.format(fullParticipationBudget - businessFlatTotal)) +
-            contributorRow('Business flat contributions', currency.format(businessFlatTotal)) +
+            contributorRow('Lot shares', currency.format(fullParticipation.lotTotal)) +
+            contributorRow('Business flat contributions', currency.format(fullParticipation.flatTotal)) +
+            (shortfall > 0 ? contributorRow('Shortfall (no lots checked)', currency.format(shortfall),
+              'contributor contributor-total funding-deficit') : '') +
             contributorRow('Budget', currency.format(fullParticipationBudget), 'contributor contributor-total') +
-            '<small>Business flat contributions come off the budget first. Shares are per lot number (F33-35 is 3 lots). Only HIZ buildings pay the full building fee; others pay 10%.</small>';
+            '<small>Business flat contributions come off the budget first. Checked lots share the rest; uncheck a contributor in Browse lots &amp; contributors to recompute. Shares are per lot number (F33-35 is 3 lots). Only HIZ buildings pay the full building fee; others pay 10%.</small>';
         }
         return;
       }
