@@ -7253,7 +7253,7 @@
     const pendingContributionSets = new Set(['2023 Contributions', '2024 Contributions', '2025 Contributions']);
     const isPendingSet = () => pendingContributionSets.has(selectedContributionSet);
     const is2026Set = () => selectedContributionSet === '2026 Contributions';
-    const isFullSet = () => selectedContributionSet === 'Funding Proposal';
+    const isFullSet = () => selectedContributionSet.startsWith('Funding Proposal');
     // Each entry is [feature ID, donated USD, Detail lot code, shared, displayed name, recorded names].
     // A shared total covering several lots (a code like G48/49 or F8-9) is split evenly across
     // their shapes. A single-lot code on several shapes is a duplicate drawing and keeps the full total.
@@ -7739,7 +7739,7 @@
         `Lots & other contributors (${entries.length})`;
       detailsBox.querySelector('#lot-browser-sort').value = lotBrowserSort;
       detailsBox.querySelector('.lot-browser-rows').innerHTML = entries.map(entry => {
-        const paying = !entry.payerKey || !fundingProposalExcluded.has(entry.payerKey);
+        const paying = !entry.payerKey || activeProposal().included(entry.payerKey);
         const amount = !paying ? 'Not charged' : entry.amount == null
           ? donationDataReady ? is2026Set() ? 'No 2026 record' : isFullSet() ? 'No share' : 'No Detail record' : donationPlaceholder
           : currency.format(entry.amount) + (entry.amountSuffix || '');
@@ -7925,7 +7925,7 @@
       box.innerHTML = '<h2>Map Views</h2>' + option('Barrier Purchase', true) +
         '<h3>Barrier Operations</h3>' +
         ['2023 Contributions', '2024 Contributions', '2025 Contributions'].map(label => option(label)).join('') +
-        '<h3>Barrier and Beach Operations</h3>' + option('2026 Contributions') + option('Funding Proposal');
+        '<h3>Barrier and Beach Operations</h3>' + option('2026 Contributions') + option('Funding Proposal') + option('Funding Proposal 2');
       L.DomEvent.disableClickPropagation(box);
       box.addEventListener('change', event => {
         if (!event.target.matches('input[name="contribution-set"]')) return;
@@ -7997,13 +7997,10 @@
     // twice on the map shows its share on both shapes but counts once toward the budget.
     // Fees tab "Property Type Overrides": individual lots whose type differs from their property's.
     const propertyTypeOverrides = new Map([['G37', 'empty lot'], ['G38', 'empty lot']]);
-    // Funding Proposal contributors unchecked in the lot browser, as "lot:<lot ID>" or
-    // "business:<name>" keys, saved in this browser's local storage.
-    const fundingProposalStorageKey = 'akumal-funding-proposal-unchecked';
-    const fundingProposalExcluded = new Set((() => {
-      try { return JSON.parse(localStorage.getItem(fundingProposalStorageKey)) || []; } catch (_error) { return []; }
-    })());
-    const fullParticipation = (() => {
+    // A Funding Proposal view. Each contributor ("lot:<lot ID>" or "business:<name>") starts
+    // checked or unchecked per checkedByDefault; the keys toggled away from that default are saved
+    // in this browser's local storage under storageKey.
+    function createFundingProposal(label, storageKey, checkedByDefault) {
       const featureNames = new Map(lotFeatures.map(feature => [feature.id, feature.properties.name]));
       const sourceNames = new Map(geojson.features.map(feature => [feature.id, feature.properties.name]));
       const counted = new Set();
@@ -8030,7 +8027,20 @@
         row.payerKey = flat.has(row.name) ? `business:${row.name}` : `lot:${row.sourceCode}`;
         row.baseCategory = flat.has(row.name) ? 'Business flat contribution' : row.category;
       });
+      const toggled = new Set((() => {
+        try { return JSON.parse(localStorage.getItem(storageKey)) || []; } catch (_error) { return []; }
+      })());
       const state = {
+        label,
+        included: key => toggled.has(key) !== checkedByDefault,
+        setIncluded(key, paying) {
+          if (paying === checkedByDefault) toggled.delete(key);
+          else toggled.add(key);
+          try {
+            localStorage.setItem(storageKey, JSON.stringify([...toggled]));
+          } catch (_error) { /* Storage unavailable: the choice lasts until reload. */ }
+          state.recompute();
+        },
         donations: new Map(rows.map(entry => [entry.id, entry])),
         ownerSummary: null,
         dataRefreshed: 'Stakeholders Fees tab, September 29, 2026',
@@ -8040,7 +8050,7 @@
       // Charge only checked contributors: checked businesses pay their flat amount, and checked lots
       // share what remains of the budget by Fees System 3 weight.
       state.recompute = () => {
-        const included = key => !fundingProposalExcluded.has(key);
+        const { included } = state;
         const activeFlat = businessFlatContributions.filter(([name]) => included(`business:${name}`));
         state.flatTotal = activeFlat.reduce((sum, [, amount]) => sum + amount, 0);
         state.contributors = businessFlatContributions.map(([name, amount]) =>
@@ -8065,17 +8075,19 @@
       };
       state.recompute();
       return state;
-    })();
-    // Toggle a Funding Proposal contributor, keep the choice in this browser, and recompute.
+    }
+    const fundingProposals = new Map([
+      ['Funding Proposal', createFundingProposal('Funding Proposal', 'akumal-funding-proposal-unchecked', true)],
+      ['Funding Proposal 2', createFundingProposal('Funding Proposal 2', 'akumal-funding-proposal-2-checked', false)]
+    ]);
+    // The Funding Proposal view on screen, or undefined in other views.
+    const activeProposal = () => fundingProposals.get(selectedContributionSet);
+    // Toggle a contributor in the current Funding Proposal and redraw with the recomputed shares.
     function setFundingProposalPayer(key, paying) {
-      if (paying) fundingProposalExcluded.delete(key);
-      else fundingProposalExcluded.add(key);
-      try {
-        localStorage.setItem(fundingProposalStorageKey, JSON.stringify([...fundingProposalExcluded]));
-      } catch (_error) { /* Storage unavailable: the choice lasts until reload. */ }
-      fullParticipation.recompute();
-      if (!isFullSet()) return;
-      contributors = fullParticipation.contributors;
+      const proposal = activeProposal();
+      if (!proposal) return;
+      proposal.setIncluded(key, paying);
+      contributors = proposal.contributors;
       lots.eachLayer(layer => layer.setStyle(lotStyle(layer.feature)));
       refreshLotDisplays();
       renderContributors();
@@ -8085,7 +8097,7 @@
       const state = isPendingSet() ? {
         donations: new Map(), contributors: null, ownerSummary: null,
         dataRefreshed: 'Pending', donationDataReady: false, donationPlaceholder: 'Pending'
-      } : is2026Set() ? contributions2026 : isFullSet() ? fullParticipation : purchaseState;
+      } : is2026Set() ? contributions2026 : isFullSet() ? activeProposal() : purchaseState;
       ({ donations, contributors, ownerSummary, dataRefreshed, donationDataReady, donationPlaceholder } = state);
       donations = expandSplitLots(donations);
       const title = document.getElementById('page-title');
@@ -8129,24 +8141,25 @@
       if (fundingBox) fundingBox.hidden = pending;
       if (pending) return;
       if (full) {
+        const proposal = activeProposal();
         if (contributorsBox) {
           contributorsBox.innerHTML = '<h2>Business Flat Contributions</h2>' +
-            fullParticipation.contributors.map(([name, amount]) =>
+            proposal.contributors.map(([name, amount]) =>
               contributorRow(name, amount ? currency.format(amount) : 'Unchecked')).join('') +
-            contributorRow('Total', currency.format(fullParticipation.flatTotal), 'contributor contributor-total');
+            contributorRow('Total', currency.format(proposal.flatTotal), 'contributor contributor-total');
         }
         if (fundingBox) {
-          const shortfall = fullParticipationBudget - fullParticipation.flatTotal - fullParticipation.lotTotal;
-          fundingBox.innerHTML = '<h2>Funding Proposal</h2>' +
+          const shortfall = fullParticipationBudget - proposal.flatTotal - proposal.lotTotal;
+          fundingBox.innerHTML = `<h2>${escapeHtml(proposal.label)}</h2>` +
             '<small>Fees System 3 · USD · share per checked lot</small>' +
-            fullParticipation.categories.map(({ label, count, each }) =>
+            proposal.categories.map(({ label, count, each }) =>
               contributorRow(`${label} (${count})`, currency.format(each))).join('') +
-            contributorRow('Lot shares', currency.format(fullParticipation.lotTotal)) +
-            contributorRow('Business flat contributions', currency.format(fullParticipation.flatTotal)) +
+            contributorRow('Lot shares', currency.format(proposal.lotTotal)) +
+            contributorRow('Business flat contributions', currency.format(proposal.flatTotal)) +
             (shortfall > 0 ? contributorRow('Shortfall (no lots checked)', currency.format(shortfall),
               'contributor contributor-total funding-deficit') : '') +
             contributorRow('Budget', currency.format(fullParticipationBudget), 'contributor contributor-total') +
-            '<small>Business flat contributions come off the budget first. Checked lots share the rest; uncheck a contributor in Browse lots &amp; contributors to recompute. Shares are per lot number (F33-35 is 3 lots). Only HIZ buildings pay the full building fee; others pay 10%.</small>';
+            '<small>Business flat contributions come off the budget first. Checked lots share the rest; check or uncheck a contributor in Browse lots &amp; contributors to recompute. Shares are per lot number (F33-35 is 3 lots). Only HIZ buildings pay the full building fee; others pay 10%.</small>';
         }
         return;
       }
