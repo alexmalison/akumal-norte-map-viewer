@@ -7687,7 +7687,7 @@
       const entries = [...lotLayers.values()].map(layer => {
         const feature = layer.feature;
         const detail = donations.get(feature.id);
-        const mappedOther = is2026Set() && otherMapped2026Ids.has(feature.id);
+        const mappedOther = (is2026Set() || isFullSet()) && otherMapped2026Ids.has(feature.id);
         if (mappedOther && detail) mappedOtherNames.add(detail.name);
         const otherAmount = mappedOther
           ? otherContributions.find(([name]) => name === detail?.name)?.[1] : undefined;
@@ -7949,6 +7949,19 @@
       { place: 'Waterfront', land: 0.1, building: 0.1 },
       { place: 'HIZ', land: 0.1, building: 1 }
     ];
+    // Fees System 3 flat contributions, as [name, USD], largest first. They come off the budget
+    // before the lot shares are computed. Akumal Villas also has a map lot (H88), which shows its
+    // flat contribution instead of a lot share.
+    const businessFlatContributions = [
+      ['Akumal Direct', 12000],
+      ['Akumal Vacations', 10000],
+      ['Aventuras Cancun', 10000],
+      ['Akumal Villas', 5000],
+      ['Buy Playa', 5000],
+      ['Buy Playa Real Estate Advisors', 5000],
+      ['La Lunita', 5000]
+    ];
+    const businessFlatTotal = businessFlatContributions.reduce((sum, [, amount]) => sum + amount, 0);
     // Lots covered by a map lot ID: F33-35 is 3 lots, F10 and 11 is 2, G36-41A is 6.
     function lotCount(id) {
       const [start, end] = id.split(/\s*(?:-|and)\s*/).map(part => parseInt(part.replace(/^[A-Z]/i, ''), 10));
@@ -7976,10 +7989,19 @@
         });
       // Mark the first drawing of a duplicated lot too, so both shapes carry the same note.
       rows.forEach(row => { if (row.shared) rows.find(other => other.sourceCode === row.sourceCode).shared = true; });
-      const charged = rows.filter(row => !row.shared || rows.find(other => other.sourceCode === row.sourceCode) === row);
+      const flat = new Map(businessFlatContributions);
+      const charged = rows.filter(row => !flat.has(row.name) &&
+        (!row.shared || rows.find(other => other.sourceCode === row.sourceCode) === row));
       const totalWeight = charged.reduce((sum, row) => sum + row.weight, 0);
-      const unit = fullParticipationBudget / totalWeight;
-      rows.forEach(row => { row.amount = Math.round(row.weight * unit * 100) / 100; });
+      const unit = (fullParticipationBudget - businessFlatTotal) / totalWeight;
+      rows.forEach(row => {
+        if (flat.has(row.name)) {
+          row.amount = flat.get(row.name);
+          row.category = 'Business flat contribution';
+        } else {
+          row.amount = Math.round(row.weight * unit * 100) / 100;
+        }
+      });
       const categories = [...feesSystem3].reverse().flatMap(fees => ['building', 'empty lot'].map(kind => ({
         label: `${fees.place} ${kind}`,
         count: charged.filter(row => row.place === fees.place && row.built === (kind === 'building'))
@@ -7988,7 +8010,7 @@
       })));
       return {
         donations: new Map(rows.map(entry => [entry.id, entry])),
-        contributors: null,
+        contributors: businessFlatContributions,
         ownerSummary: null,
         dataRefreshed: 'Stakeholders Fees tab, September 29, 2026',
         donationDataReady: true,
@@ -8040,18 +8062,25 @@
       const pending = isPendingSet();
       const full = isFullSet();
       if (ownerBox) ownerBox.hidden = pending || full;
-      if (contributorsBox) contributorsBox.hidden = pending || full;
+      if (contributorsBox) contributorsBox.hidden = pending;
       if (allContributorsBox) allContributorsBox.hidden = pending || full;
       if (fundingBox) fundingBox.hidden = pending;
       if (pending) return;
       if (full) {
+        if (contributorsBox) {
+          contributorsBox.innerHTML = '<h2>Business Flat Contributions</h2>' +
+            businessFlatContributions.map(([name, amount]) => contributorRow(name, currency.format(amount))).join('') +
+            contributorRow('Total', currency.format(businessFlatTotal), 'contributor contributor-total');
+        }
         if (fundingBox) {
           fundingBox.innerHTML = '<h2>Full Participation Funding</h2>' +
             '<small>Fees System 3 · USD · share per lot</small>' +
             fullParticipation.categories.map(({ label, count, each }) =>
               contributorRow(`${label} (${count})`, currency.format(each))).join('') +
+            contributorRow('Lot shares', currency.format(fullParticipationBudget - businessFlatTotal)) +
+            contributorRow('Business flat contributions', currency.format(businessFlatTotal)) +
             contributorRow('Budget', currency.format(fullParticipationBudget), 'contributor contributor-total') +
-            '<small>Shares are per lot number (F33-35 is 3 lots). Only HIZ buildings pay the full building fee; others pay 10%.</small>';
+            '<small>Business flat contributions come off the budget first. Shares are per lot number (F33-35 is 3 lots). Only HIZ buildings pay the full building fee; others pay 10%.</small>';
         }
         return;
       }
