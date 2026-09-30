@@ -48,6 +48,16 @@ Pushing `main` or manually dispatching the workflow runs `.github/workflows/page
 
 The page then loads the current Detail data on every visit and shows a **Refresh donations** button. The browser receives mapped lot names, amounts, lot codes, business/other contributor names and amounts, and owner summary totals. These are public to anyone who can reach the web app URL, including people who do not use the map. No workbook credential is embedded in the page or stored in GitHub Secrets: Apps Script runs under the HMB account's authorization, and the manifest limits its Google Sheets scope to read-only. If Detail names or codes change in a way the matching guide in `Code.gs` cannot resolve, the feed returns an error and the page shows that the Detail data is unavailable rather than a possibly wrong total.
 
+### Funding Proposal 2 change emails
+
+In **Funding Proposal 2**, changing a checkbox first asks for the visitor's name; cancelling leaves the checkbox unchanged. The page then applies the change and sends the name, the property or business (with its lot), and the new checkbox status to `hmbsargassumproject@gmail.com` through the Apps Script web app in `apps_script/proposal_email/`. The last name entered is remembered in that browser to prefill the next prompt. The Browse lots list shows whether each change was emailed. Until the web app is deployed, changes still apply but the list reports that they were not emailed. To set it up:
+
+1. While signed in as `hmbsargassumproject@gmail.com`, create a new Apps Script project (for example, **HMB Funding Proposal emails**) at <https://script.google.com/>. Replace its `Code.gs` with `apps_script/proposal_email/Code.gs`. Enable **Show "appsscript.json" manifest file in editor** in project settings, then replace the manifest with `apps_script/proposal_email/appsscript.json` and save.
+2. Deploy a new web app version with **Execute as: Me** and **Who has access: Anyone**. Authorize the **Send email as you** scope when prompted. Copy the `/exec` URL.
+3. Put that `/exec` URL in the `proposal-email-url` meta tag in `site/index.html`, then push.
+
+Anyone who finds the web app URL can send it requests, so the script validates each field and sends at most 80 emails per UTC day (consumer Gmail allows about 100 script emails a day). Names entered are not verified.
+
 The server source is in `server/akumal-local-server.cs`. It can be rebuilt with the .NET Framework C# compiler:
 
 ```powershell
@@ -60,6 +70,7 @@ The server source is in `server/akumal-local-server.cs`. It can be rebuilt with 
 - `data/akumal_norte_lots_2025.geojson`: extracted machine-readable geometry and attributes.
 - `site/index.html`: standalone viewer with the GeoJSON and a Detail data snapshot embedded, so no browser request to the private workbook is needed.
 - `apps_script/`: optional Apps Script web app that serves live Detail data to the page.
+- `apps_script/proposal_email/`: Apps Script web app that emails Funding Proposal 2 checkbox changes.
 - `validation/basemap.png`: satellite image used for an independent alignment check.
 - `validation/overlay.png`: rendered geometry over that image.
 - `validation/render.ps1`: regenerates the overlay from the GeoJSON and basemap.

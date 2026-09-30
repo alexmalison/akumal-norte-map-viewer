@@ -5,6 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <meta name="donation-data-refreshed" content="2026-09-24">
   <meta name="donation-feed-url" content="">
+  <meta name="proposal-email-url" content="">
   <title>Akumal Norte lot map preview</title>
   <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css">
   <style>
@@ -63,6 +64,8 @@
     .lot-browser-header h2 { margin: 0 0 6px; font-size: 14px; }
     .lot-browser-header label { display: flex; align-items: center; gap: 8px; font-size: 12px; }
     .lot-browser-header select { flex: 1; min-width: 0; padding: 5px; color: inherit; font: inherit; }
+    .proposal-email-status { display: block; margin-top: 4px; color: #4b5866; }
+    .proposal-email-status:empty { display: none; }
     .visible-lot { display: grid; grid-template-columns: minmax(0, 1fr) auto; align-items: start; gap: 2px 6px; width: 100%; padding: 7px 10px; border: 0; border-top: 1px solid #e3e8ed; background: transparent; color: inherit; font: inherit; text-align: left; }
     button.visible-lot { cursor: pointer; }
     button.visible-lot:hover, button.visible-lot:focus-visible { background: #e9f3fa; }
@@ -7662,9 +7665,21 @@
       });
       detailsBox.addEventListener('change', event => {
         if (event.target.matches('.funding-toggle')) {
-          const key = event.target.dataset.payer;
-          setFundingProposalPayer(key, event.target.checked);
+          const box = event.target;
+          const key = box.dataset.payer;
+          const paying = box.checked;
+          let name;
+          if (activeProposal()?.notifyChanges) {
+            // Ask who is making the change first; cancelling leaves the checkbox as it was.
+            box.checked = !paying;
+            name = window.prompt(`Your name (emailed to the HMB Sargassum Project with this change to ${box.dataset.contributor}):`,
+              localStorage.getItem(proposalNameStorageKey) || '')?.trim();
+            if (!name) return;
+            try { localStorage.setItem(proposalNameStorageKey, name); } catch (_error) { /* Not remembered. */ }
+          }
+          setFundingProposalPayer(key, paying);
           detailsBox.querySelector(`.funding-toggle[data-payer="${CSS.escape(key)}"]`)?.focus();
+          if (name) void emailProposalChange(name, box.dataset.contributor, paying);
           return;
         }
         if (!event.target.matches('#lot-browser-sort')) return;
@@ -7733,8 +7748,10 @@
           '<label for="lot-browser-sort">Sort by <select id="lot-browser-sort">' +
           '<option value="name">Name (A–Z)</option>' +
           '<option value="amount">Contribution (highest first)</option>' +
-          '</select></label></div><div class="lot-browser-rows"></div>';
+          '</select></label><small class="proposal-email-status" aria-live="polite"></small></div>' +
+          '<div class="lot-browser-rows"></div>';
       }
+      if (!activeProposal()?.notifyChanges) detailsBox.querySelector('.proposal-email-status').textContent = '';
       detailsBox.querySelector('.lot-browser-header h2').textContent =
         `Lots & other contributors (${entries.length})`;
       detailsBox.querySelector('#lot-browser-sort').value = lotBrowserSort;
@@ -7751,7 +7768,7 @@
         if (!isFullSet()) return row;
         // Funding Proposal: a checkbox per contributor decides whether it is charged.
         const toggle = entry.payerKey
-          ? `<input type="checkbox" class="funding-toggle" data-payer="${escapeHtml(entry.payerKey)}"${paying ? ' checked' : ''} aria-label="Charge ${escapeHtml(entry.name)}">`
+          ? `<input type="checkbox" class="funding-toggle" data-payer="${escapeHtml(entry.payerKey)}" data-contributor="${escapeHtml(`${entry.name} (${entry.note})`)}"${paying ? ' checked' : ''} aria-label="Charge ${escapeHtml(entry.name)}">`
           : '';
         return `<div class="funding-row${paying ? '' : ' unchecked'}"><label class="funding-check">${toggle}</label>${row}</div>`;
       }).join('');
@@ -8002,7 +8019,8 @@
     // A Funding Proposal view. Each contributor ("lot:<lot ID>" or "business:<name>") starts
     // checked or unchecked per checkedByDefault; the keys toggled away from that default are saved
     // in this browser's local storage under storageKey.
-    function createFundingProposal(label, storageKey, checkedByDefault) {
+    // With notifyChanges, each checkbox change asks for the visitor's name and emails it.
+    function createFundingProposal(label, storageKey, checkedByDefault, notifyChanges = false) {
       const featureNames = new Map(lotFeatures.map(feature => [feature.id, feature.properties.name]));
       const sourceNames = new Map(geojson.features.map(feature => [feature.id, feature.properties.name]));
       const counted = new Set();
@@ -8034,6 +8052,7 @@
       })());
       const state = {
         label,
+        notifyChanges,
         included: key => toggled.has(key) !== checkedByDefault,
         setIncluded(key, paying) {
           if (paying === checkedByDefault) toggled.delete(key);
@@ -8080,10 +8099,36 @@
     }
     const fundingProposals = new Map([
       ['Funding Proposal', createFundingProposal('Funding Proposal', 'akumal-funding-proposal-unchecked', true)],
-      ['Funding Proposal 2', createFundingProposal('Funding Proposal 2', 'akumal-funding-proposal-2-checked', false)]
+      ['Funding Proposal 2', createFundingProposal('Funding Proposal 2', 'akumal-funding-proposal-2-checked', false, true)]
     ]);
     // The Funding Proposal view on screen, or undefined in other views.
     const activeProposal = () => fundingProposals.get(selectedContributionSet);
+    // Checkbox changes in a notifying proposal are emailed through the Apps Script web app in
+    // apps_script/proposal_email (deployed from the HMB Sargassum account). The name entered is
+    // remembered in this browser to prefill the next prompt.
+    const proposalEmailUrl = document.querySelector('meta[name="proposal-email-url"]').content;
+    const proposalNameStorageKey = 'akumal-funding-proposal-name';
+    async function emailProposalChange(name, contributor, paying) {
+      const status = detailsBox?.querySelector('.proposal-email-status');
+      const show = message => { if (status) status.textContent = message; };
+      if (!proposalEmailUrl) { show('Change saved, but not emailed: email notifications are not set up yet.'); return; }
+      show('Emailing change…');
+      try {
+        const response = await fetch(proposalEmailUrl, {
+          method: 'POST',
+          headers: { 'Content-Type': 'text/plain;charset=utf-8' },
+          body: JSON.stringify({
+            proposal: activeProposal()?.label || 'Funding Proposal 2', name, contributor,
+            status: paying ? 'checked' : 'unchecked', page: location.href
+          })
+        });
+        const result = await response.json();
+        show(result.ok ? `Change emailed: ${contributor} ${paying ? 'checked' : 'unchecked'}.` :
+          `Change saved, but not emailed: ${result.error}.`);
+      } catch (_error) {
+        show('Change saved, but not emailed: could not reach the email service.');
+      }
+    }
     // Toggle a contributor in the current Funding Proposal and redraw with the recomputed shares.
     function setFundingProposalPayer(key, paying) {
       const proposal = activeProposal();
