@@ -7849,7 +7849,9 @@
         const southEast = map.latLngToLayerPoint(bounds.getSouthEast());
         const width = Math.max(1, southEast.x - northWest.x);
         const height = Math.max(1, southEast.y - northWest.y);
-        const amount = donation ? currency.format(donation.amount) + (donation.shared ? '*' : '') : '';
+        // Unchecked Funding Proposal contributors are not charged, so their lots show no amount.
+        const charged = donation && !(isFullSet() && !activeProposal().included(donation.payerKey));
+        const amount = charged ? currency.format(donation.amount) + (donation.shared ? '*' : '') : '';
         const name = sharedNames.get(nameKey(layer.feature)) || donation?.name || '';
         const wrappedName = name ? splitLotName(name) : null;
         const candidates = name ? [
@@ -8152,8 +8154,9 @@
           const shortfall = fullParticipationBudget - proposal.flatTotal - proposal.lotTotal;
           fundingBox.innerHTML = `<h2>${escapeHtml(proposal.label)}</h2>` +
             '<small>Fees System 3 · USD · share per checked lot</small>' +
+            // A type with no checked lots has no share; its formula rate would only mislead.
             proposal.categories.map(({ label, count, each }) =>
-              contributorRow(`${label} (${count})`, currency.format(each))).join('') +
+              contributorRow(`${label} (${count})`, count ? currency.format(each) : '—')).join('') +
             contributorRow('Lot shares', currency.format(proposal.lotTotal)) +
             contributorRow('Business flat contributions', currency.format(proposal.flatTotal)) +
             (shortfall > 0 ? contributorRow('Shortfall (no lots checked)', currency.format(shortfall),
