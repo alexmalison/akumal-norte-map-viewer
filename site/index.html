@@ -8156,7 +8156,7 @@
             '<small>Fees System 3 · USD · share per checked lot</small>' +
             // A type with no checked lots has no share; its formula rate would only mislead.
             proposal.categories.map(({ label, count, each }) =>
-              contributorRow(`${label} (${count})`, count ? currency.format(each) : '')).join('') +
+              contributorRow(`${label} (${count})`, count ? currency.format(each) : 'undefined')).join('') +
             contributorRow('Lot shares', currency.format(proposal.lotTotal)) +
             contributorRow('Business flat contributions', currency.format(proposal.flatTotal)) +
             (shortfall > 0 ? contributorRow('Shortfall (no lots checked)', currency.format(shortfall),
