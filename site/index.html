@@ -7544,7 +7544,7 @@
         (isLot && canEdit ? `<form class="edit-lot-name" data-lot-id="${escapeHtml(feature.id)}"><input aria-label="Shared lot name" maxlength="120" value="${escapeHtml(sharedName || '')}" placeholder="Shared lot name"><button type="submit">Save name</button><button type="button" class="clear-lot-name">Clear name</button><small class="edit-lot-status" aria-live="polite"></small></form>` : ''));
       layer.setTooltipContent(isLot
         ? `${escapeHtml(id || p.name)} · ${escapeHtml(sharedName || detail?.name || p.name)}` +
-          (detail ? ` · ${currency.format(detail.amount)} ${is2026Set() ? 'paid' : isFullSet() ? 'share' : 'donated'}` : '')
+          (detail ? ` · ${currency.format(detail.amount)}` : '')
         : escapeHtml(p.name));
     }
     function bindFeature(feature, layer) {
