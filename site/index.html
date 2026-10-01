@@ -46,6 +46,7 @@
     .contributor span:last-child { white-space: nowrap; }
     .legend .contributor-total { margin: 4px 0 -9px; padding: 4px 0 9px; border-top: 1px solid #c9d2da; background: #fff; font-weight: 700; }
     .contributors p { margin: 0; }
+    .fees-header { margin-top: 4px; border-bottom: 1px solid #c9d2da; font-weight: 700; }
     .swatch { display: inline-block; width: 13px; height: 13px; border: 1px solid #697785; }
     .lot-label { display: flex; flex-direction: column; align-items: center; justify-content: center; overflow: hidden; pointer-events: none; color: #17222c; font-weight: 700; line-height: 1.05; white-space: nowrap; text-shadow: -1px -1px 1px #fff, 1px -1px 1px #fff, -1px 1px 1px #fff, 1px 1px 1px #fff; }
     /* A light backing keeps names and amounts readable on the dark green fills. */
@@ -7733,15 +7734,17 @@
     function renderLotBrowser() {
       if (!detailsBox || detailsBox.hidden) return;
       const otherContributions = contributors || [];
-      // Akumal Villas is both an Other contributor and a mapped lot; list it once.
+      // A business that is both an Other contributor and a mapped lot is listed once, on its lot.
       const mappedOtherNames = new Set();
       const entries = [...lotLayers.values()].map(layer => {
         const feature = layer.feature;
         const detail = donations.get(feature.id);
-        const mappedOther = (is2026Set() || isFullSet()) && otherMapped2026Ids.has(feature.id);
-        if (mappedOther && detail) mappedOtherNames.add(detail.name);
+        const mappedOther = isFullSet() ? businessLots.has(feature.id) :
+          is2026Set() && otherMapped2026Ids.has(feature.id);
+        const otherName = detail?.business || detail?.name;
+        if (mappedOther && detail) mappedOtherNames.add(otherName);
         const otherAmount = mappedOther
-          ? otherContributions.find(([name]) => name === detail?.name)?.[1] : undefined;
+          ? otherContributions.find(([name]) => name === otherName)?.[1] : undefined;
         const code = lotId(feature.properties.name);
         return {
           layer,
@@ -8017,17 +8020,22 @@
       { place: 'Waterfront', land: 0.1, building: 0.1 },
       { place: 'HIZ', land: 0.1, building: 1 }
     ];
-    // Fees System 3 flat contributions, as [name, USD], largest first. They come off the budget
-    // before the lot shares are computed. Akumal Villas also has a map lot (H88), which shows its
-    // flat contribution instead of a lot share.
+    // Fees System 3 business contributions, as [name, USD], largest first. They come off the budget
+    // before the lot shares are computed.
     const businessFlatContributions = [
       ['Akumal Direct', 12000],
-      ['Akumal Vacations', 10000],
       ['Aventuras Cancun', 10000],
+      ['Aventuras Maya', 10000],
       ['Akumal Villas', 5000],
       ['Buy Playa Real Estate Advisors', 5000],
       ['La Lunita', 5000]
     ];
+    // Businesses that also have a map lot, by feature ID. The lot shows the business contribution
+    // instead of being charged a lot share.
+    const businessLots = new Map([
+      ['1325BEB9E270A761', 'Akumal Villas'], // H88
+      ['132595DF97276B8E', 'Aventuras Maya'] // H08, "Adventuras Mayas" on the map
+    ]);
     // Lots covered by a map lot ID: F33-35 is 3 lots, F10 and 11 is 2, G36-41A is 6.
     function lotCount(id) {
       const [start, end] = id.split(/\s*(?:-|and)\s*/).map(part => parseInt(part.replace(/^[A-Z]/i, ''), 10));
@@ -8067,8 +8075,9 @@
       rows.forEach(row => { if (row.shared) rows.find(other => other.sourceCode === row.sourceCode).shared = true; });
       const flat = new Map(businessFlatContributions);
       rows.forEach(row => {
-        row.payerKey = flat.has(row.name) ? `business:${row.name}` : `lot:${row.sourceCode}`;
-        row.baseCategory = flat.has(row.name) ? 'Business flat contribution' : row.category;
+        row.business = businessLots.get(row.id);
+        row.payerKey = row.business ? `business:${row.business}` : `lot:${row.sourceCode}`;
+        row.baseCategory = row.business ? 'Business contribution' : row.category;
       });
       const toggled = new Set((() => {
         try { return JSON.parse(localStorage.getItem(storageKey)) || []; } catch (_error) { return []; }
@@ -8099,14 +8108,14 @@
         state.flatTotal = activeFlat.reduce((sum, [, amount]) => sum + amount, 0);
         state.contributors = businessFlatContributions.map(([name, amount]) =>
           [name, included(`business:${name}`) ? amount : 0]);
-        const charged = rows.filter(row => !flat.has(row.name) && included(row.payerKey) &&
+        const charged = rows.filter(row => !row.business && included(row.payerKey) &&
           (!row.shared || rows.find(other => other.sourceCode === row.sourceCode) === row));
         const totalWeight = charged.reduce((sum, row) => sum + row.weight, 0);
         state.lotTotal = totalWeight ? fullParticipationBudget - state.flatTotal : 0;
         const unit = totalWeight ? state.lotTotal / totalWeight : 0;
         rows.forEach(row => {
           const paying = included(row.payerKey);
-          row.amount = !paying ? 0 : flat.has(row.name) ? flat.get(row.name) :
+          row.amount = !paying ? 0 : row.business ? flat.get(row.business) :
             Math.round(row.weight * unit * 100) / 100;
           row.category = row.baseCategory + (paying ? '' : ' · unchecked, not charged');
         });
@@ -8213,24 +8222,27 @@
       if (full) {
         const proposal = activeProposal();
         if (contributorsBox) {
-          contributorsBox.innerHTML = '<h2>Business Flat Contributions</h2>' +
+          contributorsBox.innerHTML = '<h2>Business Contributions</h2>' +
             proposal.contributors.map(([name, amount]) =>
               contributorRow(name, amount ? currency.format(amount) : 'Unchecked')).join('') +
             contributorRow('Total', currency.format(proposal.flatTotal), 'contributor contributor-total');
         }
         if (fundingBox) {
           const shortfall = fullParticipationBudget - proposal.flatTotal - proposal.lotTotal;
-          fundingBox.innerHTML = `<h2>${escapeHtml(proposal.label)}</h2>` +
-            '<small>Fees System 3 · USD · share per checked lot</small>' +
+          // Annual amounts with the monthly equivalent in parentheses before them.
+          const fee = annual => `(${currency.format(annual / 12)}) ${currency.format(annual)}`;
+          fundingBox.innerHTML = '<h2>Fees</h2>' +
+            `<small>${escapeHtml(proposal.label)} · Fees System 3 · USD · share per checked lot</small>` +
+            contributorRow('Prop Type', 'Annual (monthly)', 'contributor fees-header') +
             // A type with no checked lots has no share; its formula rate would only mislead.
             proposal.categories.map(({ label, count, each }) =>
-              contributorRow(`${label} (${count})`, count ? currency.format(each) : 'undefined')).join('') +
-            contributorRow('Lot shares', currency.format(proposal.lotTotal)) +
-            contributorRow('Business flat contributions', currency.format(proposal.flatTotal)) +
-            (shortfall > 0 ? contributorRow('Shortfall (no lots checked)', currency.format(shortfall),
+              contributorRow(`${label} (${count})`, count ? fee(each) : 'undefined')).join('') +
+            contributorRow('Lot shares', fee(proposal.lotTotal)) +
+            contributorRow('Business contributions', fee(proposal.flatTotal)) +
+            (shortfall > 0 ? contributorRow('Shortfall (no lots checked)', fee(shortfall),
               'contributor contributor-total funding-deficit') : '') +
-            contributorRow('Budget', currency.format(fullParticipationBudget), 'contributor contributor-total') +
-            '<small>Business flat contributions come off the budget first. Checked lots share the rest; check or uncheck a contributor in Browse lots &amp; contributors to recompute. Shares are per lot number (F33-35 is 3 lots). Only HIZ buildings pay the full building fee; others pay 10%.</small>';
+            contributorRow('Budget', fee(fullParticipationBudget), 'contributor contributor-total') +
+            '<small>Business contributions come off the budget first. Checked lots share the rest; check or uncheck a contributor in Browse lots &amp; contributors to recompute. Shares are per lot number (F33-35 is 3 lots). Only HIZ buildings pay the full building fee; others pay 10%.</small>';
         }
         return;
       }
