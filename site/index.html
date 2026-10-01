@@ -48,6 +48,8 @@
     .contributors p { margin: 0; }
     .swatch { display: inline-block; width: 13px; height: 13px; border: 1px solid #697785; }
     .lot-label { display: flex; flex-direction: column; align-items: center; justify-content: center; overflow: hidden; pointer-events: none; color: #17222c; font-weight: 700; line-height: 1.05; white-space: nowrap; text-shadow: -1px -1px 1px #fff, 1px -1px 1px #fff, -1px 1px 1px #fff, 1px 1px 1px #fff; }
+    /* A light backing keeps names and amounts readable on the dark green fills. */
+    .lot-label span { padding: 0 2px; border-radius: 2px; background: rgba(255,255,255,.78); }
     .lot-label .lot-name { font-size: .9em; }
     .lot-label .donation-amount { font-size: .9em; }
     .lot-browser { display: flex; flex-direction: column; align-items: flex-start; gap: 6px; }
@@ -7483,15 +7485,32 @@
       const amount = donations.get(feature.id)?.amount;
       const contributed = amount > 0;
       return {
-        color: contributed ? '#22c55e' : '#b91c1c',
-        weight: contributed ? 2.25 : 1.5,
+        color: contributed ? '#166534' : '#b91c1c',
+        weight: 1.5,
         opacity: 0.95,
-        fillColor: contributed ? feature.properties.style_color : '#ef4444',
-        fillOpacity: !contributed ? 0.5 :
-          feature.properties.style_color === '#000000' ? 0.04 : 0.30,
+        fillColor: contributed ? lotShade(amount) : '#ef4444',
+        fillOpacity: contributed ? 0.8 : 0.5,
         // Dashed outlines mark lots divided from a range shape; their boundaries are approximate.
         dashArray: feature.properties.parentId ? '5 4' : null
       };
+    }
+    // Green fill on a logarithmic scale of a lot's amount: the view's smallest positive amount is
+    // lightest and its largest is darkest, so each doubling darkens the shade by the same step.
+    // The scale resets whenever the view's amounts change.
+    const shadeLight = [220, 252, 231], shadeDark = [20, 83, 45];
+    let shadeRange = null;
+    function lotShade(amount) {
+      if (!shadeRange) {
+        const positive = [...donations.values()].map(entry => entry.amount).filter(value => value > 0);
+        shadeRange = { min: Math.min(...positive), max: Math.max(...positive) };
+      }
+      const { min, max } = shadeRange;
+      const t = max > min ? Math.min(1, Math.max(0, Math.log(amount / min) / Math.log(max / min))) : 1;
+      return `rgb(${shadeLight.map((light, i) => Math.round(light + (shadeDark[i] - light) * t)).join(',')})`;
+    }
+    function restyleLots() {
+      shadeRange = null;
+      lots.eachLayer(layer => layer.setStyle(lotStyle(layer.feature)));
     }
     const lots = L.geoJSON(null, {
       style: lotStyle,
@@ -7918,8 +7937,12 @@
         '<label><input type="checkbox" id="show-legend"> Show Legend</label>';
       box.appendChild(document.getElementById('map-tools'));
       box.querySelector('#show-legend').addEventListener('change', event => {
-        if (event.target.checked) legend.addTo(map);
-        else legend.remove();
+        if (event.target.checked) {
+          legend.addTo(map);
+          showDonationStatus(dataRefreshed);
+        } else {
+          legend.remove();
+        }
       });
       L.DomEvent.disableClickPropagation(box);
       box.querySelector('#show-lot-numbers').addEventListener('change', event => {
@@ -8135,7 +8158,7 @@
       if (!proposal) return;
       proposal.setIncluded(key, paying);
       contributors = proposal.contributors;
-      lots.eachLayer(layer => layer.setStyle(lotStyle(layer.feature)));
+      restyleLots();
       refreshLotDisplays();
       renderContributors();
     }
@@ -8157,7 +8180,7 @@
       }
       refreshButton.hidden = !liveDonationsUrl || is2026Set() || isPendingSet() || isFullSet();
       contributorsToggle.getContainer().hidden = isPendingSet();
-      lots.eachLayer(layer => layer.setStyle(lotStyle(layer.feature)));
+      restyleLots();
       refreshLotDisplays();
       showDonationStatus(dataRefreshed);
       renderContributors();
@@ -8291,11 +8314,8 @@
     const legend = L.control({position: 'bottomright'});
     legend.onAdd = () => {
       const box = L.DomUtil.create('div', 'legend');
-      box.innerHTML = '<div><span class="swatch" style="background:#F4EB37"></span>Yellow · Vecinos member</div>' +
-        '<div><span class="swatch" style="background:#F8971B"></span>Orange · Vecinos member owned</div>' +
-        '<div><span class="swatch" style="background:transparent;border:3px solid #22c55e"></span>Green outline · contributed</div>' +
-        '<div><span class="swatch" style="background:#ef4444"></span>Red lot · no contribution or pending</div>' +
-        '<div><span class="swatch" style="background:#000000"></span>Black · no category stated</div>' +
+      box.innerHTML = '<div><span class="swatch" style="width:40px;background:linear-gradient(to right,rgb(220,252,231),rgb(20,83,45))"></span>Green lot · amount, log scale (darker = higher)</div>' +
+        '<div><span class="swatch" style="background:#ef4444"></span>Red lot · no amount or pending</div>' +
         '<div><span class="swatch" style="background:#93D7E8"></span>Blue · M&amp;M region</div>' +
         '<div><span class="swatch" style="background:#DB4436"></span>Red · Etapa I / impact line</div>' +
         '<div><span class="swatch" style="background:#EE9C96"></span>Pink · approximate regions</div>' +
