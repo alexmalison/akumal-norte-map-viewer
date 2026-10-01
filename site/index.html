@@ -47,6 +47,8 @@
     .legend .contributor-total { margin: 4px 0 -9px; padding: 4px 0 9px; border-top: 1px solid #c9d2da; background: #fff; font-weight: 700; }
     .contributors p { margin: 0; }
     .fees-header { margin-top: 4px; border-bottom: 1px solid #c9d2da; font-weight: 700; }
+    /* Divides the per-type lot fees from the totals below them. */
+    .fees-totals { margin-top: 4px; padding-top: 4px; border-top: 1px solid #c9d2da; }
     .swatch { display: inline-block; width: 13px; height: 13px; border: 1px solid #697785; }
     .lot-label { display: flex; flex-direction: column; align-items: center; justify-content: center; overflow: hidden; pointer-events: none; color: #17222c; font-weight: 700; line-height: 1.05; white-space: nowrap; text-shadow: -1px -1px 1px #fff, 1px -1px 1px #fff, -1px 1px 1px #fff, 1px 1px 1px #fff; }
     /* A light backing keeps names and amounts readable on the dark green fills. */
@@ -8229,15 +8231,15 @@
         }
         if (fundingBox) {
           const shortfall = fullParticipationBudget - proposal.flatTotal - proposal.lotTotal;
-          // Annual amounts with the monthly equivalent in parentheses before them.
-          const fee = annual => `(${currency.format(annual / 12)}) ${currency.format(annual)}`;
+          // Annual amounts with the monthly equivalent in parentheses after them.
+          const fee = annual => `${currency.format(annual)} (${currency.format(annual / 12)})`;
           fundingBox.innerHTML = '<h2>Fees</h2>' +
             `<small>${escapeHtml(proposal.label)} · Fees System 3 · USD · share per checked lot</small>` +
             contributorRow('Prop Type', 'Annual (monthly)', 'contributor fees-header') +
             // A type with no checked lots has no share; its formula rate would only mislead.
             proposal.categories.map(({ label, count, each }) =>
               contributorRow(`${label} (${count})`, count ? fee(each) : 'undefined')).join('') +
-            contributorRow('Lot shares', fee(proposal.lotTotal)) +
+            contributorRow('Lot shares', fee(proposal.lotTotal), 'contributor fees-totals') +
             contributorRow('Business contributions', fee(proposal.flatTotal)) +
             (shortfall > 0 ? contributorRow('Shortfall (no lots checked)', fee(shortfall),
               'contributor contributor-total funding-deficit') : '') +
