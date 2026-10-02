@@ -46,6 +46,8 @@
     .contributor span:last-child { white-space: nowrap; }
     .legend .contributor-total { margin: 4px 0 -9px; padding: 4px 0 9px; border-top: 1px solid #c9d2da; background: #fff; font-weight: 700; }
     .contributors p { margin: 0; }
+    .budget-edit { padding: 0; border: 0; border-bottom: 1px dashed currentColor; background: none; color: inherit; font: inherit; cursor: pointer; }
+    .budget-edit:hover, .budget-edit:focus-visible { color: #166534; }
     .fees-header { margin-top: 4px; border-bottom: 1px solid #c9d2da; font-weight: 700; }
     /* Divides the per-type lot fees from the totals below them. */
     .fees-totals { margin-top: 4px; padding-top: 4px; border-top: 1px solid #c9d2da; }
@@ -8016,7 +8018,19 @@
     const pesosPerUsd = 18;
     // Stakeholders "Fees" tab, Fees System 3: a land fee plus a reference building fee. Only HIZ
     // buildings pay the full building fee; every other building pays 10% of it.
-    const fullParticipationBudget = 300000;
+    // The Funding Proposal budget (USD), shared by both proposals. Clicking the Budget amount in
+    // the Fees box asks for budgetPassword, then for a new figure, which is saved in this
+    // browser's local storage. The password only keeps casual visitors from changing it: it is
+    // visible in the page source.
+    const defaultBudget = 400000;
+    const budgetStorageKey = 'akumal-funding-proposal-budget';
+    const budgetPassword = '0001';
+    let fullParticipationBudget = (() => {
+      try {
+        const saved = Number(localStorage.getItem(budgetStorageKey));
+        return saved > 0 ? saved : defaultBudget;
+      } catch (_error) { return defaultBudget; }
+    })();
     const feesSystem3 = [
       { place: 'Interior', land: 0.05, building: 0.1 },
       { place: 'Waterfront', land: 0.1, building: 0.1 },
@@ -8163,6 +8177,30 @@
         show('Change saved, but not emailed: could not reach the email service.');
       }
     }
+    // Ask for the password, then a new budget; recompute both proposals and redraw.
+    // A correct password unlocks editing until this browser tab is closed.
+    function editFundingBudget() {
+      let unlocked = false;
+      try { unlocked = sessionStorage.getItem(budgetStorageKey + '-unlocked') === '1'; } catch (_error) { /* Ask. */ }
+      if (!unlocked) {
+        const password = window.prompt('Password to change the budget:');
+        if (password === null) return;
+        if (password !== budgetPassword) { window.alert('Incorrect password. The budget was not changed.'); return; }
+        try { sessionStorage.setItem(budgetStorageKey + '-unlocked', '1'); } catch (_error) { /* Ask again next time. */ }
+      }
+      const entered = window.prompt('New annual budget (USD):', String(fullParticipationBudget));
+      if (entered === null) return;
+      const budget = Number(entered.replace(/[$,\s]/g, ''));
+      if (!Number.isFinite(budget) || budget <= 0) { window.alert('Enter a budget greater than zero, such as 400000.'); return; }
+      fullParticipationBudget = Math.round(budget * 100) / 100;
+      try { localStorage.setItem(budgetStorageKey, String(fullParticipationBudget)); } catch (_error) { /* Lasts until reload. */ }
+      fundingProposals.forEach(proposal => proposal.recompute());
+      if (!isFullSet()) return;
+      contributors = activeProposal().contributors;
+      restyleLots();
+      refreshLotDisplays();
+      renderContributors();
+    }
     // Toggle a contributor in the current Funding Proposal and redraw with the recomputed shares.
     function setFundingProposalPayer(key, paying) {
       const proposal = activeProposal();
@@ -8243,7 +8281,8 @@
             contributorRow('Business contributions', fee(proposal.flatTotal)) +
             (shortfall > 0 ? contributorRow('Shortfall (no lots checked)', fee(shortfall),
               'contributor contributor-total funding-deficit') : '') +
-            contributorRow('Budget', fee(fullParticipationBudget), 'contributor contributor-total') +
+            '<div class="contributor contributor-total"><span>Budget</span>' +
+              `<button type="button" class="budget-edit" title="Change the budget (password required)">${escapeHtml(fee(fullParticipationBudget))}</button></div>` +
             '<small>Business contributions come off the budget first. Checked lots share the rest; check or uncheck a contributor in Browse lots &amp; contributors to recompute. Shares are per lot number (F33-35 is 3 lots). Only HIZ buildings pay the full building fee; others pay 10%.</small>';
         }
         return;
@@ -8318,6 +8357,9 @@
     fundingControl.onAdd = () => {
       fundingBox = L.DomUtil.create('section', 'legend contributors collapsible funding-box');
       L.DomEvent.disableClickPropagation(fundingBox);
+      fundingBox.addEventListener('click', event => {
+        if (event.target.closest('.budget-edit')) editFundingBudget();
+      });
       renderContributors();
       return fundingBox;
     };
