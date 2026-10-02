@@ -8037,22 +8037,14 @@
       { place: 'Waterfront', land: 0.1, building: 0.1 },
       { place: 'HIZ', land: 0.1, building: 1 }
     ];
-    // Fees System 3 business contributions, as [name, USD], largest first. They come off the budget
+    // Fees System 3 business contributions, as [name, USD]. They come off the budget
     // before the lot shares are computed.
     const businessFlatContributions = [
-      ['Akumal Direct', 12000],
-      ['Aventuras Cancun', 10000],
-      ['Aventuras Maya', 10000],
-      ['Akumal Villas', 5000],
-      ['Buy Playa Real Estate Advisors', 5000],
-      ['La Lunita', 5000]
+      ['Business Contributors', 60000]
     ];
     // Businesses that also have a map lot, by feature ID. The lot shows the business contribution
-    // instead of being charged a lot share.
-    const businessLots = new Map([
-      ['1325BEB9E270A761', 'Akumal Villas'], // H88
-      ['132595DF97276B8E', 'Aventuras Maya'] // H08, "Adventuras Mayas" on the map
-    ]);
+    // instead of being charged a lot share. Currently none: every mapped lot pays a lot share.
+    const businessLots = new Map();
     // Lots covered by a map lot ID: F33-35 is 3 lots, F10 and 11 is 2, G36-41A is 6.
     function lotCount(id) {
       const [start, end] = id.split(/\s*(?:-|and)\s*/).map(part => parseInt(part.replace(/^[A-Z]/i, ''), 10));
@@ -8113,7 +8105,7 @@
         },
         donations: new Map(rows.map(entry => [entry.id, entry])),
         ownerSummary: null,
-        dataRefreshed: 'Stakeholders Fees tab, September 29, 2026',
+        dataRefreshed: 'Stakeholders Fees tab, October 2, 2026',
         donationDataReady: true,
         donationPlaceholder: ''
       };
