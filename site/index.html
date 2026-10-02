@@ -34,6 +34,7 @@
     .legend { background: rgba(255,255,255,.96); padding: 9px 12px; border-radius: 4px; box-shadow: 0 1px 5px #0003; }
     .legend div { display: flex; gap: 6px; align-items: center; margin: 2px 0; }
     .display-options label { display: flex; gap: 6px; align-items: center; margin: 2px 0; cursor: pointer; }
+    .display-options label.inactive { color: #9ca3af; cursor: not-allowed; }
     .display-options h2 { margin: 0 0 4px; font-size: 14px; text-align: center; }
     .display-options h3 { margin: 8px 0 2px; font-size: 13px; }
     .leaflet-top.leaflet-left { width: min(310px, calc(100vw - 60px)); max-height: calc(100% - 76px); overflow-x: hidden; overflow-y: auto; overscroll-behavior: contain; -webkit-overflow-scrolling: touch; touch-action: pan-y; pointer-events: auto; padding-right: 5px; }
@@ -7969,12 +7970,12 @@
     const contributionSets = L.control({ position: 'topright' });
     contributionSets.onAdd = () => {
       const box = L.DomUtil.create('div', 'legend display-options collapsible');
-      const option = (label, checked = false) =>
-        `<label><input type="radio" name="contribution-set" value="${escapeHtml(label)}"${checked ? ' checked' : ''}> ${escapeHtml(label)}</label>`;
+      const option = (label, checked = false, disabled = false) =>
+        `<label${disabled ? ' class="inactive"' : ''}><input type="radio" name="contribution-set" value="${escapeHtml(label)}"${checked ? ' checked' : ''}${disabled ? ' disabled' : ''}> ${escapeHtml(label)}</label>`;
       box.innerHTML = '<h2>Map Views</h2>' + option('Barrier Purchase', true) +
         '<h3>Barrier Operations</h3>' +
-        ['2023 Contributions', '2024 Contributions', '2025 Contributions'].map(label => option(label)).join('') +
-        '<h3>Barrier and Beach Operations</h3>' + option('2026 Contributions') + option('Funding Proposal') + option('Funding Proposal 2');
+        ['2023 Contributions', '2024 Contributions', '2025 Contributions'].map(label => option(label, false, true)).join('') +
+        '<h3>Barrier and Beach Operations</h3>' + option('2026 Contributions') + option('Funding Proposal') + option('Funding Proposal 2', false, true);
       L.DomEvent.disableClickPropagation(box);
       box.addEventListener('change', event => {
         if (!event.target.matches('input[name="contribution-set"]')) return;
