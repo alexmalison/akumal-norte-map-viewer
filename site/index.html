@@ -49,6 +49,23 @@
     .contributors p { margin: 0; }
     .budget-edit { padding: 0; border: 0; border-bottom: 1px dashed currentColor; background: none; color: inherit; font: inherit; cursor: pointer; }
     .budget-edit:hover, .budget-edit:focus-visible { color: #166534; }
+    .fees-edit-link { padding: 0; border: 0; background: none; color: #245c83; font: 400 11px/1.4 system-ui, sans-serif; text-decoration: underline; cursor: pointer; }
+    .fees-edit-link:hover, .fees-edit-link:focus-visible { color: #166534; }
+    .fees-editor { width: min(580px, calc(100vw - 32px)); max-height: min(80vh, 760px); padding: 20px; border: 1px solid #aebdc9; border-radius: 8px; color: #17222c; background: #fff; box-shadow: 0 12px 36px #0004; }
+    .fees-editor::backdrop { background: #10232a99; }
+    .fees-editor h2 { margin: 0 0 6px; }
+    .fees-editor p { margin: 0 0 14px; color: #536372; }
+    .fees-editor-fields { display: grid; gap: 8px; }
+    .fees-editor-row { display: grid; grid-template-columns: minmax(0, 1fr) 105px 105px; align-items: center; gap: 10px; padding-bottom: 8px; border-bottom: 1px solid #e3e8ed; }
+    .fees-editor-row > span { font-weight: 600; }
+    .fees-editor-row label { display: grid; gap: 2px; color: #536372; font-size: 11px; }
+    .fees-editor-fields input { width: 100%; padding: 6px; font: inherit; }
+    .fees-editor-actions { display: flex; justify-content: flex-end; gap: 8px; margin-top: 16px; }
+    .fees-editor-actions button { padding: 7px 12px; font: inherit; cursor: pointer; }
+    @media (max-width: 520px) {
+      .fees-editor-row { grid-template-columns: 1fr 1fr; }
+      .fees-editor-row > span { grid-column: 1 / -1; }
+    }
     .fees-header { margin-top: 4px; border-bottom: 1px solid #c9d2da; font-weight: 700; }
     /* Divides the per-type lot fees from the totals below them. */
     .fees-totals { margin-top: 4px; padding-top: 4px; border-top: 1px solid #c9d2da; }
@@ -119,6 +136,14 @@
   <header><h1 id="page-title" aria-live="polite">Barrier Purchase</h1><p>HMB Sargassum Mitigation Project</p></header>
   <details id="map-tools" class="map-tools"><summary>Map data &amp; editing</summary><span id="data-status">157 lots · 9 region features</span><span id="sync-status" aria-live="polite">Loading shared names…</span><button id="refresh-donations" type="button" hidden>Refresh donations</button><button id="editor-button" type="button" hidden>Editor sign in</button><form id="editor-form" hidden><input id="editor-email" type="email" aria-label="Editor email" placeholder="Editor email" required><button type="submit">Send link</button></form></details>
   <div id="map" role="application" aria-label="Interactive map of Akumal Norte lots and regions"></div>
+  <dialog id="fees-editor" class="fees-editor" aria-labelledby="fees-editor-title">
+    <form id="fees-editor-form">
+      <h2 id="fees-editor-title">Edit Fees</h2>
+      <p>Reference % sets each property type's share. Participation % scales its expected contributing lots; yearly amounts adjust so participating lots meet the budget. Changes are saved in this browser.</p>
+      <div id="fees-editor-fields" class="fees-editor-fields"></div>
+      <div class="fees-editor-actions"><button type="button" id="fees-editor-cancel">Cancel</button><button type="submit">Save</button></div>
+    </form>
+  </dialog>
   <script type="application/json" id="map-data">{
   "type": "FeatureCollection",
   "name": "2025 Mapa de Lotes de Akumal Norte",
@@ -8035,13 +8060,26 @@
     // tab's Lot Type Classification titles. Zones: 0 interior, 1 waterfront off the bay, 2 bay
     // High Impact Zone, 3 bay Low Impact Zone (the bay is the crescent from F24 round to H29).
     const feesSystem3 = [
-      { building: 0.1, lot: 0.05, buildingLabel: 'Interior Building', lotLabel: 'Interior Empty Lot' },
-      { building: 0.1, lot: 0.05, buildingLabel: 'Waterfront Building', lotLabel: 'Waterfront Empty Lot' },
-      { building: 1, lot: 0.1, buildingLabel: 'Bay Building High Impact Zone', lotLabel: 'Bay Lot High Impact Zone' },
-      { building: 0.2, lot: 0.05, buildingLabel: 'Bay Building Low Impact Zone', lotLabel: 'Bay Lot Low Impact Zone' }
+      { building: 0.1, lot: 0.05, buildingParticipation: 1, lotParticipation: 1, buildingLabel: 'Interior Building', lotLabel: 'Interior Empty Lot' },
+      { building: 0.1, lot: 0.05, buildingParticipation: 1, lotParticipation: 1, buildingLabel: 'Waterfront Building', lotLabel: 'Waterfront Empty Lot' },
+      { building: 1, lot: 0.1, buildingParticipation: 1, lotParticipation: 1, buildingLabel: 'Bay Building High Impact Zone', lotLabel: 'Bay Lot High Impact Zone' },
+      { building: 0.2, lot: 0.05, buildingParticipation: 1, lotParticipation: 1, buildingLabel: 'Bay Building Low Impact Zone', lotLabel: 'Bay Lot Low Impact Zone' }
     ];
+    const feesSystem3StorageKey = 'akumal-funding-proposal-fees-system-3';
+    try {
+      const saved = JSON.parse(localStorage.getItem(feesSystem3StorageKey));
+      const keys = ['building', 'lot', 'buildingParticipation', 'lotParticipation'];
+      if (Array.isArray(saved) && saved.length === feesSystem3.length && saved.every(entry =>
+        keys.every(key => typeof entry?.[key] === 'number' && Number.isFinite(entry[key]) &&
+          entry[key] >= 0 && (key.endsWith('Participation') ? entry[key] <= 1 : entry[key] <= 10))) &&
+          saved.some(entry => entry.building * entry.buildingParticipation > 0 ||
+            entry.lot * entry.lotParticipation > 0)) {
+        saved.forEach((entry, zone) => keys.forEach(key => { feesSystem3[zone][key] = entry[key]; }));
+      }
+    } catch (_error) { /* Use Fees tab defaults. */ }
     // Order of the Fees box rows, as in the Fees tab.
     const feesSystem3Order = [2, 3, 1, 0];
+    const percent = new Intl.NumberFormat('en-US', { style: 'percent', maximumFractionDigits: 2 });
     // Fees System 3 business contributions, as [name, USD]. They come off the budget
     // before the lot shares are computed.
     const businessFlatContributions = [
@@ -8118,27 +8156,48 @@
       // share what remains of the budget by Fees System 3 weight.
       state.recompute = () => {
         const { included } = state;
+        const participation = row => {
+          const fees = feesSystem3[row.zone];
+          return row.built ? fees.buildingParticipation : fees.lotParticipation;
+        };
+        rows.forEach(row => {
+          if (!row.business) {
+            const fees = feesSystem3[row.zone];
+            row.weight = row.lots * (row.built ? fees.building : fees.lot);
+          }
+        });
         const activeFlat = businessFlatContributions.filter(([name]) => included(`business:${name}`));
         state.flatTotal = activeFlat.reduce((sum, [, amount]) => sum + amount, 0);
         state.contributors = businessFlatContributions.map(([name, amount]) =>
           [name, included(`business:${name}`) ? amount : 0]);
         const charged = rows.filter(row => !row.business && included(row.payerKey) &&
           (!row.shared || rows.find(other => other.sourceCode === row.sourceCode) === row));
-        const totalWeight = charged.reduce((sum, row) => sum + row.weight, 0);
-        state.lotTotal = totalWeight ? fullParticipationBudget - state.flatTotal : 0;
-        const unit = totalWeight ? state.lotTotal / totalWeight : 0;
+        const participatingWeight = charged.reduce((sum, row) =>
+          sum + row.weight * participation(row), 0);
+        state.lotTotal = participatingWeight ? fullParticipationBudget - state.flatTotal : 0;
+        const unit = participatingWeight ? state.lotTotal / participatingWeight : 0;
         rows.forEach(row => {
           const paying = included(row.payerKey);
           row.amount = !paying ? 0 : row.business ? flat.get(row.business) :
-            Math.round(row.weight * unit * 100) / 100;
-          row.category = row.baseCategory + (paying ? '' : ' · unchecked, not charged');
+            Math.round(row.weight * unit * participation(row) * 100) / 100;
+          row.category = row.baseCategory + (paying && !row.business && participation(row) < 1
+            ? ` · ${percent.format(participation(row))} participation` : '') +
+            (paying ? '' : ' · unchecked, not charged');
         });
-        state.categories = feesSystem3Order.flatMap(zone => [true, false].map(built => ({
-          label: built ? feesSystem3[zone].buildingLabel : feesSystem3[zone].lotLabel,
-          count: charged.filter(row => row.zone === zone && row.built === built)
-            .reduce((sum, row) => sum + row.lots, 0),
-          each: (built ? feesSystem3[zone].building : feesSystem3[zone].lot) * unit
-        })));
+        state.categories = feesSystem3Order.flatMap(zone => [true, false].map(built => {
+          const fees = feesSystem3[zone];
+          const reference = built ? fees.building : fees.lot;
+          const count = charged.filter(row => row.zone === zone && row.built === built)
+            .reduce((sum, row) => sum + row.lots, 0);
+          const each = reference * unit;
+          const participation = built ? fees.buildingParticipation : fees.lotParticipation;
+          return {
+            zone, built,
+            label: built ? fees.buildingLabel : fees.lotLabel,
+            reference, participation, count, each,
+            total: count * participation * Math.round(each)
+          };
+        }));
       };
       state.recompute();
       return state;
@@ -8149,6 +8208,63 @@
     ]);
     // The Funding Proposal view on screen, or undefined in other views.
     const activeProposal = () => fundingProposals.get(selectedContributionSet);
+    const feesEditor = document.getElementById('fees-editor');
+    const feesEditorForm = document.getElementById('fees-editor-form');
+    const feesEditorFields = document.getElementById('fees-editor-fields');
+    function openFeesEditor() {
+      const password = window.prompt('Password to edit fees:');
+      if (password === null) return;
+      if (password !== budgetPassword) { window.alert('Incorrect password. Fees were not changed.'); return; }
+      feesEditorFields.innerHTML = feesSystem3Order.flatMap(zone => [true, false].map(built => {
+        const fees = feesSystem3[zone];
+        const name = built ? 'building' : 'lot';
+        const label = built ? fees.buildingLabel : fees.lotLabel;
+        const field = (key, title, max) =>
+          `<label>${title}<input type="number" min="0" max="${max}" step="any" required` +
+            ` data-zone="${zone}" data-key="${key}" value="${Number((fees[key] * 100).toFixed(4))}"></label>`;
+        return `<div class="fees-editor-row"><span>${escapeHtml(label)}</span>` +
+          field(name, 'Reference %', 1000) +
+          field(`${name}Participation`, 'Participation %', 100) + '</div>';
+      })).join('');
+      feesEditor.showModal();
+      feesEditorFields.querySelector('input')?.focus();
+    }
+    document.getElementById('fees-editor-cancel').addEventListener('click', () => feesEditor.close());
+    feesEditorForm.addEventListener('submit', event => {
+      event.preventDefault();
+      const keys = ['building', 'lot', 'buildingParticipation', 'lotParticipation'];
+      const next = feesSystem3.map(fees => Object.fromEntries(keys.map(key => [key, fees[key]])));
+      for (const input of feesEditorFields.querySelectorAll('input')) {
+        const value = Number(input.value);
+        if (input.value.trim() === '' || !Number.isFinite(value) || value < 0 ||
+            value > (input.dataset.key.endsWith('Participation') ? 100 : 1000)) {
+          input.setCustomValidity('Enter a valid percentage.');
+          input.reportValidity();
+          input.setCustomValidity('');
+          return;
+        }
+        next[Number(input.dataset.zone)][input.dataset.key] = value / 100;
+      }
+      const categories = activeProposal().categories;
+      if (categories.some(category => category.count > 0) && !categories.some(({ zone, built, count }) => {
+        const fees = next[zone];
+        return count > 0 && (built ? fees.building : fees.lot) > 0 &&
+          (built ? fees.buildingParticipation : fees.lotParticipation) > 0;
+      })) {
+        window.alert('At least one checked lot needs a positive Reference % and Participation % to meet the budget.');
+        return;
+      }
+      next.forEach((entry, zone) => keys.forEach(key => { feesSystem3[zone][key] = entry[key]; }));
+      try { localStorage.setItem(feesSystem3StorageKey, JSON.stringify(next)); } catch (_error) { /* Lasts until reload. */ }
+      feesEditor.close();
+      fundingProposals.forEach(proposal => proposal.recompute());
+      if (isFullSet()) {
+        contributors = activeProposal().contributors;
+        restyleLots();
+        refreshLotDisplays();
+        renderContributors();
+      }
+    });
     // Checkbox changes in a notifying proposal are emailed through the Apps Script web app in
     // apps_script/proposal_email (deployed from the HMB Sargassum account). The name entered is
     // remembered in this browser to prefill the next prompt.
@@ -8269,19 +8385,20 @@
           const shortfall = fullParticipationBudget - proposal.flatTotal - proposal.lotTotal;
           // Annual amounts with the monthly equivalent in parentheses after them.
           const fee = annual => `${currency.format(annual)} (${currency.format(annual / 12)})`;
-          fundingBox.innerHTML = '<h2>Fees</h2>' +
-            `<small>${escapeHtml(proposal.label)} · Fees System 3 · USD · share per checked lot</small>` +
+          fundingBox.innerHTML = '<h2>Fees <button type="button" class="fees-edit-link" title="Edit Fees percentages (password required)">(edit)</button></h2>' +
+            `<small>${escapeHtml(proposal.label)} · Fees System 3 · USD · annual share per participating lot</small>` +
             contributorRow('Prop Type', 'Annual (monthly)', 'contributor fees-header') +
             // A type with no checked lots has no share; its formula rate would only mislead.
-            proposal.categories.map(({ label, count, each }) =>
-              contributorRow(`${label} (${count})`, count ? fee(each) : 'undefined')).join('') +
+            proposal.categories.map(({ label, reference, participation, count, each, total }) =>
+              contributorRow(`${label} (${percent.format(reference)}, ${count}, ${percent.format(participation)} participation, ${currency.format(total)})`,
+                count ? fee(each) : 'undefined')).join('') +
             contributorRow('Lot shares', fee(proposal.lotTotal), 'contributor fees-totals') +
             contributorRow('Business contributions', fee(proposal.flatTotal)) +
-            (shortfall > 0 ? contributorRow('Shortfall (no lots checked)', fee(shortfall),
+            (shortfall > 0 ? contributorRow('Shortfall', fee(shortfall),
               'contributor contributor-total funding-deficit') : '') +
             '<div class="contributor contributor-total"><span>Budget</span>' +
               `<button type="button" class="budget-edit" title="Change the budget (password required)">${escapeHtml(fee(fullParticipationBudget))}</button></div>` +
-            '<small>Business contributions come off the budget first. Checked lots share the rest; check or uncheck a contributor in Browse lots &amp; contributors to recompute. Shares are per lot number (F33-35 is 3 lots), at the Fees System 3 rates in the Fees tab: a Bay High Impact Zone building pays 1, a Bay Low Impact Zone building 0.2, Bay High Impact empty lots 0.1, other buildings 0.1 and other empty lots 0.05.</small>';
+            '<small>Business contributions come off the budget first. Checked lots and Participation % set the annual shares so projected contributions meet the remaining budget. Check or uncheck a contributor in Browse lots &amp; contributors to recompute. Shares are per lot number (F33-35 is 3 lots). Per-type totals multiply the displayed rounded annual share by checked lots and Participation %.</small>';
         }
         return;
       }
@@ -8356,6 +8473,7 @@
       fundingBox = L.DomUtil.create('section', 'legend contributors collapsible funding-box');
       L.DomEvent.disableClickPropagation(fundingBox);
       fundingBox.addEventListener('click', event => {
+        if (event.target.closest('.fees-edit-link')) openFeesEditor();
         if (event.target.closest('.budget-edit')) editFundingBudget();
       });
       renderContributors();
