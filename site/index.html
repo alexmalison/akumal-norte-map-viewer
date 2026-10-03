@@ -139,7 +139,7 @@
   <dialog id="fees-editor" class="fees-editor" aria-labelledby="fees-editor-title">
     <form id="fees-editor-form">
       <h2 id="fees-editor-title">Edit Fees</h2>
-      <p>Reference % sets each property type's share. Participation % scales its expected contributing lots; yearly amounts adjust so participating lots meet the budget. Changes are saved in this browser.</p>
+      <p>Reference % sets each property type's share. Participation % is the share of each type's lots expected to pay; checking or unchecking a lot in Browse lots &amp; contributors sets its type's Participation % to the share of that type's lots checked. Yearly amounts adjust so participating lots meet the budget. Changes are saved in this browser.</p>
       <div id="fees-editor-fields" class="fees-editor-fields"></div>
       <div class="fees-editor-actions"><button type="button" id="fees-editor-cancel">Cancel</button><button type="submit">Save</button></div>
     </form>
@@ -8170,31 +8170,37 @@
         state.flatTotal = activeFlat.reduce((sum, [, amount]) => sum + amount, 0);
         state.contributors = businessFlatContributions.map(([name, amount]) =>
           [name, included(`business:${name}`) ? amount : 0]);
-        const charged = rows.filter(row => !row.business && included(row.payerKey) &&
+        // Every lot that could pay a share (one per lot drawn twice), and the checked ones that do.
+        const eligible = rows.filter(row => !row.business &&
           (!row.shared || rows.find(other => other.sourceCode === row.sourceCode) === row));
-        const participatingWeight = charged.reduce((sum, row) =>
+        const charged = eligible.filter(row => included(row.payerKey));
+        state.eligible = eligible;
+        state.charged = charged;
+        // Participation % is the share of each type's lots expected to pay, so the per-lot share is
+        // set by all of a type's lots times its Participation %, and each checked lot pays it in full.
+        const participatingWeight = eligible.reduce((sum, row) =>
           sum + row.weight * participation(row), 0);
-        state.lotTotal = participatingWeight ? fullParticipationBudget - state.flatTotal : 0;
-        const unit = participatingWeight ? state.lotTotal / participatingWeight : 0;
+        state.lotTotal = participatingWeight && charged.length ? fullParticipationBudget - state.flatTotal : 0;
+        const unit = state.lotTotal ? state.lotTotal / participatingWeight : 0;
         rows.forEach(row => {
           const paying = included(row.payerKey);
           row.amount = !paying ? 0 : row.business ? flat.get(row.business) :
-            Math.round(row.weight * unit * participation(row) * 100) / 100;
-          row.category = row.baseCategory + (paying && !row.business && participation(row) < 1
-            ? ` · ${percent.format(participation(row))} participation` : '') +
-            (paying ? '' : ' · unchecked, not charged');
+            Math.round(row.weight * unit * 100) / 100;
+          row.category = row.baseCategory + (paying ? '' : ' · unchecked, not charged');
         });
+        const lotsOf = (list, zone, built) => list.filter(row => row.zone === zone && row.built === built)
+          .reduce((sum, row) => sum + row.lots, 0);
         state.categories = feesSystem3Order.flatMap(zone => [true, false].map(built => {
           const fees = feesSystem3[zone];
           const reference = built ? fees.building : fees.lot;
-          const count = charged.filter(row => row.zone === zone && row.built === built)
-            .reduce((sum, row) => sum + row.lots, 0);
+          const count = lotsOf(eligible, zone, built);
+          const checked = lotsOf(charged, zone, built);
           const each = reference * unit;
           const participation = built ? fees.buildingParticipation : fees.lotParticipation;
           return {
             zone, built,
             label: built ? fees.buildingLabel : fees.lotLabel,
-            reference, participation, count, each,
+            reference, participation, count, checked, each,
             total: count * participation * Math.round(each)
           };
         }));
@@ -8246,9 +8252,9 @@
         next[Number(input.dataset.zone)][input.dataset.key] = value / 100;
       }
       const categories = activeProposal().categories;
-      if (categories.some(category => category.count > 0) && !categories.some(({ zone, built, count }) => {
+      if (categories.some(category => category.checked > 0) && !categories.some(({ zone, built, checked }) => {
         const fees = next[zone];
-        return count > 0 && (built ? fees.building : fees.lot) > 0 &&
+        return checked > 0 && (built ? fees.building : fees.lot) > 0 &&
           (built ? fees.buildingParticipation : fees.lotParticipation) > 0;
       })) {
         window.alert('At least one checked lot needs a positive Reference % and Participation % to meet the budget.');
@@ -8320,6 +8326,22 @@
       const proposal = activeProposal();
       if (!proposal) return;
       proposal.setIncluded(key, paying);
+      // Set the toggled lot's property type Participation % to the share of its lots now checked,
+      // save it like an Edit Fees change, and recompute every proposal from it.
+      const lot = proposal.eligible.find(row => row.payerKey === key);
+      if (lot) {
+        const sameType = row => row.zone === lot.zone && row.built === lot.built;
+        const lots = list => list.filter(sameType).reduce((sum, row) => sum + row.lots, 0);
+        const share = lots(proposal.charged) / lots(proposal.eligible);
+        feesSystem3[lot.zone][lot.built ? 'buildingParticipation' : 'lotParticipation'] = share;
+        try {
+          localStorage.setItem(feesSystem3StorageKey, JSON.stringify(feesSystem3.map(fees => ({
+            building: fees.building, lot: fees.lot,
+            buildingParticipation: fees.buildingParticipation, lotParticipation: fees.lotParticipation
+          }))));
+        } catch (_error) { /* Lasts until reload. */ }
+        fundingProposals.forEach(each => each.recompute());
+      }
       contributors = proposal.contributors;
       restyleLots();
       refreshLotDisplays();
@@ -8385,10 +8407,10 @@
           const shortfall = fullParticipationBudget - proposal.flatTotal - proposal.lotTotal;
           // Annual amounts with the monthly equivalent in parentheses after them.
           const fee = annual => `${currency.format(annual)} (${currency.format(annual / 12)})`;
-          const feeTypeRow = ({ label, reference, participation, count, each, total }) => {
+          const feeTypeRow = ({ label, reference, participation, count, checked, each, total }) => {
             const details = `${percent.format(reference)}, ${count}, ${percent.format(participation)} participation, ${currency.format(total)}`;
             return `<div class="contributor"><span><strong>${escapeHtml(label)}</strong> (${escapeHtml(details)})</span>` +
-              `<span>${count ? `<strong>${escapeHtml(fee(each))}</strong>` : 'undefined'}</span></div>`;
+              `<span>${checked ? `<strong>${escapeHtml(fee(each))}</strong>` : 'undefined'}</span></div>`;
           };
           fundingBox.innerHTML = '<h2>Fees <button type="button" class="fees-edit-link" title="Edit Fees percentages (password required)">(edit)</button></h2>' +
             `<small>${escapeHtml(proposal.label)} · Fees System 3 · USD · annual share per participating lot</small>` +
@@ -8401,7 +8423,7 @@
               'contributor contributor-total funding-deficit') : '') +
             '<div class="contributor contributor-total"><span>Budget</span>' +
               `<button type="button" class="budget-edit" title="Change the budget (password required)">${escapeHtml(fee(fullParticipationBudget))}</button></div>` +
-            '<small>Business contributions come off the budget first. Checked lots and Participation % set the annual shares so projected contributions meet the remaining budget. Check or uncheck a contributor in Browse lots &amp; contributors to recompute. Shares are per lot number (F33-35 is 3 lots). Per-type totals multiply the displayed rounded annual share by checked lots and Participation %.</small>';
+            '<small>Business contributions come off the budget first. Checked lots and Participation % set the annual shares so projected contributions meet the remaining budget. Check or uncheck a contributor in Browse lots &amp; contributors to recompute. Shares are per lot number (F33-35 is 3 lots). Checking or unchecking a lot sets its type&#39;s Participation % to the share of that type&#39;s lots checked. Per-type totals multiply the displayed rounded annual share by the type&#39;s lots and Participation %.</small>';
         }
         return;
       }
