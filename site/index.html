@@ -8057,13 +8057,13 @@
     })();
     // Fees tab "Fees System 3" rates by zone, relative to one Bay High Impact Zone building. Each
     // lot pays its zone's building rate if built, otherwise its empty-lot rate; the labels are the
-    // tab's Lot Type Classification titles. Zones: 0 interior, 1 waterfront off the bay, 2 bay
+    // tab's Lot Type Classification titles, with "Empty" added to bay lot display labels. Zones: 0 interior, 1 waterfront off the bay, 2 bay
     // High Impact Zone, 3 bay Low Impact Zone (the bay is the crescent from F24 round to H29).
     const feesSystem3 = [
       { building: 0.1, lot: 0.05, buildingParticipation: 1, lotParticipation: 1, buildingLabel: 'Interior Building', lotLabel: 'Interior Empty Lot' },
       { building: 0.1, lot: 0.05, buildingParticipation: 1, lotParticipation: 1, buildingLabel: 'Waterfront Building', lotLabel: 'Waterfront Empty Lot' },
-      { building: 1, lot: 0.1, buildingParticipation: 1, lotParticipation: 1, buildingLabel: 'Bay Building High Impact Zone', lotLabel: 'Bay Lot High Impact Zone' },
-      { building: 0.2, lot: 0.05, buildingParticipation: 1, lotParticipation: 1, buildingLabel: 'Bay Building Low Impact Zone', lotLabel: 'Bay Lot Low Impact Zone' }
+      { building: 1, lot: 0.1, buildingParticipation: 1, lotParticipation: 1, buildingLabel: 'Bay Building High Impact Zone', lotLabel: 'Bay Empty Lot High Impact Zone' },
+      { building: 0.2, lot: 0.05, buildingParticipation: 1, lotParticipation: 1, buildingLabel: 'Bay Building Low Impact Zone', lotLabel: 'Bay Empty Lot Low Impact Zone' }
     ];
     const feesSystem3StorageKey = 'akumal-funding-proposal-fees-system-3';
     try {
@@ -8385,13 +8385,16 @@
           const shortfall = fullParticipationBudget - proposal.flatTotal - proposal.lotTotal;
           // Annual amounts with the monthly equivalent in parentheses after them.
           const fee = annual => `${currency.format(annual)} (${currency.format(annual / 12)})`;
+          const feeTypeRow = ({ label, reference, participation, count, each, total }) => {
+            const details = `${percent.format(reference)}, ${count}, ${percent.format(participation)} participation, ${currency.format(total)}`;
+            return `<div class="contributor"><span><strong>${escapeHtml(label)}</strong> (${escapeHtml(details)})</span>` +
+              `<span>${count ? `<strong>${escapeHtml(fee(each))}</strong>` : 'undefined'}</span></div>`;
+          };
           fundingBox.innerHTML = '<h2>Fees <button type="button" class="fees-edit-link" title="Edit Fees percentages (password required)">(edit)</button></h2>' +
             `<small>${escapeHtml(proposal.label)} · Fees System 3 · USD · annual share per participating lot</small>` +
-            contributorRow('Prop Type', 'Annual (monthly)', 'contributor fees-header') +
+            contributorRow('Property Type', 'Annual (monthly)', 'contributor fees-header') +
             // A type with no checked lots has no share; its formula rate would only mislead.
-            proposal.categories.map(({ label, reference, participation, count, each, total }) =>
-              contributorRow(`${label} (${percent.format(reference)}, ${count}, ${percent.format(participation)} participation, ${currency.format(total)})`,
-                count ? fee(each) : 'undefined')).join('') +
+            proposal.categories.map(feeTypeRow).join('') +
             contributorRow('Lot shares', fee(proposal.lotTotal), 'contributor fees-totals') +
             contributorRow('Business contributions', fee(proposal.flatTotal)) +
             (shortfall > 0 ? contributorRow('Shortfall', fee(shortfall),
