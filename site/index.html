@@ -7718,6 +7718,8 @@
           const box = event.target;
           const key = box.dataset.payer;
           const paying = box.checked;
+          // Changing a checkbox needs the password; cancelling or a wrong entry leaves it as it was.
+          if (!unlockCheckboxes()) { box.checked = !paying; return; }
           let name;
           if (activeProposal()?.notifyChanges) {
             // Ask who is making the change first; cancelling leaves the checkbox as it was.
@@ -8296,6 +8298,17 @@
       } catch (_error) {
         show('Change saved, but not emailed: could not reach the email service.');
       }
+    }
+    // Ask for budgetPassword before the first Funding Proposal checkbox change; a correct entry
+    // unlocks the checkboxes until this browser tab is closed. Returns whether the change may go ahead.
+    function unlockCheckboxes() {
+      const key = 'akumal-funding-proposal-checkboxes-unlocked';
+      try { if (sessionStorage.getItem(key) === '1') return true; } catch (_error) { /* Ask. */ }
+      const password = window.prompt('Password to change contributor checkboxes:');
+      if (password === null) return false;
+      if (password !== budgetPassword) { window.alert('Incorrect password. The checkbox was not changed.'); return false; }
+      try { sessionStorage.setItem(key, '1'); } catch (_error) { /* Ask again next time. */ }
+      return true;
     }
     // Ask for the password, then a new budget; recompute both proposals and redraw.
     // A correct password unlocks editing until this browser tab is closed.
