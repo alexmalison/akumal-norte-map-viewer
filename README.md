@@ -32,6 +32,28 @@ The contributor and Funding boxes scroll together as one column, so the Funding 
 
 ## View the map
 
+### Honor-system proposal voting
+
+In **Funding Proposal**, each eligible lot popup has a **Vote on Funding Proposal** button that opens a ballot dialog: representative name, an acknowledgment that the person is authorized to vote for the lot/building, and Yes or No. There is no representative vetting, email requirement, or Google sign-in. One current vote is counted per existing fee-register lot key, including individual pieces of divided map ranges; duplicate drawings of that key share one vote. The latest submission replaces the current vote, and every earlier ballot remains in the private history. Anyone using the honor system can replace a lot's vote.
+
+**Show voting results** switches the map to green (Yes), red (No), and blue (no vote for the current proposal version). The panel shows lot counts, the last successful refresh time, and a Refresh button; results refresh automatically every 30 seconds while a proposal view is selected. Public results contain only lot keys and Yes/No values, with no representative names. A failed refresh retains the last loaded results with a warning. Until storage is connected, blue fills are explicitly labeled as placeholders, and submitting a ballot is disabled.
+
+With results shown, the Fees panel uses only Yes lots. Each type's Participation % becomes its actual Yes count divided by its total count, and the remaining budget is divided across Yes lots according to Fees System 3 weights. No and pending lots receive zero fees. The published $60,000 business contribution is deducted first; with no Yes lots, the remaining $340,000 of the default $400,000 budget is shown as a shortfall. Charges are projected fees rather than received payments. Cent rounding is allocated across participating lots so their totals equal the remaining budget exactly. Hiding results restores the existing checkbox/participation calculation and browser settings.
+
+Voting budget, reference rates, business contribution, and proposal version come from the storage endpoint, rather than browser-specific proposal edits. Keep these settings fixed while voting is open. To change a proposal, change its version; older ballots remain in history but are excluded from the new version's results. Funding Proposal 2 has a separate ballot namespace if that view is enabled later; it remains disabled in the current interface.
+
+The page remains static. Google is used for ballot storage through the Apps Script web app in `apps_script/voting`; representatives interact only with the map. The deployed endpoint is configured in `site/index.html`'s `voting-url` meta tag. Its public result feed was verified on October 5, 2026, and the user confirmed that a submitted ballot appeared in the Votes sheet. The connection is included in the local viewer and the deployable page. To set up or replace the storage deployment:
+
+1. Create a private Google Sheet for ballots. Create a separate Apps Script project and install `apps_script/voting/Code.gs` and its `appsscript.json` manifest.
+2. Set the script property **VOTING_SPREADSHEET_ID** to the Sheet ID. Review `PROPOSALS` in `Code.gs` (default budget $400,000, business contribution $60,000, version `2026-10-v1`). Run `initializeVotingSheet` once and authorize Sheet access. It creates the Votes tab and headers without removing existing ballots.
+3. Deploy as a web app, **Execute as: Me**, **Who has access: Anyone**. Keep the Sheet itself private. This endpoint intentionally accepts honor-system ballots without sign-in.
+4. Put the deployment's `/exec` URL into the `voting-url` meta tag in `site/index.html`. Reload and verify that results load. Submit a designated test ballot and verify that its row appears in the Sheet and its map lot changes color after refresh. Test replacing it with No, and check results from another browser before opening voting to representatives.
+5. Publish the updated page when ready. After future Apps Script changes, deploy a new version; saving the source alone does not update the web app.
+
+Storage uses Apps Script [Content Service](https://developers.google.com/apps-script/guides/content): a public read-only JSONP result feed and plain-text JSON POST ballots. Public result reads omit Google login cookies to avoid multi-account redirects. An unchanged result refresh updates the timestamp without rebuilding popups or ballots. The spreadsheet-only manifest requests no email scope, and voting sends no notifications. The lot allowlist in `Code.gs` must stay synchronized with the map's fee-register keys if that data changes.
+
+Run `node validation/voting.test.cjs` to check Yes-only fee allocation, status colors, duplicate drawings, exact cent totals, normal-view restoration, ballot validation, history retention, public result privacy, and proposal-version isolation without contacting Google.
+
 On Windows, run `./akumal-local-server.exe` from this directory, then open <http://127.0.0.1:8765/>. The server listens only on loopback by default. The viewer overlays the features on Esri satellite imagery and can switch to OpenStreetMap streets. Click any shape to see its source attributes; lot popups also show the recorded Detail name and donation total.
 
 On a system with Nix flakes enabled, run `nix run` to serve the same static site on <http://127.0.0.1:8765/>. Run `nix build` to create a deployable `result/index.html`, or `nix develop` for a shell with Python. The flake pins Nixpkgs to a specific commit.
