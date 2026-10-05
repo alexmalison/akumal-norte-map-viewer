@@ -39,6 +39,7 @@
     .display-options h2 { margin: 0 0 4px; font-size: 14px; text-align: center; }
     .display-options h3 { margin: 8px 0 2px; font-size: 13px; }
     .leaflet-top.leaflet-left { width: min(310px, calc(100vw - 60px)); max-height: calc(100% - 76px); overflow-x: hidden; overflow-y: auto; overscroll-behavior: contain; -webkit-overflow-scrolling: touch; touch-action: pan-y; pointer-events: auto; padding-right: 5px; }
+    .leaflet-top.leaflet-right { width: min(340px, calc(100vw - 20px)); max-height: calc(100% - 20px); overflow-x: hidden; overflow-y: auto; overscroll-behavior: contain; -webkit-overflow-scrolling: touch; touch-action: pan-y; pointer-events: auto; }
     .contributors { width: min(290px, calc(100vw - 80px)); }
     .contributors[hidden] { display: none !important; }
     .contributors h2 { margin: 0 0 4px; font-size: 14px; }
@@ -97,6 +98,8 @@
     .voting-panel[hidden] { display: none; }
     .voting-shortfall { display: block; margin-top: 6px; cursor: pointer; }
     .fee-shortfall { color: #b91c1c; font-weight: 700; }
+    .legend .voting-funding-summary { display: block; margin-top: 6px; padding-top: 4px; border-top: 1px solid #c9d2da; }
+    .voting-funding-summary small { display: block; }
     .voting-status { display: block; margin-top: 6px; font-size: 12px; }
     .vote-form { display: grid; gap: 8px; margin-top: 10px; padding-top: 8px; border-top: 1px solid #c9d2da; }
     .vote-form label { display: block; }
@@ -8141,6 +8144,21 @@
       const [start, end] = id.split(/\s*(?:-|and)\s*/).map(part => parseInt(part.replace(/^[A-Z]/i, ''), 10));
       return Number.isFinite(start) && Number.isFinite(end) ? Math.abs(end - start) + 1 : 1;
     }
+    // Allocate cents by fractional remainder so totals equal the budget exactly.
+    function allocateLotAmounts(rows, budget, weightOf = row => row.weight) {
+      const weight = rows.reduce((sum, row) => sum + weightOf(row), 0);
+      if (!weight) return new Map();
+      const totalCents = Math.round(budget * 100);
+      const allocation = rows.map(row => {
+        const exact = totalCents * weightOf(row) / weight;
+        return { key: row.payerKey, cents: Math.floor(exact), remainder: exact - Math.floor(exact) };
+      }).sort((a, b) => b.remainder - a.remainder || a.key.localeCompare(b.key));
+      let remaining = totalCents - allocation.reduce((sum, item) => sum + item.cents, 0);
+      return new Map(allocation.map(item => {
+        if (remaining > 0) { item.cents++; remaining--; }
+        return [item.key, item.cents / 100];
+      }));
+    }
     // Each entry is [feature ID, zone (0 interior, 1 waterfront, 2 HIZ), buildings, Stakeholders
     // code, shared, name]. Every lot in a map shape's lot ID range pays the per-lot share for its
     // zone: land plus building fee if the property is built, otherwise the land fee. A lot drawn
@@ -8230,6 +8248,16 @@
         const charged = eligible.filter(row => included(row.payerKey));
         state.eligible = eligible;
         state.charged = charged;
+        // The summary always reports support at published full-participation fees.
+        // Raising Yes fees in the alternative display must not inflate support so far.
+        const baselineAmounts = allocateLotAmounts(eligible, Math.max(0, settings.budget - settings.businessContribution),
+          row => row.lots * (row.built ? settings.rates[row.zone].building : settings.rates[row.zone].lot));
+        const votedCents = eligible.filter(row => voteFor(row.payerKey, label) === 'yes')
+          .reduce((sum, row) => sum + Math.round((baselineAmounts.get(row.payerKey) || 0) * 100), 0);
+        state.votingSummary = {
+          budget: settings.budget, votedFor: votedCents / 100, businessContribution: settings.businessContribution,
+          shortfall: Math.max(0, Math.round(settings.budget * 100) - Math.round(settings.businessContribution * 100) - votedCents) / 100
+        };
         // Participation % is the share of each type's lots expected to pay, so the per-lot share is
         // set by all of a type's lots times its Participation %, and each checked lot pays it in full.
         const allocationLots = votingShortfallVisible ? eligible : charged;
@@ -8238,21 +8266,8 @@
           : eligible.reduce((sum, row) => sum + row.weight * participation(row), 0);
         state.lotTotal = participatingWeight && charged.length ? Math.max(0, state.budget - state.flatTotal) : 0;
         const unit = state.lotTotal ? state.lotTotal / participatingWeight : 0;
-        const voteAmounts = new Map();
-        if (votingResultsVisible && participatingWeight > 0) {
-          // Shortfall uses all lots' baseline fees; otherwise Yes lots cover the whole remainder.
-          // Allocate cents by fractional remainder so the allocation equals the budget exactly.
-          const totalCents = Math.round(Math.max(0, state.budget - state.flatTotal) * 100);
-          const allocation = allocationLots.map(row => {
-            const exact = totalCents * row.weight / participatingWeight;
-            return { key: row.payerKey, cents: Math.floor(exact), remainder: exact - Math.floor(exact) };
-          }).sort((a, b) => b.remainder - a.remainder || a.key.localeCompare(b.key));
-          let remaining = totalCents - allocation.reduce((sum, item) => sum + item.cents, 0);
-          allocation.forEach(item => {
-            if (remaining > 0) { item.cents++; remaining--; }
-            voteAmounts.set(item.key, item.cents / 100);
-          });
-        }
+        const voteAmounts = !votingResultsVisible ? new Map() : votingShortfallVisible ? baselineAmounts :
+          allocateLotAmounts(charged, Math.max(0, state.budget - state.flatTotal));
         rows.forEach(row => {
           const paying = included(row.payerKey);
           row.amount = !paying ? 0 : row.business ? flat.get(row.business) :
@@ -8332,11 +8347,16 @@
       if (!isFullSet()) return;
       const counts = { yes: 0, no: 0, pending: 0 };
       activeProposal().eligible.forEach(row => { counts[voteFor(row.payerKey)]++; });
+      const summary = activeProposal().votingSummary;
       votingPanel.innerHTML = `<button type="button" class="voting-toggle" aria-pressed="${votingResultsVisible}">${votingResultsVisible ? 'Hide voting results' : 'Show voting results'}</button> ` +
         `<button type="button" class="voting-refresh"${!votingUrl || votingLoading ? ' disabled' : ''}>Refresh</button>` +
         (votingResultsVisible ? `<label class="voting-shortfall"><input type="checkbox" class="shortfall-toggle"${votingShortfallVisible ? ' checked' : ''}> Shortfall</label>` : '') +
         (votingResultsVisible ? '<div><span class="swatch" style="background:#16a34a"></span> Yes · <span class="swatch" style="background:#ef4444"></span> No · <span class="swatch" style="background:#3b82f6"></span> Pending vote</div>' +
-          (votingFeed ? `<div>Yes: ${counts.yes} · No: ${counts.no} · Pending: ${counts.pending}</div><small>Counts are voting lots; duplicate map drawings count once.</small>` : '') : '') +
+          (votingFeed ? `<div>Yes: ${counts.yes} · No: ${counts.no} · Pending: ${counts.pending}</div><small>Counts are voting lots; duplicate map drawings count once.</small>` : '') +
+          '<div class="voting-funding-summary">' + contributorRow('Budget', currency.format(summary.budget)) +
+          contributorRow('Voted for so far', votingFeed ? currency.format(summary.votedFor) : '—') +
+          contributorRow('Shortfall', votingFeed ? currency.format(summary.shortfall) : '—', 'contributor fee-shortfall') +
+          `<small>At published fees, plus ${escapeHtml(currency.format(summary.businessContribution))} fixed business contributions.</small></div>` : '') +
         `<small class="voting-status" role="status">${escapeHtml(!votingUrl ? 'Shared voting is not connected. Blue lots are placeholders; no live results are available.' :
           votingLoading ? 'Updating voting results…' : votingError || (votingFeed ? `Last updated ${new Date(votingFeed.generatedAt).toLocaleString()}. Auto-refresh every 30 seconds.` : 'Results not loaded.'))}</small>`;
     }
@@ -8787,6 +8807,11 @@
       return votingPanel;
     };
     votingControl.addTo(map);
+    // Keep the vote summary above the longer view/options boxes, with scrolling for smaller screens.
+    const rightColumn = votingPanel.parentElement;
+    rightColumn.insertBefore(votingPanel, contributionSets.getContainer());
+    L.DomEvent.disableScrollPropagation(rightColumn);
+    L.DomEvent.on(rightColumn, 'touchstart touchmove', L.DomEvent.stopPropagation);
     const contributorColumn = map.getContainer().querySelector('.leaflet-top.leaflet-left');
     L.DomEvent.disableScrollPropagation(contributorColumn);
     L.DomEvent.on(contributorColumn, 'touchstart touchmove', L.DomEvent.stopPropagation);
