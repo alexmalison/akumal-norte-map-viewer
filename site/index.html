@@ -95,6 +95,8 @@
     .voting-panel { max-width: min(310px, calc(100vw - 90px)); }
     .voting-panel button { padding: 8px 10px; font: inherit; cursor: pointer; }
     .voting-panel[hidden] { display: none; }
+    .voting-shortfall { display: block; margin-top: 6px; cursor: pointer; }
+    .fee-shortfall { color: #b91c1c; font-weight: 700; }
     .voting-status { display: block; margin-top: 6px; font-size: 12px; }
     .vote-form { display: grid; gap: 8px; margin-top: 10px; padding-top: 8px; border-top: 1px solid #c9d2da; }
     .vote-form label { display: block; }
@@ -7309,6 +7311,7 @@
     const isFullSet = () => selectedContributionSet.startsWith('Funding Proposal');
     const votingUrl = document.querySelector('meta[name="voting-url"]').content;
     let votingResultsVisible = false;
+    let votingShortfallVisible = true;
     let votingFeed = null;
     let votingLoading = false;
     let votingError = '';
@@ -8229,16 +8232,18 @@
         state.charged = charged;
         // Participation % is the share of each type's lots expected to pay, so the per-lot share is
         // set by all of a type's lots times its Participation %, and each checked lot pays it in full.
+        const allocationLots = votingShortfallVisible ? eligible : charged;
         const participatingWeight = votingResultsVisible
-          ? charged.reduce((sum, row) => sum + row.weight, 0)
+          ? allocationLots.reduce((sum, row) => sum + row.weight, 0)
           : eligible.reduce((sum, row) => sum + row.weight * participation(row), 0);
         state.lotTotal = participatingWeight && charged.length ? Math.max(0, state.budget - state.flatTotal) : 0;
         const unit = state.lotTotal ? state.lotTotal / participatingWeight : 0;
         const voteAmounts = new Map();
         if (votingResultsVisible && participatingWeight > 0) {
-          // Allocate the remaining cents by fractional remainder so the Yes shares add up exactly.
-          const totalCents = Math.round(state.lotTotal * 100);
-          const allocation = charged.map(row => {
+          // Shortfall uses all lots' baseline fees; otherwise Yes lots cover the whole remainder.
+          // Allocate cents by fractional remainder so the allocation equals the budget exactly.
+          const totalCents = Math.round(Math.max(0, state.budget - state.flatTotal) * 100);
+          const allocation = allocationLots.map(row => {
             const exact = totalCents * row.weight / participatingWeight;
             return { key: row.payerKey, cents: Math.floor(exact), remainder: exact - Math.floor(exact) };
           }).sort((a, b) => b.remainder - a.remainder || a.key.localeCompare(b.key));
@@ -8255,6 +8260,9 @@
           row.category = row.baseCategory + (votingResultsVisible
             ? ` · ${voteLabel(voteFor(row.payerKey, label))}` : paying ? '' : ' · unchecked, not charged');
         });
+        if (votingResultsVisible && votingShortfallVisible) {
+          state.lotTotal = charged.reduce((sum, row) => sum + Math.round(row.amount * 100), 0) / 100;
+        }
         const lotsOf = (list, zone, built) => list.filter(row => row.zone === zone && row.built === built)
           .reduce((sum, row) => sum + row.lots, 0);
         state.categories = feesSystem3Order.flatMap(zone => [true, false].map(built => {
@@ -8265,10 +8273,13 @@
           const each = reference * unit;
           const participation = votingResultsVisible ? (count ? checked / count : 0) :
             built ? fees.buildingParticipation : fees.lotParticipation;
+          const typeRows = eligible.filter(row => row.zone === zone && row.built === built);
+          const shortfall = votingResultsVisible && votingShortfallVisible ? typeRows.reduce((sum, row) =>
+            sum + Math.round((voteAmounts.get(row.payerKey) || 0) * 100) - Math.round(row.amount * 100), 0) / 100 : 0;
           return {
             zone, built,
             label: built ? fees.buildingLabel : fees.lotLabel,
-            reference, participation, count, checked, each,
+            reference, participation, count, checked, each, shortfall,
             total: votingResultsVisible ? charged.filter(row => row.zone === zone && row.built === built)
               .reduce((sum, row) => sum + row.amount, 0) : count * participation * Math.round(each)
           };
@@ -8323,6 +8334,7 @@
       activeProposal().eligible.forEach(row => { counts[voteFor(row.payerKey)]++; });
       votingPanel.innerHTML = `<button type="button" class="voting-toggle" aria-pressed="${votingResultsVisible}">${votingResultsVisible ? 'Hide voting results' : 'Show voting results'}</button> ` +
         `<button type="button" class="voting-refresh"${!votingUrl || votingLoading ? ' disabled' : ''}>Refresh</button>` +
+        (votingResultsVisible ? `<label class="voting-shortfall"><input type="checkbox" class="shortfall-toggle"${votingShortfallVisible ? ' checked' : ''}> Shortfall</label>` : '') +
         (votingResultsVisible ? '<div><span class="swatch" style="background:#16a34a"></span> Yes · <span class="swatch" style="background:#ef4444"></span> No · <span class="swatch" style="background:#3b82f6"></span> Pending vote</div>' +
           (votingFeed ? `<div>Yes: ${counts.yes} · No: ${counts.no} · Pending: ${counts.pending}</div><small>Counts are voting lots; duplicate map drawings count once.</small>` : '') : '') +
         `<small class="voting-status" role="status">${escapeHtml(!votingUrl ? 'Shared voting is not connected. Blue lots are placeholders; no live results are available.' :
@@ -8648,26 +8660,27 @@
             contributorRow('Total', currency.format(proposal.flatTotal), 'contributor contributor-total');
         }
         if (fundingBox) {
-          const shortfall = proposal.budget - proposal.flatTotal - proposal.lotTotal;
+          const shortfallMode = votingMode() && votingShortfallVisible;
+          const shortfall = Math.max(0, proposal.budget - proposal.flatTotal - proposal.lotTotal);
           // Annual amounts with the monthly equivalent in parentheses after them.
           const fee = annual => `${currency.format(annual)} (${currency.format(annual / 12)})`;
-          const feeTypeRow = ({ label, reference, participation, count, checked, each, total }) => {
+          const feeTypeRow = ({ label, reference, participation, count, checked, each, total, shortfall }) => {
             const details = `${percent.format(reference)}, ${votingMode() ? `${checked} Yes / ${count} lots` : count}, ${percent.format(participation)} participation, ${currency.format(total)}`;
             return `<div class="contributor"><span><strong>${escapeHtml(label)}</strong> (${escapeHtml(details)})</span>` +
-              `<span>${checked ? `<strong>${escapeHtml(fee(each))}</strong>` : votingMode() ? 'No Yes lots' : 'undefined'}</span></div>`;
+              `<span${shortfallMode ? ' class="fee-shortfall"' : ''}>${shortfallMode ? escapeHtml(fee(shortfall)) : checked ? `<strong>${escapeHtml(fee(each))}</strong>` : votingMode() ? 'No Yes lots' : 'undefined'}</span></div>`;
           };
           fundingBox.innerHTML = '<h2>Fees ' + (votingMode() ? '· Yes votes' : '<button type="button" class="fees-edit-link" title="Edit Fees percentages (password required)">(edit)</button>') + '</h2>' +
-            `<small>${escapeHtml(proposal.label)} · Fees System 3 · USD · annual share per participating lot</small>` +
-            contributorRow('Property Type', 'Annual (monthly)', 'contributor fees-header') +
+            `<small>${escapeHtml(proposal.label)} · Fees System 3 · USD · ${shortfallMode ? 'total annual shortfall per type (monthly equivalent)' : 'annual share per participating lot'}</small>` +
+            contributorRow('Property Type', shortfallMode ? 'Shortfall' : 'Annual (monthly)', 'contributor fees-header') +
             // A type with no checked lots has no share; its formula rate would only mislead.
             proposal.categories.map(feeTypeRow).join('') +
             contributorRow('Lot shares', fee(proposal.lotTotal), 'contributor fees-totals') +
             contributorRow('Business contributions', fee(proposal.flatTotal)) +
-            (shortfall > 0 ? contributorRow('Shortfall', fee(shortfall),
-              'contributor contributor-total funding-deficit') : '') +
             '<div class="contributor contributor-total"><span>Budget</span>' +
               (votingMode() ? `<span>${escapeHtml(fee(proposal.budget))}</span>` : `<button type="button" class="budget-edit" title="Change the budget (password required)">${escapeHtml(fee(proposal.budget))}</button>`) + '</div>' +
-            (votingMode() ? '<small>Only Yes lots share the remaining budget, weighted by property type. No and Pending lots pay $0 in this calculation. Participation is the actual Yes share of each type. The fixed business contribution is deducted first. Amounts are projected fees, not payments received. Published voting budget and rates apply; browser edits do not change them.</small>' : '<small>Business contributions come off the budget first. Checked lots and Participation % set the annual shares so projected contributions meet the remaining budget. Check or uncheck a contributor in Browse lots &amp; contributors to recompute. Shares are per lot number (F33-35 is 3 lots). Checking or unchecking a lot sets its type&#39;s Participation % to the share of that type&#39;s lots checked. Per-type totals multiply the displayed rounded annual share by the type&#39;s lots and Participation %.</small>');
+            (shortfallMode || shortfall > 0 ? contributorRow('Total shortfall', fee(shortfall),
+              'contributor contributor-total funding-deficit') : '') +
+            (shortfallMode ? '<small>Yes lots contribute their published full-participation fees. Red shortfalls are the fees missing from No and Pending lots, totaled by property type. The fixed business contribution is deducted first. Amounts are projected funding, not payments received. Uncheck Shortfall to calculate the higher fees required from Yes lots to cover the budget.</small>' : votingMode() ? '<small>Only Yes lots share the remaining budget, weighted by property type. No and Pending lots pay $0 in this calculation. Participation is the actual Yes share of each type. The fixed business contribution is deducted first. Amounts are projected fees, not payments received. Published voting budget and rates apply; browser edits do not change them.</small>' : '<small>Business contributions come off the budget first. Checked lots and Participation % set the annual shares so projected contributions meet the remaining budget. Check or uncheck a contributor in Browse lots &amp; contributors to recompute. Shares are per lot number (F33-35 is 3 lots). Checking or unchecking a lot sets its type&#39;s Participation % to the share of that type&#39;s lots checked. Per-type totals multiply the displayed rounded annual share by the type&#39;s lots and Participation %.</small>');
         }
         return;
       }
@@ -8763,6 +8776,12 @@
           votingPanel.querySelector('.voting-toggle').focus();
         }
         if (event.target.closest('.voting-refresh')) loadVotes();
+      });
+      votingPanel.addEventListener('change', event => {
+        if (!event.target.matches('.shortfall-toggle')) return;
+        votingShortfallVisible = event.target.checked;
+        redrawVoting();
+        votingPanel.querySelector('.shortfall-toggle').focus();
       });
       renderVotingPanel();
       return votingPanel;
