@@ -39,7 +39,7 @@
     .display-options h2 { margin: 0 0 4px; font-size: 14px; text-align: center; }
     .display-options h3 { margin: 8px 0 2px; font-size: 13px; }
     .leaflet-top.leaflet-left { width: min(310px, calc(100vw - 60px)); max-height: calc(100% - 76px); overflow-x: hidden; overflow-y: auto; overscroll-behavior: contain; -webkit-overflow-scrolling: touch; touch-action: pan-y; pointer-events: auto; padding-right: 5px; }
-    .leaflet-top.leaflet-right { width: min(340px, calc(100vw - 20px)); max-height: calc(100% - 20px); overflow-x: hidden; overflow-y: auto; overscroll-behavior: contain; -webkit-overflow-scrolling: touch; touch-action: pan-y; pointer-events: auto; }
+    .leaflet-top.leaflet-right { width: min(340px, calc(100vw - 20px)); max-height: calc(100% - 20px); overflow-x: hidden; overflow-y: auto; overscroll-behavior: contain; -webkit-overflow-scrolling: touch; }
     .contributors { width: min(290px, calc(100vw - 80px)); }
     .contributors[hidden] { display: none !important; }
     .contributors h2 { margin: 0 0 4px; font-size: 14px; }
@@ -96,6 +96,8 @@
     .voting-panel { max-width: min(310px, calc(100vw - 90px)); }
     .voting-panel button { padding: 8px 10px; font: inherit; cursor: pointer; }
     .voting-panel[hidden] { display: none; }
+    .voting-panel .voting-size-toggle, .voting-panel .voting-mobile-label { display: none; }
+    .legend .voting-details { display: block; }
     .voting-shortfall { display: block; margin-top: 6px; cursor: pointer; }
     .fee-shortfall { color: #b91c1c; font-weight: 700; }
     .legend .voting-funding-summary { display: block; margin-top: 6px; padding-top: 4px; border-top: 1px solid #c9d2da; }
@@ -129,6 +131,11 @@
       header p { font-size: 16px; }
       #map { min-height: 0; }
       .panel-toggle { display: block; }
+      .voting-panel { padding: 6px; }
+      .voting-panel .voting-size-toggle { display: inline-block; }
+      .voting-panel .voting-mobile-label { display: inline; }
+      .voting-panel .voting-desktop-label { display: none; }
+      .voting-panel.minimized .voting-details { display: none; }
       .panel-toggle button {
         display: block; padding: 9px 12px; font: inherit; font-weight: 600; color: #17222c;
         background: #fff; border: 2px solid rgba(0,0,0,.2); border-radius: 4px;
@@ -7314,6 +7321,7 @@
     const isFullSet = () => selectedContributionSet.startsWith('Funding Proposal');
     const votingUrl = document.querySelector('meta[name="voting-url"]').content;
     let votingResultsVisible = false;
+    let votingPanelMinimized = true;
     let votingShortfallVisible = true;
     let votingFeed = null;
     let votingLoading = false;
@@ -8348,7 +8356,11 @@
       const counts = { yes: 0, no: 0, pending: 0 };
       activeProposal().eligible.forEach(row => { counts[voteFor(row.payerKey)]++; });
       const summary = activeProposal().votingSummary;
-      votingPanel.innerHTML = `<button type="button" class="voting-toggle" aria-pressed="${votingResultsVisible}">${votingResultsVisible ? 'Hide voting results' : 'Show voting results'}</button> ` +
+      votingPanel.classList.toggle('minimized', votingPanelMinimized);
+      votingPanel.innerHTML = '<div class="voting-header">' +
+        `<button type="button" class="voting-toggle" aria-label="${votingResultsVisible ? 'Hide voting results' : 'Show voting results'}" aria-pressed="${votingResultsVisible}"><span class="voting-desktop-label">${votingResultsVisible ? 'Hide voting results' : 'Show voting results'}</span><span class="voting-mobile-label">${votingResultsVisible ? 'Hide votes' : 'Show votes'}</span></button>` +
+        `<button type="button" class="voting-size-toggle" aria-expanded="${!votingPanelMinimized}" aria-controls="voting-panel-details">${votingPanelMinimized ? 'Expand' : 'Minimize'}</button></div>` +
+        '<div id="voting-panel-details" class="voting-details">' +
         `<button type="button" class="voting-refresh"${!votingUrl || votingLoading ? ' disabled' : ''}>Refresh</button>` +
         (votingResultsVisible ? `<label class="voting-shortfall"><input type="checkbox" class="shortfall-toggle"${votingShortfallVisible ? ' checked' : ''}> Shortfall</label>` : '') +
         (votingResultsVisible ? '<div><span class="swatch" style="background:#16a34a"></span> Yes · <span class="swatch" style="background:#ef4444"></span> No · <span class="swatch" style="background:#3b82f6"></span> Pending vote</div>' +
@@ -8358,7 +8370,7 @@
           contributorRow('Shortfall', votingFeed ? currency.format(summary.shortfall) : '—', 'contributor fee-shortfall') +
           `<small>At published fees, plus ${escapeHtml(currency.format(summary.businessContribution))} fixed business contributions.</small></div>` : '') +
         `<small class="voting-status" role="status">${escapeHtml(!votingUrl ? 'Shared voting is not connected. Blue lots are placeholders; no live results are available.' :
-          votingLoading ? 'Updating voting results…' : votingError || (votingFeed ? `Last updated ${new Date(votingFeed.generatedAt).toLocaleString()}. Auto-refresh every 30 seconds.` : 'Results not loaded.'))}</small>`;
+          votingLoading ? 'Updating voting results…' : votingError || (votingFeed ? `Last updated ${new Date(votingFeed.generatedAt).toLocaleString()}. Auto-refresh every 30 seconds.` : 'Results not loaded.'))}</small></div>`;
     }
     function redrawVoting() {
       // Preserve a representative's unfinished ballot across a shared-results refresh.
@@ -8789,6 +8801,12 @@
       L.DomEvent.disableClickPropagation(votingPanel);
       L.DomEvent.disableScrollPropagation(votingPanel);
       votingPanel.addEventListener('click', event => {
+        if (event.target.closest('.voting-size-toggle')) {
+          votingPanelMinimized = !votingPanelMinimized;
+          renderVotingPanel();
+          votingPanel.querySelector('.voting-size-toggle').focus();
+          return;
+        }
         if (event.target.closest('.voting-toggle')) {
           votingResultsVisible = !votingResultsVisible;
           redrawVoting();
@@ -8811,7 +8829,6 @@
     const rightColumn = votingPanel.parentElement;
     rightColumn.insertBefore(votingPanel, contributionSets.getContainer());
     L.DomEvent.disableScrollPropagation(rightColumn);
-    L.DomEvent.on(rightColumn, 'touchstart touchmove', L.DomEvent.stopPropagation);
     const contributorColumn = map.getContainer().querySelector('.leaflet-top.leaflet-left');
     L.DomEvent.disableScrollPropagation(contributorColumn);
     L.DomEvent.on(contributorColumn, 'touchstart touchmove', L.DomEvent.stopPropagation);
