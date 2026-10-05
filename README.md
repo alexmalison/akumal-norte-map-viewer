@@ -4,6 +4,8 @@ An interactive local viewer and GeoJSON extraction of the [2025 Mapa de Lotes de
 
 Public viewer: <https://alexmalison.github.io/akumal-norte-map-viewer/>. Source repository: <https://github.com/alexmalison/akumal-norte-map-viewer>.
 
+The page opens in **Funding Proposal** by default. Other views remain available in Map Views.
+
 The extraction contains 157 lot features and 9 larger region features (165 polygons and one line). Each feature retains the map name, description, layer, feature ID, and style color. Coordinates are WGS84 longitude/latitude in GeoJSON order.
 
 ## Donation overlay

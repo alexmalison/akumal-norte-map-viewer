@@ -144,7 +144,7 @@
   </style>
 </head>
 <body>
-  <header><h1 id="page-title" aria-live="polite">Barrier Purchase</h1><p>HMB Sargassum Mitigation Project</p></header>
+  <header><h1 id="page-title" aria-live="polite">Funding Proposal</h1><p>HMB Sargassum Mitigation Project</p></header>
   <details id="map-tools" class="map-tools"><summary>Map data &amp; editing</summary><span id="data-status">157 lots · 9 region features</span><span id="sync-status" aria-live="polite">Loading shared names…</span><button id="refresh-donations" type="button" hidden>Refresh donations</button><button id="editor-button" type="button" hidden>Editor sign in</button><form id="editor-form" hidden><input id="editor-email" type="email" aria-label="Editor email" placeholder="Editor email" required><button type="submit">Send link</button></form></details>
   <div id="map" role="application" aria-label="Interactive map of Akumal Norte lots and regions"></div>
   <dialog id="voting-ballot" class="fees-editor" aria-labelledby="voting-ballot-title">
@@ -7301,6 +7301,7 @@
     const refreshButton = document.getElementById('refresh-donations');
     const geojson = JSON.parse(document.getElementById('map-data').textContent);
     const liveDonationsUrl = document.querySelector('meta[name="donation-feed-url"]').content;
+    // Start with purchase data while layers initialize; select Funding Proposal after setup.
     let selectedContributionSet = 'Barrier Purchase';
     const pendingContributionSets = new Set(['2023 Contributions', '2024 Contributions', '2025 Contributions']);
     const isPendingSet = () => pendingContributionSets.has(selectedContributionSet);
@@ -8041,10 +8042,10 @@
       const box = L.DomUtil.create('div', 'legend display-options collapsible');
       const option = (label, checked = false, disabled = false) =>
         `<label${disabled ? ' class="inactive"' : ''}><input type="radio" name="contribution-set" value="${escapeHtml(label)}"${checked ? ' checked' : ''}${disabled ? ' disabled' : ''}> ${escapeHtml(label)}</label>`;
-      box.innerHTML = '<h2>Map Views</h2>' + option('Barrier Purchase', true) +
+      box.innerHTML = '<h2>Map Views</h2>' + option('Barrier Purchase') +
         '<h3>Barrier Operations</h3>' +
         ['2023 Contributions', '2024 Contributions', '2025 Contributions'].map(label => option(label, false, true)).join('') +
-        '<h3>Barrier and Beach Operations</h3>' + option('2026 Contributions') + option('Funding Proposal') + option('Funding Proposal 2', false, true);
+        '<h3>Barrier and Beach Operations</h3>' + option('2026 Contributions') + option('Funding Proposal', true) + option('Funding Proposal 2', false, true);
       L.DomEvent.disableClickPropagation(box);
       box.addEventListener('change', event => {
         if (!event.target.matches('input[name="contribution-set"]')) return;
@@ -8878,10 +8879,9 @@
     overviewZoom = map.getZoom();
     map.setMinZoom(map.getZoom());
     map.setMaxBounds(map.getBounds().pad(0.15));
-    updateLotLabels();
+    selectContributionSet('Funding Proposal');
     void startSharedNames();
     loadLiveDonations();
-    loadVotes();
     setInterval(() => { if (isFullSet() && !voteSubmitting) loadVotes(); }, 30000);
   </script>
 </body>
