@@ -4486,8 +4486,9 @@
       "type": "Feature",
       "id": "134516FEF0697D61",
       "properties": {
-        "name": "Lot H44 - Casa Maya",
-        "description": "Casa Maya",
+        "name": "Lot H44 - Villa Azanik",
+        "description": "Villa Azanik",
+        "classification": "Bay Building Low Impact Zone",
         "layer": "Akumal Norte property Lots",
         "style_color": "#000000",
         "style_index": 0
@@ -4526,6 +4527,7 @@
       "properties": {
         "name": "Lot H45 - Casa Milah",
         "description": "Casa Milah",
+        "classification": "Bay Building Low Impact Zone",
         "layer": "Akumal Norte property Lots",
         "style_color": "#F4EB37",
         "style_index": 1

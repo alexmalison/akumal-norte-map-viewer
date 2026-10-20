@@ -4660,8 +4660,9 @@
       "type": "Feature",
       "id": "134516FEF0697D61",
       "properties": {
-        "name": "Lot H44 - Casa Maya",
-        "description": "Casa Maya",
+        "name": "Lot H44 - Villa Azanik",
+        "description": "Villa Azanik",
+        "classification": "Bay Building Low Impact Zone",
         "layer": "Akumal Norte property Lots",
         "style_color": "#000000",
         "style_index": 0
@@ -4700,6 +4701,7 @@
       "properties": {
         "name": "Lot H45 - Casa Milah",
         "description": "Casa Milah",
+        "classification": "Bay Building Low Impact Zone",
         "layer": "Akumal Norte property Lots",
         "style_color": "#F4EB37",
         "style_index": 1
@@ -6910,8 +6912,8 @@
     ["13451E8396D12D7E",0,"H40/41",1,"Casa Mayanah (fractional ownership)"],
     ["4ABA2A81B247B7C1",4675.14,"H42",1,"Nahil"],
     ["K31GYERMMUY412906380CCE36283",0,"H43",0,"Yool Canal"],
-    ["134516FEF0697D61",0,"H44",0,"Casa Maya"],
-    ["13452D6662367A88",0,"H45",0,"Lot-H45"],
+    ["134516FEF0697D61",0,"H44",0,"Villa Azanik"],
+    ["13452D6662367A88",0,"H45",0,"Casa Milah"],
     ["1344E2278238CB63",0,"H50/51",1,"Casa Laguna"],
     ["1344E07BACC28836",0,"H50/51",1,"Casa Laguna"],
     ["1344DFAD027F8BA0",0,"H52",0,"Casa Las Culpas"],
@@ -7055,8 +7057,8 @@
     ["13451E8396D12D7E",0,"H40/41",1,"Casa Mayanah (fractional ownership)"],
     ["4ABA2A81B247B7C1",3152.16,"H42",1,"Nahil"],
     ["K31GYERMMUY412906380CCE36283",0,"H43",0,"Yool Canal"],
-    ["134516FEF0697D61",0,"H44",0,"Casa Maya"],
-    ["13452D6662367A88",0,"H45",0,"Lot-H45"],
+    ["134516FEF0697D61",7200,"H44",0,"Casa Azanik"],
+    ["13452D6662367A88",0,"H45",0,"Casa Milah"],
     ["1344E2278238CB63",0,"H50/51",1,"Casa Laguna"],
     ["1344E07BACC28836",0,"H50/51",1,"Casa Laguna"],
     ["1344DFAD027F8BA0",0,"H52",0,"Casa Las Culpas"],
@@ -7200,8 +7202,8 @@
     ["13451E8396D12D7E",3,1,"H40/41",1,"Casa Mayanah (fractional ownership)"],
     ["4ABA2A81B247B7C1",3,1,"H42",1,"Nahil"],
     ["K31GYERMMUY412906380CCE36283",3,1,"H43",0,"Yool Canal"],
-    ["134516FEF0697D61",3,1,"H44",0,"Casa Maya"],
-    ["13452D6662367A88",3,0,"H45",0,"Lot-H45"],
+    ["134516FEF0697D61",3,1,"H44",0,"Villa Azanik"],
+    ["13452D6662367A88",3,1,"H45",0,"Casa Milah"],
     ["1344E2278238CB63",1,1,"H50/51",1,"Casa Laguna"],
     ["1344E07BACC28836",1,1,"H50/51",1,"Casa Laguna"],
     ["1344DFAD027F8BA0",0,1,"H52",0,"Casa Las Culpas"],
@@ -7268,7 +7270,6 @@
   ]</script>
   <script type="application/json" id="property-2026-extra-data">[
     ["Playa Caribe Beach Concession",17500],
-    ["Casa Azanik",7200],
     ["Casa Josefina",300]
   ]</script>
   <script type="application/json" id="owner-summary-2026-data">{"contributors":67,"amount":176929.94}</script>
@@ -7620,6 +7621,7 @@
         : isLot ? `<div>${donationDataReady ? is2026Set() ? 'No matching Summary Contributions row' : isFullSet() ? 'No share (park)' : 'No matching Detail record' : donationPlaceholder}</div>` : '';
       layer.setPopupContent(`<strong>${escapeHtml(sharedName || detail?.name || p.name)}</strong>` +
         (isLot ? `<div><b>Lot:</b> ${escapeHtml(id || p.name)}</div>` : '') +
+        (isLot && p.classification ? `<div><b>Classification:</b> ${escapeHtml(p.classification)}</div>` : '') +
         (sharedName && detail ? `<div><b>${is2026Set() ? 'Property name' : 'Detail name'}:</b> ${escapeHtml(detail.name)}</div>` : '') +
         recordedNames + donated + description +
         (isFullSet() && detail?.payerKey?.startsWith('lot:') ?
