@@ -7331,8 +7331,9 @@
     const votingMode = () => isFullSet() && votingResultsVisible;
     const voteFor = (key, label = selectedContributionSet) => votingFeed?.votes?.[label]?.[key] || 'pending';
     const voteLabel = vote => ({ yes: 'Yes', no: 'No', pending: 'Pending vote' })[vote];
+    const barrierOnlyProposalLabel = 'Funding Proposal (Only Barrier)';
     const votingSettings = label => votingFeed?.proposals?.[label] || {
-      version: '2026-10-v1', budget: 400000, businessContribution: 60000,
+      version: '2026-10-v1', budget: label === barrierOnlyProposalLabel ? 150000 : 400000, businessContribution: 60000,
       rates: [{ building: .1, lot: .05 }, { building: .1, lot: .05 },
         { building: 1, lot: .1 }, { building: .2, lot: .05 }]
     };
@@ -7625,7 +7626,7 @@
         (sharedName && detail ? `<div><b>${is2026Set() ? 'Property name' : 'Detail name'}:</b> ${escapeHtml(detail.name)}</div>` : '') +
         recordedNames + donated + description +
         (isFullSet() && detail?.payerKey?.startsWith('lot:') ?
-          `<div><b>Vote:</b> ${votingFeed ? voteLabel(voteFor(detail.payerKey)) : 'Results not loaded'}</div><button type="button" class="open-ballot" data-lot-id="${escapeHtml(feature.id)}">Vote on Funding Proposal</button>` : '') +
+          `<div><b>Vote:</b> ${votingFeed?.proposals?.[selectedContributionSet] ? voteLabel(voteFor(detail.payerKey)) : 'Results not loaded'}</div><button type="button" class="open-ballot" data-lot-id="${escapeHtml(feature.id)}">Vote on ${escapeHtml(selectedContributionSet)}</button>` : '') +
         (p.parentId ? `<div><small>Approximate boundary: map shape ${escapeHtml(p.parentLot)} divided into equal-area lots.</small></div>` : '') +
         `<small>${escapeHtml(p.layer)} · ${escapeHtml(feature.id)}</small>` +
         (isLot && canEdit ? `<form class="edit-lot-name" data-lot-id="${escapeHtml(feature.id)}"><input aria-label="Shared lot name" maxlength="120" value="${escapeHtml(sharedName || '')}" placeholder="Shared lot name"><button type="submit">Save name</button><button type="button" class="clear-lot-name">Clear name</button><small class="edit-lot-status" aria-live="polite"></small></form>` : ''));
@@ -8061,6 +8062,7 @@
       box.innerHTML = '<h2>Map Views</h2>' + option('Barrier Purchase') +
         '<h3>Barrier Operations</h3>' +
         ['2023 Contributions', '2024 Contributions', '2025 Contributions'].map(label => option(label, false, true)).join('') +
+        option(barrierOnlyProposalLabel) +
         '<h3>Barrier and Beach Operations</h3>' + option('2026 Contributions') + option('Funding Proposal', true) + option('Funding Proposal 2', false, true);
       L.DomEvent.disableClickPropagation(box);
       box.addEventListener('change', event => {
@@ -8103,7 +8105,8 @@
       fundedPesos: total.fundedPesos + round.fundedPesos
     }), { budgetPesos: 0, fundedPesos: 0 });
     const pesosPerUsd = 18;
-    // The Funding Proposal budget (USD), shared by both proposals. Clicking the Budget amount in
+    // The Barrier and Beach budget (USD), shared by its two proposals. Only Barrier has its own budget.
+    // Clicking the Budget amount in
     // the Fees box asks for budgetPassword, then for a new figure, which is saved in this
     // browser's local storage. The password only keeps casual visitors from changing it: it is
     // visible in the page source.
@@ -8116,6 +8119,13 @@
         return saved > 0 ? saved : defaultBudget;
       } catch (_error) { return defaultBudget; }
     })();
+    const barrierOnlyBudgetStorageKey = 'akumal-funding-proposal-only-barrier-budget';
+    let barrierOnlyBudget = (() => {
+      try {
+        const saved = Number(localStorage.getItem(barrierOnlyBudgetStorageKey));
+        return Number.isFinite(saved) && saved > 0 ? saved : 150000;
+      } catch (_error) { return 150000; }
+    })();
     // Fees tab "Fees System 3" rates by zone, relative to one Bay High Impact Zone building. Each
     // lot pays its zone's building rate if built, otherwise its empty-lot rate; the labels are the
     // tab's Lot Type Classification titles, with "Empty" added to bay lot display labels. Zones: 0 interior, 1 waterfront off the bay, 2 bay
@@ -8127,17 +8137,23 @@
       { building: 0.2, lot: 0.05, buildingParticipation: 1, lotParticipation: 1, buildingLabel: 'Bay Building Low Impact Zone', lotLabel: 'Bay Empty Lot Low Impact Zone' }
     ];
     const feesSystem3StorageKey = 'akumal-funding-proposal-fees-system-3';
-    try {
-      const saved = JSON.parse(localStorage.getItem(feesSystem3StorageKey));
-      const keys = ['building', 'lot', 'buildingParticipation', 'lotParticipation'];
-      if (Array.isArray(saved) && saved.length === feesSystem3.length && saved.every(entry =>
-        keys.every(key => typeof entry?.[key] === 'number' && Number.isFinite(entry[key]) &&
-          entry[key] >= 0 && (key.endsWith('Participation') ? entry[key] <= 1 : entry[key] <= 10))) &&
-          saved.some(entry => entry.building * entry.buildingParticipation > 0 ||
-            entry.lot * entry.lotParticipation > 0)) {
-        saved.forEach((entry, zone) => keys.forEach(key => { feesSystem3[zone][key] = entry[key]; }));
-      }
-    } catch (_error) { /* Use Fees tab defaults. */ }
+    const barrierOnlyFees = feesSystem3.map(fees => ({ ...fees }));
+    const barrierOnlyFeesStorageKey = 'akumal-funding-proposal-only-barrier-fees-system-3';
+    function loadFeesSettings(target, storageKey) {
+      try {
+        const saved = JSON.parse(localStorage.getItem(storageKey));
+        const keys = ['building', 'lot', 'buildingParticipation', 'lotParticipation'];
+        if (Array.isArray(saved) && saved.length === target.length && saved.every(entry =>
+          keys.every(key => typeof entry?.[key] === 'number' && Number.isFinite(entry[key]) &&
+            entry[key] >= 0 && (key.endsWith('Participation') ? entry[key] <= 1 : entry[key] <= 10))) &&
+            saved.some(entry => entry.building * entry.buildingParticipation > 0 ||
+              entry.lot * entry.lotParticipation > 0)) {
+          saved.forEach((entry, zone) => keys.forEach(key => { target[zone][key] = entry[key]; }));
+        }
+      } catch (_error) { /* Use Fees tab defaults. */ }
+    }
+    loadFeesSettings(feesSystem3, feesSystem3StorageKey);
+    loadFeesSettings(barrierOnlyFees, barrierOnlyFeesStorageKey);
     // Order of the Fees box rows, as in the Fees tab.
     const feesSystem3Order = [2, 3, 1, 0];
     const percent = new Intl.NumberFormat('en-US', { style: 'percent', maximumFractionDigits: 2 });
@@ -8180,13 +8196,14 @@
     // in this browser's local storage under storageKey.
     // With notifyChanges, each checkbox change asks for the visitor's name and emails it.
     function createFundingProposal(label, storageKey, checkedByDefault, notifyChanges = false) {
+      const proposalFees = label === barrierOnlyProposalLabel ? barrierOnlyFees : feesSystem3;
       const featureNames = new Map(lotFeatures.map(feature => [feature.id, feature.properties.name]));
       const sourceNames = new Map(geojson.features.map(feature => [feature.id, feature.properties.name]));
       const counted = new Set();
       // A range divided into lots is charged per piece, so each lot can take its own override.
       const rows = JSON.parse(document.getElementById('full-participation-data').textContent)
         .flatMap(([id, zone, buildings, , , name]) => (lotPieces.get(id) || [id]).map(shapeId => {
-          const fees = feesSystem3[zone];
+          const fees = proposalFees[zone];
           const sourceCode = lotId(featureNames.get(shapeId) || sourceNames.get(id));
           const lots = lotCount(sourceCode);
           const override = propertyTypeOverrides.get(sourceCode);
@@ -8212,6 +8229,8 @@
       })());
       const state = {
         label,
+        fees: proposalFees,
+        feesStorageKey: label === barrierOnlyProposalLabel ? barrierOnlyFeesStorageKey : feesSystem3StorageKey,
         notifyChanges,
         included: key => votingResultsVisible
           ? key.startsWith('business:') || voteFor(key, label) === 'yes'
@@ -8235,10 +8254,10 @@
       state.recompute = () => {
         const { included } = state;
         const settings = votingSettings(label);
-        const rates = votingResultsVisible ? settings.rates : feesSystem3;
-        state.budget = votingResultsVisible ? settings.budget : fullParticipationBudget;
+        const rates = votingResultsVisible ? settings.rates : proposalFees;
+        state.budget = votingResultsVisible ? settings.budget : label === barrierOnlyProposalLabel ? barrierOnlyBudget : fullParticipationBudget;
         const participation = row => {
-          const fees = feesSystem3[row.zone];
+          const fees = proposalFees[row.zone];
           return row.built ? fees.buildingParticipation : fees.lotParticipation;
         };
         rows.forEach(row => {
@@ -8291,7 +8310,7 @@
         const lotsOf = (list, zone, built) => list.filter(row => row.zone === zone && row.built === built)
           .reduce((sum, row) => sum + row.lots, 0);
         state.categories = feesSystem3Order.flatMap(zone => [true, false].map(built => {
-          const fees = feesSystem3[zone];
+          const fees = proposalFees[zone];
           const reference = built ? rates[zone].building : rates[zone].lot;
           const count = lotsOf(eligible, zone, built);
           const checked = lotsOf(charged, zone, built);
@@ -8314,6 +8333,7 @@
       return state;
     }
     const fundingProposals = new Map([
+      [barrierOnlyProposalLabel, createFundingProposal(barrierOnlyProposalLabel, 'akumal-funding-proposal-only-barrier-unchecked', true)],
       ['Funding Proposal', createFundingProposal('Funding Proposal', 'akumal-funding-proposal-unchecked', true)],
       ['Funding Proposal 2', createFundingProposal('Funding Proposal 2', 'akumal-funding-proposal-2-checked', false, true)]
     ]);
@@ -8339,14 +8359,14 @@
     }, true); // Leaflet stops popup clicks from bubbling to the document.
     function renderVoteForm(detail) {
       const settings = votingSettings(selectedContributionSet);
-      const ready = Boolean(votingUrl && votingFeed && !votingError);
+      const ready = Boolean(votingUrl && votingFeed?.proposals?.[selectedContributionSet] && !votingError);
       return `<form class="vote-form" data-payer="${escapeHtml(detail.payerKey)}" data-proposal="${escapeHtml(selectedContributionSet)}" data-version="${escapeHtml(settings.version)}">` +
         `<b>Vote on ${escapeHtml(selectedContributionSet)}</b>` +
         `<small>Version ${escapeHtml(settings.version)} · Budget ${escapeHtml(currency.format(settings.budget))}. Fees depend on how many lots vote Yes.</small>` +
-        `<div>Current vote: <b>${votingFeed ? voteLabel(voteFor(detail.payerKey)) : 'Results not loaded'}</b></div>` +
+        `<div>Current vote: <b>${votingFeed?.proposals?.[selectedContributionSet] ? voteLabel(voteFor(detail.payerKey)) : 'Results not loaded'}</b></div>` +
         '<label>Your name<input name="representative" type="text" maxlength="100" autocomplete="name" required></label>' +
         '<label><input name="authorized" type="checkbox" required> I confirm that I am authorized to vote on behalf of this lot/building.</label>' +
-        '<fieldset><legend>Do you approve this Funding Proposal?</legend><label><input type="radio" name="vote" value="yes" required> Yes — For</label><label><input type="radio" name="vote" value="no" required> No — Against</label></fieldset>' +
+        `<fieldset><legend>Do you approve ${escapeHtml(selectedContributionSet)}?</legend><label><input type="radio" name="vote" value="yes" required> Yes — For</label><label><input type="radio" name="vote" value="no" required> No — Against</label></fieldset>` +
         `<button type="submit"${ready ? '' : ' disabled'}>Submit vote</button>` +
         '<small>The latest submission for this lot replaces its previous vote. Your name is stored with the ballot; the public map shows the vote only.</small>' +
         `<small class="vote-message" aria-live="polite">${ready ? '' : 'Voting is unavailable until shared results are connected and loaded.'}</small></form>`;
@@ -8358,6 +8378,7 @@
       const counts = { yes: 0, no: 0, pending: 0 };
       activeProposal().eligible.forEach(row => { counts[voteFor(row.payerKey)]++; });
       const summary = activeProposal().votingSummary;
+      const resultsReady = Boolean(votingFeed?.proposals?.[selectedContributionSet]);
       votingPanel.classList.toggle('minimized', votingPanelMinimized);
       votingPanel.innerHTML = '<div class="voting-header">' +
         `<button type="button" class="voting-toggle" aria-label="${votingResultsVisible ? 'Hide voting results' : 'Show voting results'}" aria-pressed="${votingResultsVisible}"><span class="voting-desktop-label">${votingResultsVisible ? 'Hide voting results' : 'Show voting results'}</span><span class="voting-mobile-label">${votingResultsVisible ? 'Hide votes' : 'Show votes'}</span></button>` +
@@ -8366,13 +8387,13 @@
         `<button type="button" class="voting-refresh"${!votingUrl || votingLoading ? ' disabled' : ''}>Refresh</button>` +
         (votingResultsVisible ? `<label class="voting-shortfall"><input type="checkbox" class="shortfall-toggle"${votingShortfallVisible ? ' checked' : ''}> Shortfall</label>` : '') +
         (votingResultsVisible ? '<div><span class="swatch" style="background:#16a34a"></span> Yes · <span class="swatch" style="background:#ef4444"></span> No · <span class="swatch" style="background:#3b82f6"></span> Pending vote</div>' +
-          (votingFeed ? `<div>Yes: ${counts.yes} · No: ${counts.no} · Pending: ${counts.pending}</div><small>Counts are voting lots; duplicate map drawings count once.</small>` : '') +
+          (resultsReady ? `<div>Yes: ${counts.yes} · No: ${counts.no} · Pending: ${counts.pending}</div><small>Counts are voting lots; duplicate map drawings count once.</small>` : '') +
           '<div class="voting-funding-summary">' + contributorRow('Budget', currency.format(summary.budget)) +
-          contributorRow('Voted for so far', votingFeed ? currency.format(summary.votedFor) : '—') +
-          contributorRow('Shortfall', votingFeed ? currency.format(summary.shortfall) : '—', 'contributor fee-shortfall') +
+          contributorRow('Voted for so far', resultsReady ? currency.format(summary.votedFor) : '—') +
+          contributorRow('Shortfall', resultsReady ? currency.format(summary.shortfall) : '—', 'contributor fee-shortfall') +
           `<small>At published fees, plus ${escapeHtml(currency.format(summary.businessContribution))} fixed business contributions.</small></div>` : '') +
         `<small class="voting-status" role="status">${escapeHtml(!votingUrl ? 'Shared voting is not connected. Blue lots are placeholders; no live results are available.' :
-          votingLoading ? 'Updating voting results…' : votingError || (votingFeed ? `Last updated ${new Date(votingFeed.generatedAt).toLocaleString()}. Auto-refresh every 30 seconds.` : 'Results not loaded.'))}</small></div>`;
+          votingLoading ? 'Updating voting results…' : votingError || (votingFeed && !resultsReady ? 'Voting for this proposal requires an update to the storage deployment.' : resultsReady ? `Last updated ${new Date(votingFeed.generatedAt).toLocaleString()}. Auto-refresh every 30 seconds.` : 'Results not loaded.'))}</small></div>`;
     }
     function redrawVoting() {
       // Preserve a representative's unfinished ballot across a shared-results refresh.
@@ -8405,6 +8426,8 @@
         for (const [label, proposal] of fundingProposals) {
           const settings = payload.proposals?.[label];
           const votes = payload.votes?.[label];
+          // An older deployment may not yet support the new proposal; keep existing votes working.
+          if (label === barrierOnlyProposalLabel && settings === undefined && votes === undefined) continue;
           if (!settings || typeof settings.version !== 'string' || !settings.version ||
               !Number.isFinite(settings.budget) || settings.budget <= 0 ||
               !Number.isFinite(settings.businessContribution) || settings.businessContribution < 0 || settings.businessContribution > settings.budget ||
@@ -8498,8 +8521,9 @@
       const password = window.prompt('Password to edit fees:');
       if (password === null) return;
       if (password !== budgetPassword) { window.alert('Incorrect password. Fees were not changed.'); return; }
+      const currentFees = activeProposal().fees;
       feesEditorFields.innerHTML = feesSystem3Order.flatMap(zone => [true, false].map(built => {
-        const fees = feesSystem3[zone];
+        const fees = currentFees[zone];
         const name = built ? 'building' : 'lot';
         const label = built ? fees.buildingLabel : fees.lotLabel;
         const field = (key, title, max) =>
@@ -8516,7 +8540,8 @@
     feesEditorForm.addEventListener('submit', event => {
       event.preventDefault();
       const keys = ['building', 'lot', 'buildingParticipation', 'lotParticipation'];
-      const next = feesSystem3.map(fees => Object.fromEntries(keys.map(key => [key, fees[key]])));
+      const currentFees = activeProposal().fees;
+      const next = currentFees.map(fees => Object.fromEntries(keys.map(key => [key, fees[key]])));
       for (const input of feesEditorFields.querySelectorAll('input')) {
         const value = Number(input.value);
         if (input.value.trim() === '' || !Number.isFinite(value) || value < 0 ||
@@ -8537,8 +8562,8 @@
         window.alert('At least one checked lot needs a positive Reference % and Participation % to meet the budget.');
         return;
       }
-      next.forEach((entry, zone) => keys.forEach(key => { feesSystem3[zone][key] = entry[key]; }));
-      try { localStorage.setItem(feesSystem3StorageKey, JSON.stringify(next)); } catch (_error) { /* Lasts until reload. */ }
+      next.forEach((entry, zone) => keys.forEach(key => { currentFees[zone][key] = entry[key]; }));
+      try { localStorage.setItem(activeProposal().feesStorageKey, JSON.stringify(next)); } catch (_error) { /* Lasts until reload. */ }
       feesEditor.close();
       fundingProposals.forEach(proposal => proposal.recompute());
       if (isFullSet()) {
@@ -8588,20 +8613,24 @@
     // Ask for the password, then a new budget; recompute both proposals and redraw.
     // A correct password unlocks editing until this browser tab is closed.
     function editFundingBudget() {
+      const barrierOnly = selectedContributionSet === barrierOnlyProposalLabel;
+      const storageKey = barrierOnly ? barrierOnlyBudgetStorageKey : budgetStorageKey;
       let unlocked = false;
-      try { unlocked = sessionStorage.getItem(budgetStorageKey + '-unlocked') === '1'; } catch (_error) { /* Ask. */ }
+      try { unlocked = sessionStorage.getItem(storageKey + '-unlocked') === '1'; } catch (_error) { /* Ask. */ }
       if (!unlocked) {
         const password = window.prompt('Password to change the budget:');
         if (password === null) return;
         if (password !== budgetPassword) { window.alert('Incorrect password. The budget was not changed.'); return; }
-        try { sessionStorage.setItem(budgetStorageKey + '-unlocked', '1'); } catch (_error) { /* Ask again next time. */ }
+        try { sessionStorage.setItem(storageKey + '-unlocked', '1'); } catch (_error) { /* Ask again next time. */ }
       }
-      const entered = window.prompt('New annual budget (USD):', String(fullParticipationBudget));
+      const entered = window.prompt('New annual budget (USD):', String(barrierOnly ? barrierOnlyBudget : fullParticipationBudget));
       if (entered === null) return;
       const budget = Number(entered.replace(/[$,\s]/g, ''));
       if (!Number.isFinite(budget) || budget <= 0) { window.alert('Enter a budget greater than zero, such as 400000.'); return; }
-      fullParticipationBudget = Math.round(budget * 100) / 100;
-      try { localStorage.setItem(budgetStorageKey, String(fullParticipationBudget)); } catch (_error) { /* Lasts until reload. */ }
+      const rounded = Math.round(budget * 100) / 100;
+      if (barrierOnly) barrierOnlyBudget = rounded;
+      else fullParticipationBudget = rounded;
+      try { localStorage.setItem(storageKey, String(rounded)); } catch (_error) { /* Lasts until reload. */ }
       fundingProposals.forEach(proposal => proposal.recompute());
       if (!isFullSet()) return;
       contributors = activeProposal().contributors;
@@ -8621,9 +8650,9 @@
         const sameType = row => row.zone === lot.zone && row.built === lot.built;
         const lots = list => list.filter(sameType).reduce((sum, row) => sum + row.lots, 0);
         const share = lots(proposal.charged) / lots(proposal.eligible);
-        feesSystem3[lot.zone][lot.built ? 'buildingParticipation' : 'lotParticipation'] = share;
+        proposal.fees[lot.zone][lot.built ? 'buildingParticipation' : 'lotParticipation'] = share;
         try {
-          localStorage.setItem(feesSystem3StorageKey, JSON.stringify(feesSystem3.map(fees => ({
+          localStorage.setItem(proposal.feesStorageKey, JSON.stringify(proposal.fees.map(fees => ({
             building: fees.building, lot: fees.lot,
             buildingParticipation: fees.buildingParticipation, lotParticipation: fees.lotParticipation
           }))));

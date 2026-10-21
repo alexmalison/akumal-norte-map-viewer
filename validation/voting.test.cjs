@@ -26,6 +26,12 @@ run(block('function splitLotRanges(features)', 'function expandSplitLots') +
   block('const defaultBudget', 'const ballotDialog ='));
 const recompute = () => run('fundingProposals.forEach(p => p.recompute())');
 const cents = expression => run('Math.round((' + expression + ')*100)');
+assert.equal(run('fundingProposals.get(barrierOnlyProposalLabel).budget'), 150000);
+assert.equal(run('fundingProposals.get(barrierOnlyProposalLabel).lotTotal'), 90000);
+assert.equal(run('fundingProposals.get(barrierOnlyProposalLabel).fees === activeProposal().fees'), false);
+run("fundingProposals.get(barrierOnlyProposalLabel).setIncluded('lot:F24',false)");
+assert.equal(run("activeProposal().included('lot:F24')"), true);
+run("fundingProposals.get(barrierOnlyProposalLabel).setIncluded('lot:F24',true)");
 const totalShares = 'activeProposal().charged.reduce((s,r) => s+r.amount,0)';
 context.votingResultsVisible = true;
 recompute();
@@ -99,6 +105,59 @@ for (const [vote, color] of [['yes', '#16a34a'], ['no', '#ef4444'], ['pending', 
 context.votingResultsVisible = false;
 recompute();
 assert.equal(run('activeProposal().charged.length === activeProposal().eligible.length'), true);
+// The new proposal's budget, edited fee settings, and votes remain independent.
+context.selectedContributionSet = 'Funding Proposal (Only Barrier)';
+assert.equal(run('activeProposal().budget'), 150000);
+assert.equal(run('activeProposal().fees[2].building'), 1);
+context.votingResultsVisible = true;
+context.votingFeed.votes['Funding Proposal (Only Barrier)'] = { 'lot:F24': 'yes', 'lot:F25': 'no' };
+recompute();
+assert.equal(run('activeProposal().charged.length'), 1);
+assert.equal(run('activeProposal().lotTotal'), 90000);
+assert.equal(cents(totalShares), 9000000);
+context.votingShortfallVisible = true;
+recompute();
+assert.ok(run('activeProposal().lotTotal') > 0 && run('activeProposal().lotTotal') < 90000);
+assert.equal(cents('activeProposal().lotTotal + activeProposal().votingSummary.shortfall'), 9000000);
+assert.equal(cents('activeProposal().categories.reduce((s,r) => s+r.shortfall,0)'), cents('activeProposal().votingSummary.shortfall'));
+context.votingResultsVisible = false;
+run('barrierOnlyBudget=175000');
+recompute();
+assert.equal(run('activeProposal().budget'), 175000);
+assert.equal(run("fundingProposals.get('Funding Proposal').budget"), 900000);
+context.selectedContributionSet = 'Funding Proposal';
+
+// An older live endpoint must continue serving existing proposals until it is upgraded.
+const oldFeed = {
+  ok: true, request: 'compatibility-test', generatedAt: new Date().toISOString(),
+  proposals: { 'Funding Proposal': run("votingSettings('Funding Proposal')"),
+    'Funding Proposal 2': run("votingSettings('Funding Proposal 2')") },
+  votes: { 'Funding Proposal': { 'lot:F24': 'yes' }, 'Funding Proposal 2': {} }
+};
+context.window = {};
+context.votingRequest = { id: oldFeed.request };
+context.votingError = '';
+context.finishVotingRequest = () => { context.votingRequest = null; };
+context.redrawVoting = () => {};
+context.renderVotingPanel = () => {};
+run(block('window.akumalReceiveVotes =', 'function finishVotingRequest'));
+context.window.akumalReceiveVotes(oldFeed);
+assert.equal(context.votingError, '');
+assert.equal(context.votingFeed.votes['Funding Proposal']['lot:F24'], 'yes');
+context.selectedContributionSet = 'Funding Proposal (Only Barrier)';
+context.votingUrl = 'https://example.com/votes';
+context.escapeHtml = value => String(value);
+context.currency = new Intl.NumberFormat('en-US', { style: 'currency', currency: 'USD', maximumFractionDigits: 0 });
+run(block('function renderVoteForm', 'function renderVotingPanel'));
+const unavailableBallot = run('renderVoteForm(activeProposal().eligible[0])');
+assert.match(unavailableBallot, /button type="submit" disabled/);
+context.votingFeed.proposals['Funding Proposal (Only Barrier)'] = run('votingSettings(barrierOnlyProposalLabel)');
+context.votingFeed.votes['Funding Proposal (Only Barrier)'] = {};
+const availableBallot = run('renderVoteForm(activeProposal().eligible[0])');
+assert.doesNotMatch(availableBallot, /button type="submit" disabled/);
+assert.match(availableBallot, /Do you approve Funding Proposal \(Only Barrier\)/);
+assert.match(availableBallot, /Budget \$150,000/);
+context.selectedContributionSet = 'Funding Proposal';
 
 // Exercise storage code against a private in-memory sheet; no real ballots are submitted.
 const rows = [];
@@ -149,4 +208,8 @@ assert.equal(Object.keys(get().votes['Funding Proposal 2']).length, 0);
 stored("PROPOSALS['Funding Proposal'].version='new-version'");
 assert.equal(Object.keys(get().votes['Funding Proposal']).length, 0);
 assert.equal(rows.length, 3);
+assert.equal(post({ proposal: 'Funding Proposal (Only Barrier)' }).ok, true);
+assert.equal(get().votes['Funding Proposal (Only Barrier)']['lot:F24'], 'yes');
+assert.equal(Object.keys(get().votes['Funding Proposal']).length, 0);
+assert.equal(get().proposals['Funding Proposal (Only Barrier)'].budget, 150000);
 console.log('Voting checks passed: colors, shortfalls, Yes-only fees, exact totals, duplicates, toggle restoration, ballot validation, history, privacy, and version isolation.');

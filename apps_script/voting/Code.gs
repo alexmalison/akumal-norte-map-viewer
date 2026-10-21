@@ -5,6 +5,7 @@ const RATES = [{ building: .1, lot: .05 }, { building: .1, lot: .05 },
 // Freeze these settings during voting. Changing a proposal requires a NEW version;
 // older ballots remain in the history but do not count toward the new version.
 const PROPOSALS = {
+  'Funding Proposal (Only Barrier)': { version: '2026-10-v1', budget: 150000, businessContribution: 60000, rates: RATES },
   'Funding Proposal': { version: '2026-10-v1', budget: 400000, businessContribution: 60000, rates: RATES },
   'Funding Proposal 2': { version: '2026-10-v1', budget: 400000, businessContribution: 60000, rates: RATES }
 };
