@@ -149,6 +149,10 @@
       body.panels-open .leaflet-top.leaflet-left { pointer-events: auto; }
       .leaflet-top.leaflet-left > .panel-toggle { position: sticky; top: 0; z-index: 900; }
       .leaflet-top.leaflet-right .display-options { max-width: calc(100vw - 90px); }
+      .map-views {
+        max-height: 45vh; max-height: 45dvh; overflow-y: auto; overflow-x: hidden;
+        overscroll-behavior: contain; -webkit-overflow-scrolling: touch; touch-action: pan-y;
+      }
       body.proposal-popup-open .leaflet-top { visibility: hidden; }
       .leaflet-bottom.leaflet-left .lot-browser { margin-bottom: 44px; }
       .lot-browser-list { max-height: 55dvh; }
@@ -7318,6 +7322,7 @@
     let selectedContributionSet = 'Barrier Purchase';
     const pendingContributionSets = new Set(['2023 Contributions', '2024 Contributions', '2025 Contributions']);
     const isPendingSet = () => pendingContributionSets.has(selectedContributionSet);
+    const isFeesSet = () => selectedContributionSet === 'Fees Structure';
     const is2026Set = () => selectedContributionSet === '2026 Contributions';
     const isFullSet = () => selectedContributionSet.startsWith('Funding Proposal');
     const votingUrl = document.querySelector('meta[name="voting-url"]').content;
@@ -7497,11 +7502,11 @@
     let donationPlaceholder = 'Loading…';
     const dataStatus = document.getElementById('data-status');
     function showDonationStatus(message) {
-      const label = isPendingSet() ? 'Contributions' : is2026Set() ? '2026 payments' :
+      const label = isFeesSet() ? 'Fees System 3 reference structure' : isPendingSet() ? 'Contributions' : is2026Set() ? '2026 payments' :
         isFullSet() ? 'Fees System 3 shares' : 'Detail data';
       dataStatus.textContent = `157 lots · 9 region features · ${label}: ${message}`;
       const legendStatus = document.getElementById('donation-status');
-      if (legendStatus) legendStatus.textContent = isPendingSet() ? 'Contribution data pending.' :
+      if (legendStatus) legendStatus.textContent = isFeesSet() ? 'Zoom in for lot names, categories and relative fee percentages.' : isPendingSet() ? 'Contribution data pending.' :
         isFullSet() ? `${label}: ${message}. Zoom in for lot names and shares. * Lot drawn twice on the map; each shows the full share.` :
         `${label}: ${message}. Zoom in for lot names and totals. * Lot drawn twice on the map; each shows the full total.`;
     }
@@ -7556,6 +7561,11 @@
       onEachFeature: bindFeature
     });
     function lotStyle(feature) {
+      if (isFeesSet()) {
+        const color = feeGroup(feature).color;
+        return { color: '#334155', fillColor: color, weight: 1.5, opacity: .95, fillOpacity: .75,
+          dashArray: feature.properties.parentId ? '5 4' : null };
+      }
       if (votingMode()) {
         const key = donations.get(feature.id)?.payerKey;
         const vote = voteFor(key);
@@ -7607,7 +7617,7 @@
     }
     function renderFeature(feature, layer) {
       const p = feature.properties;
-      const description = !is2026Set() && !isPendingSet() && !isFullSet() && p.description
+      const description = !isFeesSet() && !is2026Set() && !isPendingSet() && !isFullSet() && p.description
         ? `<div>${escapeHtml(p.description).replace(/\n/g, '<br>')}</div>` : '';
       const isLot = p.layer === 'Akumal Norte property Lots';
       const detail = isLot ? donations.get(feature.id) : null;
@@ -7615,7 +7625,9 @@
       const sharedName = isLot ? sharedNames.get(nameKey(feature)) : null;
       const recordedNames = detail && detail.names.length > 2
         ? `<div><b>Recorded names:</b> ${detail.names.map(escapeHtml).join('; ')}</div>` : '';
-      const donated = detail
+      const donated = isFeesSet() && isLot
+        ? `<div><b>Category:</b> ${escapeHtml(feeGroup(feature).label)}</div><div><b>Relative fee:</b> ${percent.format(feeGroup(feature).reference)}</div>`
+        : detail
         ? `<div><b>${is2026Set() ? 'Paid' : isFullSet() ? 'Share' : 'Donated'}:</b> ${currency.format(detail.amount)}${detail.shared ? ' *' : ''}</div>` +
           (isFullSet() ? `<div><b>Fees System 3:</b> ${escapeHtml(detail.category)}</div>` : '') +
           `<small>${is2026Set() ? 'Map lot' : isFullSet() ? 'Map lots' : 'Detail lot code'}: ${escapeHtml(detail.sourceCode)}${detail.shapes > 1 ? ` · Share of the ${escapeHtml(currency.format(detail.total))} total, split across ${detail.shapes} map shapes.` : detail.shared ? ' · This lot is drawn more than once on the map; each shape shows the full total.' : ''}</small>`
@@ -7632,7 +7644,7 @@
         (isLot && canEdit ? `<form class="edit-lot-name" data-lot-id="${escapeHtml(feature.id)}"><input aria-label="Shared lot name" maxlength="120" value="${escapeHtml(sharedName || '')}" placeholder="Shared lot name"><button type="submit">Save name</button><button type="button" class="clear-lot-name">Clear name</button><small class="edit-lot-status" aria-live="polite"></small></form>` : ''));
       layer.setTooltipContent(isLot
         ? `${escapeHtml(id || p.name)} · ${escapeHtml(sharedName || detail?.name || p.name)}` +
-          (detail ? ` · ${currency.format(detail.amount)}` : '')
+          (isFeesSet() ? ` · ${escapeHtml(feeGroup(feature).label)} · ${percent.format(feeGroup(feature).reference)}` : detail ? ` · ${currency.format(detail.amount)}` : '')
         : escapeHtml(p.name));
     }
     function bindFeature(feature, layer) {
@@ -7843,7 +7855,8 @@
           amount: otherAmount ?? detail?.amount,
           amountSuffix: detail?.shared ? '*' : '',
           note: (code ? `Lot ${code}` : feature.properties.name) +
-            (mappedOther ? ' · Other contributor' : ''),
+            (isFeesSet() ? ` · ${feeGroup(feature).label}` : mappedOther ? ' · Other contributor' : ''),
+          feeReference: isFeesSet() ? feeGroup(feature).reference : undefined,
           other: mappedOther,
           payerKey: isFullSet() ? detail?.payerKey : undefined
         };
@@ -7855,7 +7868,7 @@
       const byName = (a, b) => a.name.localeCompare(b.name, undefined,
         { sensitivity: 'base', numeric: true }) || a.note.localeCompare(b.note, undefined, { numeric: true });
       entries.sort((a, b) => lotBrowserSort === 'amount'
-        ? ((b.amount ?? -1) - (a.amount ?? -1)) || byName(a, b) : byName(a, b));
+        ? ((isFeesSet() ? b.feeReference - a.feeReference : (b.amount ?? -1) - (a.amount ?? -1))) || byName(a, b) : byName(a, b));
       if (!detailsBox.querySelector('.lot-browser-header')) {
         detailsBox.innerHTML = '<div class="lot-browser-header"><h2></h2>' +
           '<label for="lot-browser-sort">Sort by <select id="lot-browser-sort">' +
@@ -7867,10 +7880,11 @@
       if (!activeProposal()?.notifyChanges) detailsBox.querySelector('.proposal-email-status').textContent = '';
       detailsBox.querySelector('.lot-browser-header h2').textContent =
         `Lots & other contributors (${entries.length})`;
+      detailsBox.querySelector('option[value="amount"]').textContent = isFeesSet() ? 'Relative fee (highest first)' : 'Contribution (highest first)';
       detailsBox.querySelector('#lot-browser-sort').value = lotBrowserSort;
       detailsBox.querySelector('.lot-browser-rows').innerHTML = entries.map(entry => {
         const paying = !entry.payerKey || activeProposal().included(entry.payerKey);
-        const amount = !paying ? 'Not charged' : entry.amount == null
+        const amount = isFeesSet() ? percent.format(entry.feeReference) : !paying ? 'Not charged' : entry.amount == null
           ? donationDataReady ? is2026Set() ? 'No 2026 record' : isFullSet() ? 'No share' : 'No Detail record' : donationPlaceholder
           : currency.format(entry.amount) + (entry.amountSuffix || '');
         const content = `<b>${escapeHtml(entry.name)}</b><strong>${escapeHtml(votingMode() && !entry.other ? voteLabel(voteFor(entry.payerKey)) : amount)}</strong>` +
@@ -7954,15 +7968,15 @@
       }
       return best.lines;
     }
-    function labelSize(id, nameLines, amount) {
-      labelMeasure.font = '700 13px system-ui';
+    function labelSize(id, nameLines, amount, fontSize = 13) {
+      labelMeasure.font = `700 ${fontSize}px system-ui`;
       const idWidth = labelMeasure.measureText(id).width;
-      labelMeasure.font = '700 12px system-ui';
+      labelMeasure.font = `700 ${fontSize * .9}px system-ui`;
       const otherWidth = Math.max(0, ...nameLines.map(line => labelMeasure.measureText(line).width),
         amount ? labelMeasure.measureText(amount).width : 0);
       return {
         width: Math.ceil(Math.max(idWidth, otherWidth) + 8),
-        height: Math.ceil((id ? 13 * 1.05 : 0) + (nameLines.length + (amount ? 1 : 0)) * 12 * 1.05 + 8)
+        height: Math.ceil((id ? fontSize * 1.05 : 0) + (nameLines.length + (amount ? 1 : 0)) * fontSize * .9 * 1.05 + 8)
       };
     }
     let showLotNumbers = false;
@@ -7971,8 +7985,8 @@
       if (!map.hasLayer(lots)) return;
       lots.eachLayer(layer => {
         const lotNumber = lotId(layer.feature.properties.name);
-        if (!lotNumber) return;
-        const id = showLotNumbers ? lotNumber : '';
+        if (!lotNumber && !isFeesSet()) return;
+        const id = showLotNumbers ? (lotNumber || '') : '';
         const donation = donations.get(layer.feature.id);
         const bounds = layer.getBounds();
         const northWest = map.latLngToLayerPoint(bounds.getNorthWest());
@@ -7983,9 +7997,13 @@
         const charged = donation && !(isFullSet() && !activeProposal().included(donation.payerKey));
         const amount = votingMode() ? voteLabel(voteFor(donation?.payerKey)) :
           charged ? currency.format(donation.amount) + (donation.shared ? '*' : '') : '';
-        const name = sharedNames.get(nameKey(layer.feature)) || donation?.name || '';
+        const name = sharedNames.get(nameKey(layer.feature)) || donation?.name || (isFeesSet() ? layer.feature.properties.name : '');
         const wrappedName = name ? splitLotName(name) : null;
-        const candidates = name ? [
+        const group = isFeesSet() ? feeGroup(layer.feature) : null;
+        const candidates = group ? [
+          { nameLines: [name, group.label], amount: percent.format(group.reference) },
+          { nameLines: [...(wrappedName || [name]), ...(splitLotName(group.label) || [group.label])], amount: percent.format(group.reference) }
+        ] : name ? [
           { nameLines: [name], amount },
           ...(wrappedName ? [{ nameLines: wrappedName, amount }] : []),
           { nameLines: [], amount },
@@ -7993,16 +8011,26 @@
           ...(wrappedName ? [{ nameLines: wrappedName, amount: '' }] : [])
         ] : [];
         let fitted = null;
-        for (const candidate of candidates) {
-          const size = labelSize(id, candidate.nameLines, candidate.amount);
-          if (size.width > width || size.height > height) continue;
-          const center = findLabelCenter(layer.feature, size.width, size.height, bounds);
-          if (center) { fitted = { ...candidate, ...size, center }; break; }
+        for (const fontSize of group ? [13, 11, 9] : [13]) {
+          for (const candidate of candidates) {
+            const size = labelSize(id, candidate.nameLines, candidate.amount, fontSize);
+            if (size.width > width || size.height > height) continue;
+            const center = findLabelCenter(layer.feature, size.width, size.height, bounds);
+            if (center) { fitted = { ...candidate, ...size, center, fontSize }; break; }
+          }
+          if (fitted) break;
+        }
+        // Long names and narrow/irregular polygons must not lose their fee information.
+        // At close zoom allow the full label to extend beyond the lot boundary.
+        if (!fitted && group && map.getZoom() >= 18) {
+          const candidate = candidates[candidates.length - 1];
+          fitted = { ...candidate, ...labelSize(id, candidate.nameLines, candidate.amount),
+            center: findLabelCenter(layer.feature, 1, 1, bounds) || bounds.getCenter(), fontSize: 13 };
         }
         if (!fitted && !id) return;
         const iconWidth = fitted?.width || width;
         const iconHeight = fitted?.height || height;
-        const fontSize = fitted ? 13 :
+        const fontSize = fitted ? fitted.fontSize :
           Math.max(1, Math.min(18, (width - 4) / (id.length * 0.62), (height - 2) * 0.75));
         const icon = L.divIcon({
           className: 'lot-label',
@@ -8056,15 +8084,18 @@
     };
     const contributionSets = L.control({ position: 'topright' });
     contributionSets.onAdd = () => {
-      const box = L.DomUtil.create('div', 'legend display-options collapsible');
+      const box = L.DomUtil.create('div', 'legend display-options collapsible map-views');
       const option = (label, checked = false, disabled = false) =>
         `<label${disabled ? ' class="inactive"' : ''}><input type="radio" name="contribution-set" value="${escapeHtml(label)}"${checked ? ' checked' : ''}${disabled ? ' disabled' : ''}> ${escapeHtml(label)}</label>`;
       box.innerHTML = '<h2>Map Views</h2>' + option('Barrier Purchase') +
         '<h3>Barrier Operations</h3>' +
         ['2023 Contributions', '2024 Contributions', '2025 Contributions'].map(label => option(label, false, true)).join('') +
         option(barrierOnlyProposalLabel) +
-        '<h3>Barrier and Beach Operations</h3>' + option('2026 Contributions') + option('Funding Proposal', true) + option('Funding Proposal 2', false, true);
+        '<h3>Barrier and Beach Operations</h3>' + option('2026 Contributions') + option('Funding Proposal', true) + option('Funding Proposal 2', false, true) +
+        '<h3>Fees</h3>' + option('Fees Structure');
       L.DomEvent.disableClickPropagation(box);
+      L.DomEvent.disableScrollPropagation(box);
+      L.DomEvent.on(box, 'touchstart touchmove', L.DomEvent.stopPropagation);
       box.addEventListener('change', event => {
         if (!event.target.matches('input[name="contribution-set"]')) return;
         selectContributionSet(event.target.value);
@@ -8136,6 +8167,13 @@
       { building: 1, lot: 0.1, buildingParticipation: 1, lotParticipation: 1, buildingLabel: 'Bay Building High Impact Zone', lotLabel: 'Bay Empty Lot High Impact Zone' },
       { building: 0.2, lot: 0.05, buildingParticipation: 1, lotParticipation: 1, buildingLabel: 'Bay Building Low Impact Zone', lotLabel: 'Bay Empty Lot Low Impact Zone' }
     ];
+    // Fixed Fees tab reference structure, independent of proposal edits and voting.
+    const feeStructureGroups = feesSystem3.flatMap((fees, zone) => [true, false].map(built => ({
+      zone, built, label: built ? fees.buildingLabel : fees.lotLabel,
+      reference: built ? fees.building : fees.lot,
+      color: [['#a78bfa', '#ddd6fe'], ['#38bdf8', '#a5f3fc'], ['#f97316', '#facc15'], ['#10b981', '#a3e635']][zone][built ? 0 : 1]
+    })));
+    const exemptFeeGroup = { label: 'Park / no fee', reference: 0, color: '#cbd5e1' };
     const feesSystem3StorageKey = 'akumal-funding-proposal-fees-system-3';
     const barrierOnlyFees = feesSystem3.map(fees => ({ ...fees }));
     const barrierOnlyFeesStorageKey = 'akumal-funding-proposal-only-barrier-fees-system-3';
@@ -8337,6 +8375,20 @@
       ['Funding Proposal', createFundingProposal('Funding Proposal', 'akumal-funding-proposal-unchecked', true)],
       ['Funding Proposal 2', createFundingProposal('Funding Proposal 2', 'akumal-funding-proposal-2-checked', false, true)]
     ]);
+    const feeStructureState = {
+      donations: new Map([...fundingProposals.get('Funding Proposal').donations].map(([id, row]) => [id, { ...row, amount: 0 }])),
+      contributors: null, ownerSummary: null, donationDataReady: true, donationPlaceholder: '',
+      dataRefreshed: 'Fees System 3 reference structure, October 2, 2026'
+    };
+    function feeGroup(feature) {
+      const row = feeStructureState.donations.get(feature.id);
+      return row ? feeStructureGroups.find(group => group.zone === row.zone && group.built === row.built) : exemptFeeGroup;
+    }
+    function feeLegendHtml() {
+      return '<h2>Fees Structure</h2>' + [...feesSystem3Order.flatMap(zone => feeStructureGroups.filter(group => group.zone === zone)), exemptFeeGroup]
+        .map(group => `<div><span class="swatch" style="background:${group.color}"></span>${escapeHtml(group.label)} · ${percent.format(group.reference)}</div>`).join('') +
+        '<small>Relative to a Bay Building High Impact Zone fee (100%). Fees System 3 reference rates; lot-specific overrides included. Zoom in for lot names, categories and percentages.</small>';
+    }
     // The Funding Proposal view on screen, or undefined in other views.
     const activeProposal = () => fundingProposals.get(selectedContributionSet);
     const ballotDialog = document.getElementById('voting-ballot');
@@ -8666,7 +8718,7 @@
     }
     function selectContributionSet(label) {
       selectedContributionSet = label;
-      const state = isPendingSet() ? {
+      const state = isFeesSet() ? feeStructureState : isPendingSet() ? {
         donations: new Map(), contributors: null, ownerSummary: null,
         dataRefreshed: 'Pending', donationDataReady: false, donationPlaceholder: 'Pending'
       } : is2026Set() ? contributions2026 : isFullSet() ? activeProposal() : purchaseState;
@@ -8680,10 +8732,11 @@
         tag.textContent = 'Pending';
         title.append(' ', tag);
       }
-      refreshButton.hidden = !liveDonationsUrl || is2026Set() || isPendingSet() || isFullSet();
+      refreshButton.hidden = !liveDonationsUrl || is2026Set() || isPendingSet() || isFullSet() || isFeesSet();
       contributorsToggle.getContainer().hidden = isPendingSet();
       restyleLots();
       refreshLotDisplays();
+      if (legend.getContainer()?.isConnected) { legend.remove(); legend.addTo(map); }
       showDonationStatus(dataRefreshed);
       renderContributors();
       renderVotingPanel();
@@ -8707,6 +8760,13 @@
       return `<div class="${className}"><span>${escapeHtml(label)}</span><span>${escapeHtml(value)}</span></div>`;
     }
     function renderContributors() {
+      if (isFeesSet()) {
+        if (ownerBox) ownerBox.hidden = true;
+        if (contributorsBox) contributorsBox.hidden = true;
+        if (allContributorsBox) allContributorsBox.hidden = true;
+        if (fundingBox) { fundingBox.hidden = false; fundingBox.innerHTML = feeLegendHtml(); }
+        return;
+      }
       const pending = isPendingSet();
       const full = isFullSet();
       if (ownerBox) ownerBox.hidden = pending || full;
@@ -8866,7 +8926,7 @@
     const legend = L.control({position: 'bottomright'});
     legend.onAdd = () => {
       const box = L.DomUtil.create('div', 'legend');
-      box.innerHTML = '<div><span class="swatch" style="width:40px;background:linear-gradient(to right,rgb(240,253,244),rgb(20,83,45))"></span>Green lot · amount (darker = higher; top 10% darkest)</div>' +
+      box.innerHTML = isFeesSet() ? feeLegendHtml() : '<div><span class="swatch" style="width:40px;background:linear-gradient(to right,rgb(240,253,244),rgb(20,83,45))"></span>Green lot · amount (darker = higher; top 10% darkest)</div>' +
         '<div><span class="swatch" style="background:#ef4444"></span>Red lot · no amount or pending</div>' +
         '<div><span class="swatch" style="background:#93D7E8"></span>Blue · M&amp;M region</div>' +
         '<div><span class="swatch" style="background:#DB4436"></span>Red · Etapa I / impact line</div>' +

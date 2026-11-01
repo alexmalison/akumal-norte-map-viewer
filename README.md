@@ -4,7 +4,9 @@ An interactive local viewer and GeoJSON extraction of the [2025 Mapa de Lotes de
 
 Public viewer: <https://alexmalison.github.io/akumal-norte-map-viewer/>. Source repository: <https://github.com/alexmalison/akumal-norte-map-viewer>.
 
-The page opens in **Funding Proposal** by default. Other views remain available in Map Views.
+The page opens in **Funding Proposal** by default. Under **Fees**, **Fees Structure** colors each lot by its Fees System 3 category and shows the lot name, category, and relative fee percentage as you zoom in. Percentages are relative to a Bay Building High Impact Zone fee (100%); the reference structure includes lot-specific overrides and is independent of proposal settings and voting. A color key is shown beside the map.
+
+Other views remain available in Map Views.
 
 The extraction contains 157 lot features and 9 larger region features (165 polygons and one line). Each feature retains the map name, description, layer, feature ID, and style color. Coordinates are WGS84 longitude/latitude in GeoJSON order.
 

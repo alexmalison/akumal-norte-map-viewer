@@ -93,6 +93,7 @@ assert.ok(run("activeProposal().eligible.find(r => r.payerKey==='lot:F24').amoun
 // Status colors are categorical and independent of donation amount.
 context.isFullSet = () => true;
 context.isPendingSet = () => false;
+context.isFeesSet = () => context.selectedContributionSet === 'Fees Structure';
 context.votingMode = () => context.votingResultsVisible;
 context.donations = run('activeProposal().donations');
 run(block('function lotStyle(feature)', '// Green fill proportional'));
@@ -213,3 +214,37 @@ assert.equal(get().votes['Funding Proposal (Only Barrier)']['lot:F24'], 'yes');
 assert.equal(Object.keys(get().votes['Funding Proposal']).length, 0);
 assert.equal(get().proposals['Funding Proposal (Only Barrier)'].budget, 150000);
 console.log('Voting checks passed: colors, shortfalls, Yes-only fees, exact totals, duplicates, toggle restoration, ballot validation, history, privacy, and version isolation.');
+
+context.isFeesSet = () => context.selectedContributionSet === 'Fees Structure';
+context.selectedContributionSet = 'Fees Structure';
+context.votingResultsVisible = false;
+assert.equal(run('feeStructureGroups.length'), 8);
+assert.equal(run('new Set(feeStructureGroups.map(g => g.color)).size'), 8);
+assert.deepEqual(Array.from(run('feeStructureGroups.map(g => g.reference)')), [0.1, 0.05, 0.1, 0.05, 1, 0.1, 0.2, 0.05]);
+for (const row of run('[...feeStructureState.donations.values()]')) {
+  context.feeFeature = { id: row.id, properties: {} };
+  assert.ok(run('feeGroup(feeFeature)'));
+  assert.equal(run('lotStyle(feeFeature).fillColor'), run('feeGroup(feeFeature).color'));
+}
+for (const code of ['G37', 'G38']) {
+  context.feeFeature = run(`lotFeatures.find(f => lotId(f.properties.name) === '${code}')`);
+  assert.equal(run('feeGroup(feeFeature).label'), 'Bay Empty Lot High Impact Zone');
+  assert.equal(run('feeGroup(feeFeature).reference'), 0.1);
+}
+context.feeFeature = { id: 'park', properties: {} };
+assert.equal(run('feeGroup(feeFeature).reference'), 0);
+context.selectedContributionSet = 'Funding Proposal';
+console.log('Fees checks passed: unique colors, reference rates, every fee-register shape, lot overrides, and parks.');
+
+// Every mapped property has a reference rate; only the two named parks are exempt.
+const propertyFeatures = run("lotFeatures.filter(f => f.properties.layer === 'Akumal Norte property Lots')");
+for (const feature of propertyFeatures) {
+  context.feeFeature = feature;
+  const reference = run('feeGroup(feeFeature).reference');
+  assert.ok(Number.isFinite(reference), feature.properties.name);
+  if (!/^Parque (Bush|Yalku)$/.test(feature.properties.name)) {
+    assert.ok(run('feeStructureState.donations.has(feeFeature.id)'), feature.properties.name);
+    assert.ok(reference > 0, feature.properties.name);
+  }
+}
+console.log('Fee coverage passed for all ' + propertyFeatures.length + ' lot shapes.');
