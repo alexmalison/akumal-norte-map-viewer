@@ -340,3 +340,60 @@ for (const label of ['Funding Proposal', 'Funding Proposal (Only Barrier)']) {
   }
 }
 console.log('Label checks passed: asks followed by Yes/No/Pending status, both proposals and modes, including narrow lots.');
+
+// Direct lot clicks open the existing ballot with the requested lot/name/category heading.
+const titleElement = { textContent: '' };
+const originalGetElement = context.document.getElementById;
+context.document.getElementById = id => id === 'voting-ballot-title' ? titleElement : originalGetElement(id);
+context.ballotLotId = null;
+context.ballotContent = { innerHTML: '' };
+context.lotLayers = new Map();
+context.sharedNames = new Map();
+let modalOpens = 0;
+let popupCloses = 0;
+context.ballotDialog = { open: false, showModal() { this.open = true; modalOpens++; } };
+context.map.closePopup = () => { popupCloses++; };
+const ballotHelpersStart = main.indexOf('function ballotTitle');
+run(main.slice(ballotHelpersStart, main.indexOf("document.addEventListener('click', event => {", ballotHelpersStart)));
+for (const label of ['Funding Proposal', 'Funding Proposal (Only Barrier)']) {
+  context.selectedContributionSet = label;
+  const row = run("activeProposal().eligible.find(r => r.sourceCode==='G51')");
+  context.targetLot = row.id;
+  context.feature = run('lotFeatures.find(f => f.id === ' + JSON.stringify(row.id) + ')');
+  context.lotLayers.set(row.id, { feature: context.feature });
+  context.ballotDialog.open = false;
+  assert.equal(run('openVotingBallot(targetLot)'), true);
+  assert.equal(context.ballotDialog.open, true);
+  assert.equal(titleElement.textContent, 'Lot G51: Casa Fortuna, Bay Building High Impact Zone');
+  assert.match(context.ballotContent.innerHTML, /Contribution ask/);
+  assert.match(context.ballotContent.innerHTML, /Committed/);
+  assert.match(context.ballotContent.innerHTML, /name="representative"/);
+  assert.match(context.ballotContent.innerHTML, /name="authorized"/);
+  assert.match(context.ballotContent.innerHTML, /Submit vote/);
+  run('openVotingBallot(targetLot)'); // Reopening an already open ballot must not throw.
+}
+assert.equal(modalOpens, 2);
+assert.equal(popupCloses, 4);
+context.sharedNames.set(context.targetLot, 'Updated name');
+run('renderBallot()');
+assert.equal(titleElement.textContent, 'Lot G51: Updated name, Bay Building High Impact Zone');
+assert.equal(run("ballotTitle({sourceCode:'G51',name:'',baseCategory:'Bay Building High Impact Zone'})"),
+  'Lot G51: Bay Building High Impact Zone');
+assert.equal(run("ballotTitle({sourceCode:'G37',name:null,baseCategory:'Bay Empty Lot High Impact Zone (Fees tab override)'})"),
+  'Lot G37: Bay Empty Lot High Impact Zone');
+assert.equal(run("openVotingBallot('park')"), false);
+context.selectedContributionSet = 'Barrier Purchase';
+assert.equal(run('openVotingBallot(targetLot)'), false);
+// Exercise the actual per-layer click binding, without a browser or real vote submission.
+const layerClicks = [];
+context.directLayer = { bindPopup() {}, bindTooltip() {}, on(event, callback) { if (event === 'click') layerClicks.push(callback); } };
+context.renderFeature = () => {};
+run(block('function bindFeature(feature, layer)', 'for (const feature of lotFeatures)'));
+run('bindFeature(feature, directLayer)');
+context.ballotDialog.open = false;
+layerClicks[0]();
+assert.equal(context.ballotDialog.open, false);
+context.selectedContributionSet = 'Funding Proposal';
+layerClicks[0]();
+assert.equal(context.ballotDialog.open, true);
+console.log('Ballot navigation checks passed: direct clicks, lot-first headings, optional/shared names, categories, and unchanged form fields.');

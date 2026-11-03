@@ -7625,6 +7625,8 @@
         ? `<div>${escapeHtml(p.description).replace(/\n/g, '<br>')}</div>` : '';
       const isLot = p.layer === 'Akumal Norte property Lots';
       const detail = isLot ? donations.get(feature.id) : null;
+      const popup = layer.getPopup?.();
+      if (popup) popup.options.autoPan = !(isFullSet() && detail?.payerKey?.startsWith('lot:'));
       const id = isLot ? lotId(p.name) : null;
       const sharedName = isLot ? sharedNames.get(nameKey(feature)) : null;
       const recordedNames = detail && detail.names.length > 2
@@ -7658,6 +7660,9 @@
       layer.bindPopup('', { maxHeight: Math.max(160, Math.min(420, window.innerHeight - 220)) });
       layer.bindTooltip('', { sticky: true });
       renderFeature(feature, layer);
+      layer.on('click', () => {
+        if (isFullSet()) openVotingBallot(feature.id);
+      });
     }
     for (const feature of lotFeatures) {
       (feature.properties.layer === 'Akumal Norte property Lots' ? lots : macro).addData(feature);
@@ -7828,6 +7833,7 @@
         if (!map.hasLayer(lots)) lots.addTo(map);
         map.closePopup();
         map.fitBounds(layer.getBounds(), { maxZoom: 18, animate: false });
+        if (openVotingBallot(layer.feature.id)) return;
         document.body.classList.add('lot-browser-focus');
         map.once('popupclose', () => document.body.classList.remove('lot-browser-focus'));
         layer.openPopup();
@@ -8407,19 +8413,31 @@
     const ballotContent = document.getElementById('voting-ballot-content');
     let ballotLotId = null;
     document.getElementById('voting-ballot-close').addEventListener('click', () => ballotDialog.close());
+    function ballotTitle(detail, name = detail.name) {
+      const category = detail.baseCategory.replace(/ \(Fees tab override\)$/, '');
+      return `Lot ${detail.sourceCode}: ${[name?.trim(), category].filter(Boolean).join(', ')}`;
+    }
     function renderBallot() {
       const detail = activeProposal()?.donations.get(ballotLotId);
       if (!detail) return;
-      document.getElementById('voting-ballot-title').textContent = `${detail.name} · Lot ${detail.sourceCode}`;
+      const feature = lotLayers.get(ballotLotId)?.feature;
+      const name = feature && sharedNames.get(nameKey(feature)) || detail.name;
+      document.getElementById('voting-ballot-title').textContent = ballotTitle(detail, name);
       ballotContent.innerHTML = renderVoteForm(detail);
+    }
+    function openVotingBallot(featureId) {
+      const detail = activeProposal()?.donations.get(featureId);
+      if (!detail?.payerKey?.startsWith('lot:')) return false;
+      ballotLotId = featureId;
+      renderBallot();
+      map.closePopup();
+      if (!ballotDialog.open) ballotDialog.showModal();
+      return true;
     }
     document.addEventListener('click', event => {
       const button = event.target.closest?.('.open-ballot');
       if (!button) return;
-      ballotLotId = button.dataset.lotId;
-      renderBallot();
-      map.closePopup();
-      ballotDialog.showModal();
+      openVotingBallot(button.dataset.lotId);
     }, true); // Leaflet stops popup clicks from bubbling to the document.
     function renderVoteForm(detail) {
       const settings = votingSettings(selectedContributionSet);
