@@ -8002,7 +8002,8 @@
         const height = Math.max(1, southEast.y - northWest.y);
         // Unchecked Funding Proposal contributors are not charged, so their lots show no amount.
         const charged = donation && !(isFullSet() && !activeProposal().included(donation.payerKey));
-        const amount = votingMode() ? voteLabel(voteFor(donation?.payerKey)) :
+        const amount = votingMode() ?
+          (Number.isFinite(donation?.contributionAsk) ? `${currency.format(donation.contributionAsk)} · ` : '') + voteLabel(voteFor(donation?.payerKey)) :
           charged ? currency.format(donation.amount) + (donation.shared ? '*' : '') : '';
         const name = sharedNames.get(nameKey(layer.feature)) || donation?.name || (isFeesSet() ? layer.feature.properties.name : '');
         const wrappedName = name ? splitLotName(name) : null;
@@ -8010,6 +8011,9 @@
         const candidates = group ? [
           { nameLines: [name, group.label], amount: percent.format(group.reference) },
           { nameLines: [...(wrappedName || [name]), ...(splitLotName(group.label) || [group.label])], amount: percent.format(group.reference) }
+        ] : votingMode() && name ? [
+          { nameLines: [name], amount },
+          ...(wrappedName ? [{ nameLines: wrappedName, amount }] : [])
         ] : name ? [
           { nameLines: [name], amount },
           ...(wrappedName ? [{ nameLines: wrappedName, amount }] : []),
@@ -8018,7 +8022,7 @@
           ...(wrappedName ? [{ nameLines: wrappedName, amount: '' }] : [])
         ] : [];
         let fitted = null;
-        for (const fontSize of group ? [13, 11, 9] : [13]) {
+        for (const fontSize of group || votingMode() ? [13, 11, 9] : [13]) {
           for (const candidate of candidates) {
             const size = labelSize(id, candidate.nameLines, candidate.amount, fontSize);
             if (size.width > width || size.height > height) continue;
@@ -8027,9 +8031,9 @@
           }
           if (fitted) break;
         }
-        // Long names and narrow/irregular polygons must not lose their fee information.
+        // Keep names paired with fees or contribution asks and vote status at close zoom.
         // At close zoom allow the full label to extend beyond the lot boundary.
-        if (!fitted && group && map.getZoom() >= 18) {
+        if (!fitted && (group || votingMode()) && map.getZoom() >= 18) {
           const candidate = candidates[candidates.length - 1];
           fitted = { ...candidate, ...labelSize(id, candidate.nameLines, candidate.amount),
             center: findLabelCenter(layer.feature, 1, 1, bounds) || bounds.getCenter(), fontSize: 13 };

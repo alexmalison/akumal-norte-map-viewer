@@ -301,3 +301,42 @@ context.donations.set(context.feature.id, { ...context.donations.get(context.fea
 run('renderFeature(feature, layer)');
 assert.ok(context.tooltip.endsWith(' · $123'));
 console.log('Hover checks passed: pending contribution asks in both voting modes and proposals; other views preserved.');
+
+// Voting labels keep the published ask and status together beneath the name.
+context.labelMeasure = { measureText: text => ({ width: String(text).length * 7 }) };
+run(block('function splitLotName(name)', 'function labelSize'));
+run(block('function labelSize', 'let showLotNumbers'));
+context.showLotNumbers = false;
+context.findLabelCenter = () => ({ lat: 0, lng: 0 });
+context.map = { hasLayer: () => true, latLngToLayerPoint: point => point, getZoom: () => 18 };
+context.L = { divIcon: options => options, marker: (center, options) => ({ options, on() {} }) };
+context.lotLabels = { clearLayers: () => { context.labelMarkers = []; },
+  addLayer: marker => { context.labelMarkers.push(marker); } };
+context.lots = { eachLayer: callback => callback(context.labelLayer) };
+run(block('function updateLotLabels()', "map.on('zoomend resize'"));
+for (const label of ['Funding Proposal', 'Funding Proposal (Only Barrier)']) {
+  context.selectedContributionSet = label;
+  context.votingResultsVisible = true;
+  for (const vote of ['yes', 'no', 'pending']) for (const shortfall of [true, false]) {
+    if (vote === 'pending') delete context.votingFeed.votes[label]['lot:F25'];
+    else context.votingFeed.votes[label]['lot:F25'] = vote;
+    context.votingShortfallVisible = shortfall;
+    recompute();
+    context.donations = run('activeProposal().donations');
+    const row = run("activeProposal().eligible.find(r => r.payerKey==='lot:F25')");
+    const feature = run('lotFeatures.find(f => f.id === ' + JSON.stringify(row.id) + ')');
+    for (const narrow of [false, true]) {
+      context.labelLayer = { feature, getBounds: () => ({
+        getNorthWest: () => ({ x: 0, y: 0 }), getSouthEast: () => ({ x: narrow ? 5 : 1000, y: narrow ? 5 : 500 }),
+        getCenter: () => ({ lat: 0, lng: 0 })
+      }) };
+      run('updateLotLabels()');
+      const rendered = context.labelMarkers[0].options.icon.html;
+      const amount = context.currency.format(row.contributionAsk) + ' · ' + run('voteLabel(' + JSON.stringify(vote) + ')');
+      assert.ok(rendered.includes('<span class="lot-name">'));
+      assert.ok(rendered.includes('<span class="donation-amount">' + amount + '</span>'));
+      assert.ok(rendered.indexOf('lot-name') < rendered.indexOf('donation-amount'));
+    }
+  }
+}
+console.log('Label checks passed: asks followed by Yes/No/Pending status, both proposals and modes, including narrow lots.');
