@@ -266,3 +266,38 @@ for (const feature of propertyFeatures) {
   }
 }
 console.log('Fee coverage passed for all ' + propertyFeatures.length + ' lot shapes.');
+
+// Pending lots show the published ask on hover, even when their voting-view share is zero.
+context.sharedNames = new Map();
+context.nameKey = feature => feature.id;
+context.isFullSet = () => context.selectedContributionSet.startsWith('Funding Proposal');
+context.is2026Set = () => false;
+context.canEdit = false;
+context.donationDataReady = true;
+context.layer = { setPopupContent: () => {}, setTooltipContent: value => { context.tooltip = value; } };
+run(block('function renderFeature(feature, layer)', 'function bindFeature'));
+for (const label of ['Funding Proposal', 'Funding Proposal (Only Barrier)']) {
+  context.selectedContributionSet = label;
+  delete context.votingFeed.votes[label]['lot:F25'];
+  context.votingResultsVisible = true;
+  for (const shortfall of [true, false]) {
+    context.votingShortfallVisible = shortfall;
+    recompute();
+    context.donations = run('activeProposal().donations');
+    context.feature = run("lotFeatures.find(f => activeProposal().donations.get(f.id)?.payerKey==='lot:F25')");
+    const row = context.donations.get(context.feature.id);
+    assert.equal(row.amount, 0);
+    assert.ok(row.contributionAsk > 0);
+    run('renderFeature(feature, layer)');
+    assert.ok(context.tooltip.includes('Contribution ask: ' + context.currency.format(row.contributionAsk) + ' / year'));
+  }
+  context.votingFeed.votes[label]['lot:F25'] = 'yes';
+  recompute();
+  run('renderFeature(feature, layer)');
+  assert.equal(context.tooltip.includes('Contribution ask:'), false);
+}
+context.selectedContributionSet = 'Barrier Purchase';
+context.donations.set(context.feature.id, { ...context.donations.get(context.feature.id), amount: 123 });
+run('renderFeature(feature, layer)');
+assert.ok(context.tooltip.endsWith(' · $123'));
+console.log('Hover checks passed: pending contribution asks in both voting modes and proposals; other views preserved.');
