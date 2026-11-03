@@ -77,6 +77,9 @@ assert.equal(cents('activeProposal().votingSummary.votedFor'), baselineYes);
 assert.equal(cents('activeProposal().votingSummary.shortfall'), 34000000 - baselineYes);
 assert.equal(cents('activeProposal().categories.reduce((s,r) => s+r.shortfall,0)'), 34000000 - baselineYes);
 const baselineF24 = run("activeProposal().eligible.find(r => r.payerKey==='lot:F24').amount");
+assert.equal(run("activeProposal().eligible.find(r => r.payerKey==='lot:F24').contributionAsk"), baselineF24);
+assert.ok(run("activeProposal().eligible.find(r => r.payerKey==='lot:F25').contributionAsk") > 0);
+assert.equal(run("new Set([...activeProposal().donations.values()].filter(r => r.payerKey==='lot:H30').map(r => r.contributionAsk)).size"), 1);
 context.votingFeed.votes['Funding Proposal'] = Object.fromEntries(run('activeProposal().eligible.map(r => [r.payerKey,"yes"])'));
 recompute();
 assert.equal(cents(totalShares), 34000000);
@@ -90,6 +93,7 @@ assert.equal(cents(totalShares), 34000000);
 assert.equal(cents('activeProposal().votingSummary.votedFor'), baselineYes);
 assert.equal(cents('activeProposal().votingSummary.votedFor + activeProposal().votingSummary.businessContribution + activeProposal().votingSummary.shortfall'), 40000000);
 assert.ok(run("activeProposal().eligible.find(r => r.payerKey==='lot:F24').amount") > baselineF24);
+assert.equal(run("activeProposal().eligible.find(r => r.payerKey==='lot:F24').contributionAsk"), baselineF24);
 // Status colors are categorical and independent of donation amount.
 context.isFullSet = () => true;
 context.isPendingSet = () => false;
@@ -152,12 +156,26 @@ context.currency = new Intl.NumberFormat('en-US', { style: 'currency', currency:
 run(block('function renderVoteForm', 'function renderVotingPanel'));
 const unavailableBallot = run('renderVoteForm(activeProposal().eligible[0])');
 assert.match(unavailableBallot, /button type="submit" disabled/);
+assert.match(unavailableBallot, /Contribution ask/);
+assert.match(unavailableBallot, /<span>Committed<\/span><span>Results not loaded/);
 context.votingFeed.proposals['Funding Proposal (Only Barrier)'] = run('votingSettings(barrierOnlyProposalLabel)');
 context.votingFeed.votes['Funding Proposal (Only Barrier)'] = {};
 const availableBallot = run('renderVoteForm(activeProposal().eligible[0])');
 assert.doesNotMatch(availableBallot, /button type="submit" disabled/);
 assert.match(availableBallot, /Do you approve Funding Proposal \(Only Barrier\)/);
 assert.match(availableBallot, /Budget \$150,000/);
+// The selected lot's published ask is shown even before it has voted.
+const lotAsk = run("activeProposal().eligible.find(r => r.payerKey==='lot:F24').contributionAsk");
+const lotBallot = () => run("renderVoteForm(activeProposal().eligible.find(r => r.payerKey==='lot:F24'))");
+assert.ok(lotBallot().includes('<span>Contribution ask</span><span><strong>' + context.currency.format(lotAsk) + ' / year'));
+assert.match(lotBallot(), /<span>Committed<\/span><span><strong>\$0 \/ year/);
+context.votingFeed.votes['Funding Proposal (Only Barrier)']['lot:F24'] = 'yes';
+assert.ok(lotBallot().includes('<span>Committed</span><span><strong>' + context.currency.format(lotAsk) + ' / year'));
+assert.ok(lotBallot().includes(context.currency.format(lotAsk / 12) + ' / month'));
+context.votingFeed.votes['Funding Proposal (Only Barrier)']['lot:F24'] = 'no';
+assert.match(lotBallot(), /<span>Committed<\/span><span><strong>\$0 \/ year/);
+context.selectedContributionSet = 'Funding Proposal';
+assert.ok(lotBallot().includes('<span>Committed</span><span><strong>' + context.currency.format(run("activeProposal().eligible.find(r => r.payerKey==='lot:F24').contributionAsk")) + ' / year'));
 context.selectedContributionSet = 'Funding Proposal';
 
 // Exercise storage code against a private in-memory sheet; no real ballots are submitted.

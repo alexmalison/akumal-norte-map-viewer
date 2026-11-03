@@ -108,6 +108,10 @@
     .vote-form input[type="text"] { box-sizing: border-box; width: 100%; padding: 7px; }
     .vote-form fieldset { margin: 0; padding: 6px; }
     .vote-form button { padding: 8px; font: inherit; cursor: pointer; }
+    .vote-contributions { padding: 10px; border-radius: 4px; background: #f5f8fb; }
+    .vote-contributions > div { display: flex; justify-content: space-between; gap: 10px; margin: 4px 0; }
+    .vote-contributions > div > span:last-child { text-align: right; }
+    .vote-contributions small { display: block; color: #536372; }
     .visible-lot { display: grid; grid-template-columns: minmax(0, 1fr) auto; align-items: start; gap: 2px 6px; width: 100%; padding: 7px 10px; border: 0; border-top: 1px solid #e3e8ed; background: transparent; color: inherit; font: inherit; text-align: left; }
     button.visible-lot { cursor: pointer; }
     button.visible-lot:hover, button.visible-lot:focus-visible { background: #e9f3fa; }
@@ -8337,6 +8341,7 @@
           allocateLotAmounts(charged, Math.max(0, state.budget - state.flatTotal));
         rows.forEach(row => {
           const paying = included(row.payerKey);
+          row.contributionAsk = baselineAmounts.get(row.payerKey) || 0;
           row.amount = !paying ? 0 : row.business ? flat.get(row.business) :
             votingResultsVisible ? (voteAmounts.get(row.payerKey) || 0) : Math.round(row.weight * unit * 100) / 100;
           row.category = row.baseCategory + (votingResultsVisible
@@ -8411,10 +8416,17 @@
     }, true); // Leaflet stops popup clicks from bubbling to the document.
     function renderVoteForm(detail) {
       const settings = votingSettings(selectedContributionSet);
-      const ready = Boolean(votingUrl && votingFeed?.proposals?.[selectedContributionSet] && !votingError);
+      const resultsReady = Boolean(votingFeed?.proposals?.[selectedContributionSet]);
+      const ready = Boolean(votingUrl && resultsReady && !votingError);
+      const amount = annual => `<strong>${escapeHtml(currency.format(annual))} / year</strong><small>${escapeHtml(currency.format(annual / 12))} / month</small>`;
+      const committed = voteFor(detail.payerKey) === 'yes' ? detail.contributionAsk : 0;
       return `<form class="vote-form" data-payer="${escapeHtml(detail.payerKey)}" data-proposal="${escapeHtml(selectedContributionSet)}" data-version="${escapeHtml(settings.version)}">` +
         `<b>Vote on ${escapeHtml(selectedContributionSet)}</b>` +
         `<small>Version ${escapeHtml(settings.version)} · Budget ${escapeHtml(currency.format(settings.budget))}. Fees depend on how many lots vote Yes.</small>` +
+        '<div class="vote-contributions">' +
+        `<div><span>Contribution ask</span><span>${amount(detail.contributionAsk)}</span></div>` +
+        `<div><span>Committed</span><span>${resultsReady ? amount(committed) : 'Results not loaded'}</span></div>` +
+        '<small>For this lot at published annual fees. A Yes vote commits to the contribution ask; No or Pending means $0 committed. These are commitments, not payments received.</small></div>' +
         `<div>Current vote: <b>${votingFeed?.proposals?.[selectedContributionSet] ? voteLabel(voteFor(detail.payerKey)) : 'Results not loaded'}</b></div>` +
         '<label>Your name<input name="representative" type="text" maxlength="100" autocomplete="name" required></label>' +
         '<label><input name="authorized" type="checkbox" required> I confirm that I am authorized to vote on behalf of this lot/building.</label>' +
