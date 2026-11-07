@@ -16,7 +16,7 @@ const context = vm.createContext({
   document: { getElementById: id => ({ textContent: data[id] }) },
   localStorage: { getItem: () => null, setItem: () => {} },
   selectedContributionSet: 'Funding Proposal', votingResultsVisible: false,
-  votingShortfallVisible: false, votingFeed: null
+  votingShortfallVisible: false, votingFeed: null, allMapViewsEnabled: false, URLSearchParams
 });
 const run = code => vm.runInContext(code, context);
 run(block('const voteFor =', '// Each entry'));
@@ -163,7 +163,7 @@ context.votingFeed.proposals['Funding Proposal (Only Barrier)'] = run('votingSet
 context.votingFeed.votes['Funding Proposal (Only Barrier)'] = {};
 const availableBallot = run('renderVoteForm(activeProposal().eligible[0])');
 assert.doesNotMatch(availableBallot, /button type="submit" disabled/);
-assert.match(availableBallot, /Do you approve 2027 Funding Proposal \(Only Barrier\)/);
+assert.match(availableBallot, /Do you approve 2027 Funding Proposal \(Barrier Only\)/);
 assert.match(availableBallot, /data-proposal="Funding Proposal \(Only Barrier\)"/);
 assert.match(availableBallot, /Budget \$150,000/);
 // The selected lot's published ask is shown even before it has voted.
@@ -400,8 +400,8 @@ layerClicks[0]();
 assert.equal(context.ballotDialog.open, true);
 console.log('Ballot navigation checks passed: direct clicks, lot-first headings, optional/shared names, categories, and unchanged form fields.');
 
-// Renamed views retain their vote-storage keys; Only Barrier is the sole selectable option.
-assert.equal(run("mapViewLabel('Funding Proposal (Only Barrier)')"), '2027 Funding Proposal (Only Barrier)');
+// Renamed views retain their vote-storage keys; Barrier Only is the default option.
+assert.equal(run("mapViewLabel('Funding Proposal (Only Barrier)')"), '2027 Funding Proposal (Barrier Only)');
 assert.equal(run("mapViewLabel('Funding Proposal')"), '2027 Funding Proposal (Barrier and Beach Cleaning)');
 const optionStart = main.indexOf('const option = label =>');
 run(main.slice(optionStart, main.indexOf('box.innerHTML =', optionStart)));
@@ -419,6 +419,24 @@ for (const key of viewKeys) {
     assert.doesNotMatch(rendered, / checked/);
   }
 }
+for (const search of ['?$$$', '?$$$&view=all', '?%24%24%24', '?$$$=1']) {
+  assert.equal(run('allViewsRequested(' + JSON.stringify(search) + ')'), true, search);
+}
+for (const search of ['', '?view=all', '?view=all&$$$', '?view=$$$', '?$$$$', '?&$$$', '?$$$extra']) {
+  assert.equal(run('allViewsRequested(' + JSON.stringify(search) + ')'), false, search);
+}
+context.allMapViewsEnabled = true;
+let checkedViews = 0;
+for (const key of viewKeys) {
+  const rendered = run('option(' + JSON.stringify(key) + ')');
+  assert.doesNotMatch(rendered, / disabled|class="inactive"/);
+  if (rendered.includes(' checked')) {
+    checkedViews++;
+    assert.equal(key, 'Funding Proposal (Only Barrier)');
+  }
+}
+assert.equal(checkedViews, 1);
+context.allMapViewsEnabled = false;
 context.selectedContributionSet = 'Funding Proposal';
 context.votingResultsVisible = false;
 context.votingFeed.votes['Funding Proposal']['lot:F25'] = 'yes';
@@ -427,7 +445,7 @@ const renamedBallot = lotBallot();
 assert.match(renamedBallot, /Do you approve 2027 Funding Proposal \(Barrier and Beach Cleaning\)/);
 assert.match(renamedBallot, /data-proposal="Funding Proposal"/);
 assert.equal(context.votingFeed.votes['Funding Proposal']['lot:F25'], 'yes');
-console.log('View checks passed: 2027 display names, Only Barrier selected, other views disabled, and original vote keys preserved.');
+console.log('View checks passed: Barrier Only selected, first-parameter URL switch enables all views, and original vote keys preserved.');
 assert.equal(vm.runInNewContext(block('let votingResultsVisible', 'const voteFor') + '\nvotingMode();',
   { isFullSet: () => true }), true);
 console.log('Startup check passed: voting results are visible by default.');

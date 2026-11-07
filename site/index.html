@@ -164,7 +164,7 @@
   </style>
 </head>
 <body>
-  <header><h1 id="page-title" aria-live="polite">2027 Funding Proposal (Only Barrier)</h1><p>HMB Sargassum Mitigation Project</p></header>
+  <header><h1 id="page-title" aria-live="polite">2027 Funding Proposal (Barrier Only)</h1><p>HMB Sargassum Mitigation Project</p></header>
   <details id="map-tools" class="map-tools"><summary>Map data &amp; editing</summary><span id="data-status">157 lots · 9 region features</span><span id="sync-status" aria-live="polite">Loading shared names…</span><button id="refresh-donations" type="button" hidden>Refresh donations</button><button id="editor-button" type="button" hidden>Editor sign in</button><form id="editor-form" hidden><input id="editor-email" type="email" aria-label="Editor email" placeholder="Editor email" required><button type="submit">Send link</button></form></details>
   <div id="map" role="application" aria-label="Interactive map of Akumal Norte lots and regions"></div>
   <dialog id="voting-ballot" class="fees-editor" aria-labelledby="voting-ballot-title">
@@ -7322,7 +7322,7 @@
     const refreshButton = document.getElementById('refresh-donations');
     const geojson = JSON.parse(document.getElementById('map-data').textContent);
     const liveDonationsUrl = document.querySelector('meta[name="donation-feed-url"]').content;
-    // Start with purchase data while layers initialize; select Only Barrier after setup.
+    // Start with purchase data while layers initialize; select Barrier Only after setup.
     let selectedContributionSet = 'Barrier Purchase';
     const pendingContributionSets = new Set(['2023 Contributions', '2024 Contributions', '2025 Contributions']);
     const isPendingSet = () => pendingContributionSets.has(selectedContributionSet);
@@ -7330,6 +7330,7 @@
     const is2026Set = () => selectedContributionSet === '2026 Contributions';
     const isFullSet = () => selectedContributionSet.startsWith('Funding Proposal');
     const votingUrl = document.querySelector('meta[name="voting-url"]').content;
+    const allMapViewsEnabled = allViewsRequested(window.location.search);
     let votingResultsVisible = true;
     let votingPanelMinimized = true;
     let votingShortfallVisible = true;
@@ -7343,10 +7344,14 @@
     const barrierOnlyProposalLabel = 'Funding Proposal (Only Barrier)';
     // Keep stable storage keys so renaming the views preserves existing ballots and settings.
     const mapViewNames = {
-      'Funding Proposal (Only Barrier)': '2027 Funding Proposal (Only Barrier)',
+      'Funding Proposal (Only Barrier)': '2027 Funding Proposal (Barrier Only)',
       'Funding Proposal': '2027 Funding Proposal (Barrier and Beach Cleaning)'
     };
     const mapViewLabel = label => mapViewNames[label] || label;
+    function allViewsRequested(search) {
+      const firstParameter = search.replace(/^\?/, '').split('&')[0];
+      return new URLSearchParams(firstParameter).keys().next().value === '$$$';
+    }
     const votingSettings = label => votingFeed?.proposals?.[label] || {
       version: '2026-10-v1', budget: label === barrierOnlyProposalLabel ? 150000 : 400000, businessContribution: 60000,
       rates: [{ building: .1, lot: .05 }, { building: .1, lot: .05 },
@@ -8109,8 +8114,9 @@
     contributionSets.onAdd = () => {
       const box = L.DomUtil.create('div', 'legend display-options collapsible map-views');
       const option = label => {
-        const enabled = label === barrierOnlyProposalLabel;
-        return `<label${enabled ? '' : ' class="inactive"'}><input type="radio" name="contribution-set" value="${escapeHtml(label)}"${enabled ? ' checked' : ' disabled'}> ${escapeHtml(mapViewLabel(label))}</label>`;
+        const checked = label === barrierOnlyProposalLabel;
+        const enabled = allMapViewsEnabled || checked;
+        return `<label${enabled ? '' : ' class="inactive"'}><input type="radio" name="contribution-set" value="${escapeHtml(label)}"${checked ? ' checked' : ''}${enabled ? '' : ' disabled'}> ${escapeHtml(mapViewLabel(label))}</label>`;
       };
       box.innerHTML = '<h2>Map Views</h2>' + option('Barrier Purchase') +
         '<h3>Barrier Operations</h3>' +
@@ -8161,7 +8167,7 @@
       fundedPesos: total.fundedPesos + round.fundedPesos
     }), { budgetPesos: 0, fundedPesos: 0 });
     const pesosPerUsd = 18;
-    // The Barrier and Beach budget (USD), shared by its two proposals. Only Barrier has its own budget.
+    // The Barrier and Beach budget (USD), shared by its two proposals. Barrier Only has its own budget.
     // Clicking the Budget amount in
     // the Fees box asks for budgetPassword, then for a new figure, which is saved in this
     // browser's local storage. The password only keeps casual visitors from changing it: it is
