@@ -164,7 +164,7 @@
   </style>
 </head>
 <body>
-  <header><h1 id="page-title" aria-live="polite">Funding Proposal</h1><p>HMB Sargassum Mitigation Project</p></header>
+  <header><h1 id="page-title" aria-live="polite">2027 Funding Proposal (Only Barrier)</h1><p>HMB Sargassum Mitigation Project</p></header>
   <details id="map-tools" class="map-tools"><summary>Map data &amp; editing</summary><span id="data-status">157 lots · 9 region features</span><span id="sync-status" aria-live="polite">Loading shared names…</span><button id="refresh-donations" type="button" hidden>Refresh donations</button><button id="editor-button" type="button" hidden>Editor sign in</button><form id="editor-form" hidden><input id="editor-email" type="email" aria-label="Editor email" placeholder="Editor email" required><button type="submit">Send link</button></form></details>
   <div id="map" role="application" aria-label="Interactive map of Akumal Norte lots and regions"></div>
   <dialog id="voting-ballot" class="fees-editor" aria-labelledby="voting-ballot-title">
@@ -7322,7 +7322,7 @@
     const refreshButton = document.getElementById('refresh-donations');
     const geojson = JSON.parse(document.getElementById('map-data').textContent);
     const liveDonationsUrl = document.querySelector('meta[name="donation-feed-url"]').content;
-    // Start with purchase data while layers initialize; select Funding Proposal after setup.
+    // Start with purchase data while layers initialize; select Only Barrier after setup.
     let selectedContributionSet = 'Barrier Purchase';
     const pendingContributionSets = new Set(['2023 Contributions', '2024 Contributions', '2025 Contributions']);
     const isPendingSet = () => pendingContributionSets.has(selectedContributionSet);
@@ -7330,7 +7330,7 @@
     const is2026Set = () => selectedContributionSet === '2026 Contributions';
     const isFullSet = () => selectedContributionSet.startsWith('Funding Proposal');
     const votingUrl = document.querySelector('meta[name="voting-url"]').content;
-    let votingResultsVisible = false;
+    let votingResultsVisible = true;
     let votingPanelMinimized = true;
     let votingShortfallVisible = true;
     let votingFeed = null;
@@ -7341,6 +7341,12 @@
     const voteFor = (key, label = selectedContributionSet) => votingFeed?.votes?.[label]?.[key] || 'pending';
     const voteLabel = vote => ({ yes: 'Yes', no: 'No', pending: 'Pending vote' })[vote];
     const barrierOnlyProposalLabel = 'Funding Proposal (Only Barrier)';
+    // Keep stable storage keys so renaming the views preserves existing ballots and settings.
+    const mapViewNames = {
+      'Funding Proposal (Only Barrier)': '2027 Funding Proposal (Only Barrier)',
+      'Funding Proposal': '2027 Funding Proposal (Barrier and Beach Cleaning)'
+    };
+    const mapViewLabel = label => mapViewNames[label] || label;
     const votingSettings = label => votingFeed?.proposals?.[label] || {
       version: '2026-10-v1', budget: label === barrierOnlyProposalLabel ? 150000 : 400000, businessContribution: 60000,
       rates: [{ building: .1, lot: .05 }, { building: .1, lot: .05 },
@@ -7573,8 +7579,8 @@
       if (votingMode()) {
         const key = donations.get(feature.id)?.payerKey;
         const vote = voteFor(key);
-        const color = { yes: '#16a34a', no: '#ef4444', pending: '#3b82f6' }[vote];
-        return { color, fillColor: color, weight: 1.5, opacity: .95, fillOpacity: .65,
+        const color = { yes: '#16a34a', no: '#ef4444', pending: '#fef08a' }[vote];
+        return { color: vote === 'pending' ? '#ca8a04' : color, fillColor: color, weight: 1.5, opacity: .95, fillOpacity: .65,
           dashArray: feature.properties.parentId ? '5 4' : null };
       }
       if (isPendingSet()) return {
@@ -7644,7 +7650,7 @@
         (sharedName && detail ? `<div><b>${is2026Set() ? 'Property name' : 'Detail name'}:</b> ${escapeHtml(detail.name)}</div>` : '') +
         recordedNames + donated + description +
         (isFullSet() && detail?.payerKey?.startsWith('lot:') ?
-          `<div><b>Vote:</b> ${votingFeed?.proposals?.[selectedContributionSet] ? voteLabel(voteFor(detail.payerKey)) : 'Results not loaded'}</div><button type="button" class="open-ballot" data-lot-id="${escapeHtml(feature.id)}">Vote on ${escapeHtml(selectedContributionSet)}</button>` : '') +
+          `<div><b>Vote:</b> ${votingFeed?.proposals?.[selectedContributionSet] ? voteLabel(voteFor(detail.payerKey)) : 'Results not loaded'}</div><button type="button" class="open-ballot" data-lot-id="${escapeHtml(feature.id)}">Vote on ${escapeHtml(mapViewLabel(selectedContributionSet))}</button>` : '') +
         (p.parentId ? `<div><small>Approximate boundary: map shape ${escapeHtml(p.parentLot)} divided into equal-area lots.</small></div>` : '') +
         `<small>${escapeHtml(p.layer)} · ${escapeHtml(feature.id)}</small>` +
         (isLot && canEdit ? `<form class="edit-lot-name" data-lot-id="${escapeHtml(feature.id)}"><input aria-label="Shared lot name" maxlength="120" value="${escapeHtml(sharedName || '')}" placeholder="Shared lot name"><button type="submit">Save name</button><button type="button" class="clear-lot-name">Clear name</button><small class="edit-lot-status" aria-live="polite"></small></form>` : ''));
@@ -8102,13 +8108,15 @@
     const contributionSets = L.control({ position: 'topright' });
     contributionSets.onAdd = () => {
       const box = L.DomUtil.create('div', 'legend display-options collapsible map-views');
-      const option = (label, checked = false, disabled = false) =>
-        `<label${disabled ? ' class="inactive"' : ''}><input type="radio" name="contribution-set" value="${escapeHtml(label)}"${checked ? ' checked' : ''}${disabled ? ' disabled' : ''}> ${escapeHtml(label)}</label>`;
+      const option = label => {
+        const enabled = label === barrierOnlyProposalLabel;
+        return `<label${enabled ? '' : ' class="inactive"'}><input type="radio" name="contribution-set" value="${escapeHtml(label)}"${enabled ? ' checked' : ' disabled'}> ${escapeHtml(mapViewLabel(label))}</label>`;
+      };
       box.innerHTML = '<h2>Map Views</h2>' + option('Barrier Purchase') +
         '<h3>Barrier Operations</h3>' +
-        ['2023 Contributions', '2024 Contributions', '2025 Contributions'].map(label => option(label, false, true)).join('') +
+        ['2023 Contributions', '2024 Contributions', '2025 Contributions'].map(option).join('') +
         option(barrierOnlyProposalLabel) +
-        '<h3>Barrier and Beach Operations</h3>' + option('2026 Contributions') + option('Funding Proposal', true) + option('Funding Proposal 2', false, true) +
+        '<h3>Barrier and Beach Operations</h3>' + option('2026 Contributions') + option('Funding Proposal') + option('Funding Proposal 2') +
         '<h3>Fees</h3>' + option('Fees Structure');
       L.DomEvent.disableClickPropagation(box);
       L.DomEvent.disableScrollPropagation(box);
@@ -8446,7 +8454,7 @@
       const amount = annual => `<strong>${escapeHtml(currency.format(annual))} / year</strong><small>${escapeHtml(currency.format(annual / 12))} / month</small>`;
       const committed = voteFor(detail.payerKey) === 'yes' ? detail.contributionAsk : 0;
       return `<form class="vote-form" data-payer="${escapeHtml(detail.payerKey)}" data-proposal="${escapeHtml(selectedContributionSet)}" data-version="${escapeHtml(settings.version)}">` +
-        `<b>Vote on ${escapeHtml(selectedContributionSet)}</b>` +
+        `<b>Vote on ${escapeHtml(mapViewLabel(selectedContributionSet))}</b>` +
         `<small>Version ${escapeHtml(settings.version)} · Budget ${escapeHtml(currency.format(settings.budget))}. Fees depend on how many lots vote Yes.</small>` +
         '<div class="vote-contributions">' +
         `<div><span>Contribution ask</span><span>${amount(detail.contributionAsk)}</span></div>` +
@@ -8455,7 +8463,7 @@
         `<div>Current vote: <b>${votingFeed?.proposals?.[selectedContributionSet] ? voteLabel(voteFor(detail.payerKey)) : 'Results not loaded'}</b></div>` +
         '<label>Your name<input name="representative" type="text" maxlength="100" autocomplete="name" required></label>' +
         '<label><input name="authorized" type="checkbox" required> I confirm that I am authorized to vote on behalf of this lot/building.</label>' +
-        `<fieldset><legend>Do you approve ${escapeHtml(selectedContributionSet)}?</legend><label><input type="radio" name="vote" value="yes" required> Yes — For</label><label><input type="radio" name="vote" value="no" required> No — Against</label></fieldset>` +
+        `<fieldset><legend>Do you approve ${escapeHtml(mapViewLabel(selectedContributionSet))}?</legend><label><input type="radio" name="vote" value="yes" required> Yes — For</label><label><input type="radio" name="vote" value="no" required> No — Against</label></fieldset>` +
         `<button type="submit"${ready ? '' : ' disabled'}>Submit vote</button>` +
         '<small>The latest submission for this lot replaces its previous vote. Your name is stored with the ballot; the public map shows the vote only.</small>' +
         `<small class="vote-message" aria-live="polite">${ready ? '' : 'Voting is unavailable until shared results are connected and loaded.'}</small></form>`;
@@ -8475,13 +8483,13 @@
         '<div id="voting-panel-details" class="voting-details">' +
         `<button type="button" class="voting-refresh"${!votingUrl || votingLoading ? ' disabled' : ''}>Refresh</button>` +
         (votingResultsVisible ? `<label class="voting-shortfall"><input type="checkbox" class="shortfall-toggle"${votingShortfallVisible ? ' checked' : ''}> Shortfall</label>` : '') +
-        (votingResultsVisible ? '<div><span class="swatch" style="background:#16a34a"></span> Yes · <span class="swatch" style="background:#ef4444"></span> No · <span class="swatch" style="background:#3b82f6"></span> Pending vote</div>' +
+        (votingResultsVisible ? '<div><span class="swatch" style="background:#16a34a"></span> Yes · <span class="swatch" style="background:#ef4444"></span> No · <span class="swatch" style="background:#fef08a"></span> Pending vote</div>' +
           (resultsReady ? `<div>Yes: ${counts.yes} · No: ${counts.no} · Pending: ${counts.pending}</div><small>Counts are voting lots; duplicate map drawings count once.</small>` : '') +
           '<div class="voting-funding-summary">' + contributorRow('Budget', currency.format(summary.budget)) +
           contributorRow('Voted for so far', resultsReady ? currency.format(summary.votedFor) : '—') +
           contributorRow('Shortfall', resultsReady ? currency.format(summary.shortfall) : '—', 'contributor fee-shortfall') +
           `<small>At published fees, plus ${escapeHtml(currency.format(summary.businessContribution))} fixed business contributions.</small></div>` : '') +
-        `<small class="voting-status" role="status">${escapeHtml(!votingUrl ? 'Shared voting is not connected. Blue lots are placeholders; no live results are available.' :
+        `<small class="voting-status" role="status">${escapeHtml(!votingUrl ? 'Shared voting is not connected. Yellow lots are placeholders; no live results are available.' :
           votingLoading ? 'Updating voting results…' : votingError || (votingFeed && !resultsReady ? 'Voting for this proposal requires an update to the storage deployment.' : resultsReady ? `Last updated ${new Date(votingFeed.generatedAt).toLocaleString()}. Auto-refresh every 30 seconds.` : 'Results not loaded.'))}</small></div>`;
     }
     function redrawVoting() {
@@ -8762,7 +8770,7 @@
       ({ donations, contributors, ownerSummary, dataRefreshed, donationDataReady, donationPlaceholder } = state);
       donations = expandSplitLots(donations);
       const title = document.getElementById('page-title');
-      title.textContent = label;
+      title.textContent = mapViewLabel(label);
       if (isPendingSet()) {
         const tag = document.createElement('span');
         tag.className = 'pending-tag';
@@ -8830,7 +8838,7 @@
               `<span${shortfallMode ? ' class="fee-shortfall"' : ''}>${shortfallMode ? escapeHtml(fee(shortfall)) : checked ? `<strong>${escapeHtml(fee(each))}</strong>` : votingMode() ? 'No Yes lots' : 'undefined'}</span></div>`;
           };
           fundingBox.innerHTML = '<h2>Fees ' + (votingMode() ? '· Yes votes' : '<button type="button" class="fees-edit-link" title="Edit Fees percentages (password required)">(edit)</button>') + '</h2>' +
-            `<small>${escapeHtml(proposal.label)} · Fees System 3 · USD · ${shortfallMode ? 'total annual shortfall per type (monthly equivalent)' : 'annual share per participating lot'}</small>` +
+            `<small>${escapeHtml(mapViewLabel(proposal.label))} · Fees System 3 · USD · ${shortfallMode ? 'total annual shortfall per type (monthly equivalent)' : 'annual share per participating lot'}</small>` +
             contributorRow('Property Type', shortfallMode ? 'Shortfall' : 'Annual (monthly)', 'contributor fees-header') +
             // A type with no checked lots has no share; its formula rate would only mislead.
             proposal.categories.map(feeTypeRow).join('') +
@@ -9068,7 +9076,7 @@
     overviewZoom = map.getZoom();
     map.setMinZoom(map.getZoom());
     map.setMaxBounds(map.getBounds().pad(0.15));
-    selectContributionSet('Funding Proposal');
+    selectContributionSet(barrierOnlyProposalLabel);
     void startSharedNames();
     loadLiveDonations();
     setInterval(() => { if (isFullSet() && !voteSubmitting) loadVotes(); }, 30000);
