@@ -8472,7 +8472,7 @@
       const form = ballotContent.querySelector('.vote-form');
       if (form) {
         ballotSession.name = form.elements.representative.value;
-        ballotSession.email = form.elements.email.value;
+        ballotSession.email = form.elements.email?.value || '';
         ballotSession.authorized = form.elements.authorized.checked;
         ballotSession.vote = form.elements.vote.value;
       }
@@ -8512,7 +8512,7 @@
       const form = ballotContent.querySelector('.vote-form');
       if (form && ballotSession) {
         form.elements.representative.value = ballotSession.name;
-        form.elements.email.value = ballotSession.email;
+        if (form.elements.email) form.elements.email.value = ballotSession.email;
         form.elements.authorized.checked = ballotSession.authorized;
         form.elements.vote.value = ballotSession.vote;
         form.querySelector('button[type="submit"]').disabled ||= voteSubmitting;
@@ -8599,7 +8599,8 @@
     function renderVoteForm(detail, label = selectedContributionSet) {
       const settings = votingSettings(label);
       const resultsReady = Boolean(votingFeed?.proposals?.[label]);
-      const ready = Boolean(votingUrl && resultsReady && !votingError && votingFeed?.features?.voteEmail === true);
+      const emailEnabled = votingFeed?.features?.voteEmail === true;
+      const ready = Boolean(votingUrl && resultsReady && !votingError);
       const amount = annual => `<strong>${escapeHtml(currency.format(annual))} / year</strong><small>${escapeHtml(currency.format(annual / 12))} / month</small>`;
       const committed = voteFor(detail.payerKey, label) === 'yes' ? detail.contributionAsk : 0;
       return `<form class="vote-form" data-payer="${escapeHtml(detail.payerKey)}" data-proposal="${escapeHtml(label)}" data-version="${escapeHtml(settings.version)}">` +
@@ -8612,11 +8613,11 @@
         '<small>For this lot at published annual fees. A Yes vote commits to the contribution ask; No or Pending means $0 committed. These are commitments, not payments received.</small></div>' +
         `<div>Current vote: <b>${resultsReady ? voteLabel(voteFor(detail.payerKey, label)) : 'Results not loaded'}</b></div>` +
         '<label>Your name<input name="representative" type="text" maxlength="100" autocomplete="name" required></label>' +
-        '<label>Email address<input name="email" type="email" maxlength="254" autocomplete="email" autocapitalize="none" spellcheck="false" required></label>' +
+        (emailEnabled ? '<label>Email address<input name="email" type="email" maxlength="254" autocomplete="email" autocapitalize="none" spellcheck="false" required></label>' : '') +
         '<label><input name="authorized" type="checkbox" required> I confirm that I am authorized to vote on behalf of this lot/building.</label>' +
         `<fieldset><legend>Do you approve ${escapeHtml(mapViewLabel(label))}?</legend><label><input type="radio" name="vote" value="yes" required> Yes — For</label><label><input type="radio" name="vote" value="no" required> No — Against</label></fieldset>` +
         `<button type="submit"${ready ? '' : ' disabled'}>Submit vote</button>` +
-        '<small>The latest submission for this lot replaces its previous vote. Your name and email are stored privately with the ballot; the public map shows the vote only.</small>' +
+        `<small>The latest submission for this lot replaces its previous vote. Your name${emailEnabled ? ' and email are' : ' is'} stored privately with the ballot; the public map shows the vote only.</small>` +
         `<small class="vote-message" aria-live="polite">${ready ? '' : 'Voting is unavailable until shared results are connected and loaded.'}</small></form>`;
     }
     function renderVotingPanel() {
@@ -8769,11 +8770,12 @@
       const form = event.target.closest?.('.vote-form');
       if (!form) return;
       event.preventDefault();
-      if (voteSubmitting || !votingFeed || !votingUrl || votingFeed.features?.voteEmail !== true) return;
+      if (voteSubmitting || !votingFeed || !votingUrl) return;
       const name = form.elements.representative.value.trim();
-      const email = form.elements.email.value.trim();
+      const emailEnabled = votingFeed.features?.voteEmail === true;
+      const email = emailEnabled ? form.elements.email.value.trim() : '';
       const message = form.querySelector('.vote-message');
-      if (!validVoteEmail(email)) {
+      if (emailEnabled && !validVoteEmail(email)) {
         message.textContent = 'Enter a valid email address, such as name@example.com.';
         form.elements.email.focus();
         return;
@@ -8783,7 +8785,7 @@
         return;
       }
       const data = { proposal: form.dataset.proposal, version: form.dataset.version,
-        payer: form.dataset.payer, name, email, authorized: true, vote: form.elements.vote.value };
+        payer: form.dataset.payer, name, ...(emailEnabled ? { email } : {}), authorized: true, vote: form.elements.vote.value };
       const session = ballotDialog.open && ballotSession?.payer === data.payer && ballotSession.proposal === data.proposal ? ballotSession : null;
       if (session) {
         captureBallotDraft();

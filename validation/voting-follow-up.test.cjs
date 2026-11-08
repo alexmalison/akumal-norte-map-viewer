@@ -310,5 +310,19 @@ const votes = () => sheets.get('Votes').rows.slice(1);
   assert.equal(submitStorage({ ...feedback, activityId: 'other-validation-id' }).ok, false);
   sheets.get('Activity').rows[0][0] = stale;
   assert.equal(JSON.stringify(publicFeed()).includes('Reason'), false);
+  // The previous deployment remains usable until the email-capable backend is installed.
+  open();
+  delete ui.votingFeed.features.voteEmail;
+  run('renderBallot()');
+  assert.doesNotMatch(content.innerHTML, /name="email"/);
+  assert.doesNotMatch(content.innerHTML, /<button type="submit" disabled/);
+  assert.match(content.innerHTML, /Voting Instructions/);
+  ui.fetch = async (_url, options) => {
+    const data = JSON.parse(options.body);
+    assert.equal(Object.hasOwn(data, 'email'), false);
+    return { ok: true, json: async () => ({ ok: true }) };
+  };
+  await vote('yes');
+  assert.equal(run('ballotSession.recorded'), true);
   console.log('Follow-up checks passed: Yes/No/incomplete flows, Escape/return, draft refresh, failure/retry, private logging, duplicate protection, validation, and proposal isolation.');
 })().catch(error => { console.error(error); process.exitCode = 1; });
