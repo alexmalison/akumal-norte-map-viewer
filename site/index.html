@@ -16,6 +16,8 @@
     .pending-tag { color: #b91c1c; font-size: .65em; }
     header { padding: 12px 18px; text-align: center; }
     header p { margin: 2px 0 0; font-size: 18px; color: #536372; }
+    header .header-instructions { margin-top: 4px; font-size: 14px; }
+    .header-instructions a { color: #245c83; }
     .map-tools { margin-top: 8px; padding-top: 6px; border-top: 1px solid #c9d2da; }
     .map-tools summary { cursor: pointer; }
     .map-tools span { display: block; margin-top: 5px; color: #536372; }
@@ -173,7 +175,7 @@
   </style>
 </head>
 <body>
-  <header><h1 id="page-title" aria-live="polite">2027 Funding Proposal (Barrier Only)</h1><p>HMB Sargassum Mitigation Project</p></header>
+  <header><h1 id="page-title" aria-live="polite">2027 Funding Proposal (Barrier Only)</h1><p>HMB Sargassum Project</p><p class="header-instructions"><a href="https://docs.google.com/document/d/1BKpQgmh-NBnJJP-32WBJ-a0J3PZxJmTbnAbogYK55To/edit?usp=sharing" target="_blank" rel="noopener noreferrer">Voting Instructions</a></p></header>
   <details id="map-tools" class="map-tools"><summary>Map data &amp; editing</summary><span id="data-status">157 lots · 9 region features</span><span id="sync-status" aria-live="polite">Loading shared names…</span><button id="refresh-donations" type="button" hidden>Refresh donations</button><button id="editor-button" type="button" hidden>Editor sign in</button><form id="editor-form" hidden><input id="editor-email" type="email" aria-label="Editor email" placeholder="Editor email" required><button type="submit">Send link</button></form></details>
   <div id="map" role="application" aria-label="Interactive map of Akumal Norte lots and regions"></div>
   <dialog id="voting-ballot" class="fees-editor" aria-labelledby="voting-ballot-title">
