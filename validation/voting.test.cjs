@@ -161,6 +161,7 @@ assert.match(unavailableBallot, /Contribution ask/);
 assert.match(unavailableBallot, /<span>Committed<\/span><span>Results not loaded/);
 context.votingFeed.proposals['Funding Proposal (Only Barrier)'] = run('votingSettings(barrierOnlyProposalLabel)');
 context.votingFeed.votes['Funding Proposal (Only Barrier)'] = {};
+context.votingFeed.features = { voteEmail: true };
 const availableBallot = run('renderVoteForm(activeProposal().eligible[0])');
 assert.doesNotMatch(availableBallot, /button type="submit" disabled/);
 assert.match(availableBallot, /Do you approve 2027 Funding Proposal \(Barrier Only\)/);
@@ -189,7 +190,7 @@ const sheet = {
     return {
       getValues: () => rows.slice(row - 1, row - 1 + height).map(r => r.slice(column - 1, column - 1 + width)),
       setNumberFormat() { return this; },
-      setValues(values) { values.forEach((r, i) => { rows[row - 1 + i] = [...r]; }); return this; }
+      setValues(values) { values.forEach((r, i) => { rows[row - 1 + i] ||= []; r.forEach((value, j) => { rows[row - 1 + i][column - 1 + j] = value; }); }); return this; }
     };
   }
 };
@@ -199,7 +200,7 @@ const activitySheet = { ...sheet, getLastRow: () => activityRows.length,
     return {
       getValues: () => activityRows.slice(row - 1, row - 1 + height).map(r => r.slice(column - 1, column - 1 + width)),
       setNumberFormat() { return this; },
-      setValues(values) { values.forEach((r, i) => { activityRows[row - 1 + i] = [...r]; }); return this; }
+      setValues(values) { values.forEach((r, i) => { activityRows[row - 1 + i] ||= []; r.forEach((value, j) => { activityRows[row - 1 + i][column - 1 + j] = value; }); }); return this; }
     };
   }
 };
@@ -218,7 +219,7 @@ const stored = code => vm.runInContext(code, storage);
 assert.deepEqual(Array.from(stored('[...ELIGIBLE]')).sort(), Array.from(run('activeProposal().eligible.map(r => r.payerKey)')).sort());
 stored('initializeVotingSheet()');
 const ballot = { proposal: 'Funding Proposal', version: '2026-10-v1', payer: 'lot:F24',
-  name: 'Test Representative', authorized: true, vote: 'yes' };
+  name: 'Test Representative', email: 'representative@example.com', authorized: true, vote: 'yes' };
 const post = fields => JSON.parse(storage.doPost({ postData: { contents: JSON.stringify({ ...ballot, ...fields }) } }).text);
 assert.equal(post({ authorized: false }).ok, false);
 assert.equal(post({ payer: 'lot:unknown' }).ok, false);

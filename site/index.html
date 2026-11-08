@@ -105,7 +105,11 @@
     .voting-status { display: block; margin-top: 6px; font-size: 12px; }
     .vote-form { display: grid; gap: 8px; margin-top: 10px; padding-top: 8px; border-top: 1px solid #c9d2da; }
     .vote-form label { display: block; }
-    .vote-form input[type="text"] { box-sizing: border-box; width: 100%; padding: 7px; }
+    .vote-form input[type="text"], .vote-form input[type="email"] { box-sizing: border-box; width: 100%; padding: 7px; }
+    .voting-instructions { display: grid; gap: 12px; margin-top: 12px; }
+    .voting-instructions ol { margin: 0; padding-left: 22px; }
+    .voting-instructions li { margin-bottom: 8px; }
+    .voting-instructions button { padding: 8px 12px; font: inherit; cursor: pointer; }
     .vote-form fieldset { margin: 0; padding: 6px; }
     .vote-form button { padding: 8px; font: inherit; cursor: pointer; }
     .vote-follow-up { display: grid; gap: 12px; margin-top: 14px; }
@@ -8440,6 +8444,26 @@
     function createActivityId() {
       return window.crypto?.randomUUID?.() || `${Date.now()}-${Math.random().toString(36).slice(2)}`;
     }
+    function validVoteEmail(value) {
+      if (typeof value !== 'string') return false;
+      const email = value.trim();
+      const parts = email.split('@');
+      if (email.length > 254 || parts.length !== 2 || !parts[0] || parts[0].length > 64) return false;
+      if (!parts[0].split('.').every(atom => /^[a-zA-Z0-9!#$%&'*+/=?^_`{|}~-]+$/.test(atom))) return false;
+      const labels = parts[1].split('.');
+      return labels.length >= 2 && labels.every(label => /^[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?$/.test(label)) &&
+        /^[a-zA-Z]/.test(labels[labels.length - 1]);
+    }
+    function renderVotingInstructions() {
+      return '<div class="voting-instructions"><p>The map shows each lot’s fair share of the cost to deploy and operate a sargassum barrier in Half Moon Bay for the 2027 Sargassum Season.</p>' +
+        '<p>The budget was developed by the HMB Sargassum Project and is being used by Vecinos de Akumal Norte to raise funds for a barrier operator of their choice. Owners authorized to spend on property management can indicate whether their lot will contribute.</p>' +
+        '<ol><li>Find your lot on the map or through <b>Browse lots &amp; contributors</b>, then select it to open its ballot.</li>' +
+        '<li>Review the contribution ask. Enter your name and email address, confirm that you are authorized to vote, and choose Yes or No.</li>' +
+        '<li>Click <b>Submit vote</b> and wait for confirmation that it has been recorded.</li>' +
+        '<li>Use the voting results button to show or hide the summary and lot colors.</li></ol>' +
+        '<p><a href="https://docs.google.com/document/d/1BKpQgmh-NBnJJP-32WBJ-a0J3PZxJmTbnAbogYK55To/edit?usp=sharing" target="_blank" rel="noopener noreferrer">Open the Voting Instructions document (new tab)</a></p>' +
+        '<button type="button" class="return-to-ballot">Return to ballot</button></div>';
+    }
     function barrierFollowUpEnabled(session = ballotSession) {
       return session?.proposal === barrierOnlyProposalLabel && votingFeed?.features?.barrierFollowUp === true;
     }
@@ -8448,6 +8472,7 @@
       const form = ballotContent.querySelector('.vote-form');
       if (form) {
         ballotSession.name = form.elements.representative.value;
+        ballotSession.email = form.elements.email.value;
         ballotSession.authorized = form.elements.authorized.checked;
         ballotSession.vote = form.elements.vote.value;
       }
@@ -8456,6 +8481,11 @@
     }
     function requestBallotClose() {
       if (voteSubmitting || ballotSession?.savingComment) return;
+      if (ballotSession?.stage === 'instructions') {
+        ballotSession.stage = 'ballot';
+        renderBallot();
+        return;
+      }
       if (barrierFollowUpEnabled() && ballotSession.stage === 'ballot' && !ballotSession.recorded) {
         captureBallotDraft();
         ballotSession.stage = 'incomplete';
@@ -8475,20 +8505,23 @@
       if (!detail) return;
       const feature = lotLayers.get(ballotLotId)?.feature;
       const name = feature && sharedNames.get(nameKey(feature)) || detail.name;
-      document.getElementById('voting-ballot-title').textContent = ballotTitle(detail, name);
-      ballotContent.innerHTML = ballotSession && ballotSession.stage !== 'ballot' ? renderBarrierFollowUp(ballotSession) :
+      document.getElementById('voting-ballot-title').textContent = ballotSession?.stage === 'instructions' ? 'Voting Instructions' : ballotTitle(detail, name);
+      ballotContent.innerHTML = ballotSession?.stage === 'instructions' ? renderVotingInstructions() :
+        ballotSession && ballotSession.stage !== 'ballot' ? renderBarrierFollowUp(ballotSession) :
         renderVoteForm(detail, ballotSession?.proposal || selectedContributionSet);
       const form = ballotContent.querySelector('.vote-form');
       if (form && ballotSession) {
         form.elements.representative.value = ballotSession.name;
+        form.elements.email.value = ballotSession.email;
         form.elements.authorized.checked = ballotSession.authorized;
         form.elements.vote.value = ballotSession.vote;
-        form.querySelector('button').disabled ||= voteSubmitting;
+        form.querySelector('button[type="submit"]').disabled ||= voteSubmitting;
         if (ballotSession.status) form.querySelector('.vote-message').textContent = ballotSession.status;
       }
       const close = document.getElementById('voting-ballot-close');
       close.disabled = voteSubmitting || Boolean(ballotSession?.savingComment);
-      close.textContent = ['no', 'incomplete'].includes(ballotSession?.stage) ? 'Close without commenting' : 'Close';
+      close.textContent = ballotSession?.stage === 'instructions' ? 'Return to ballot' :
+        ['no', 'incomplete'].includes(ballotSession?.stage) ? 'Close without commenting' : 'Close';
     }
     function openVotingBallot(featureId) {
       const detail = activeProposal()?.donations.get(featureId);
@@ -8497,7 +8530,7 @@
       ballotLotId = featureId;
       ballotContent.innerHTML = '';
       ballotSession = { proposal: selectedContributionSet, version: votingSettings(selectedContributionSet).version,
-        payer: detail.payerKey, name: '', authorized: false, vote: '', stage: 'ballot', recorded: false,
+        payer: detail.payerKey, name: '', email: '', authorized: false, vote: '', stage: 'ballot', recorded: false,
         comments: '', status: '', incompleteLogged: false, incompleteId: createActivityId(), commentId: null, voteActivityId: null };
       renderBallot();
       map.closePopup();
@@ -8530,7 +8563,9 @@
       session.incompleteError = false;
       try {
         await postVotingData({ action: 'activity', proposal: session.proposal, version: session.version,
-          payer: session.payer, name: session.incompleteName ??= session.name.trim(), event: 'vote_incomplete', comments: '', activityId: session.incompleteId });
+          payer: session.payer, name: session.incompleteName ??= session.name.trim(),
+          email: session.incompleteEmail ??= validVoteEmail(session.email) ? session.email.trim() : '',
+          event: 'vote_incomplete', comments: '', activityId: session.incompleteId });
         session.incompleteLogged = true;
       } catch (error) {
         session.incompleteError = true;
@@ -8542,6 +8577,12 @@
     }
     ballotContent.addEventListener('click', event => {
       if (ballotSession?.savingComment) return;
+      if (event.target.closest('.open-voting-instructions') && ballotSession?.stage === 'ballot' && !voteSubmitting) {
+        captureBallotDraft();
+        ballotSession.stage = 'instructions';
+        renderBallot();
+        ballotDialog.scrollTop = 0;
+      }
       if (event.target.closest('.return-to-ballot')) {
         captureBallotDraft();
         ballotSession.stage = 'ballot';
@@ -8558,11 +8599,12 @@
     function renderVoteForm(detail, label = selectedContributionSet) {
       const settings = votingSettings(label);
       const resultsReady = Boolean(votingFeed?.proposals?.[label]);
-      const ready = Boolean(votingUrl && resultsReady && !votingError);
+      const ready = Boolean(votingUrl && resultsReady && !votingError && votingFeed?.features?.voteEmail === true);
       const amount = annual => `<strong>${escapeHtml(currency.format(annual))} / year</strong><small>${escapeHtml(currency.format(annual / 12))} / month</small>`;
       const committed = voteFor(detail.payerKey, label) === 'yes' ? detail.contributionAsk : 0;
       return `<form class="vote-form" data-payer="${escapeHtml(detail.payerKey)}" data-proposal="${escapeHtml(label)}" data-version="${escapeHtml(settings.version)}">` +
         `<b>Vote on ${escapeHtml(mapViewLabel(label))}</b>` +
+        '<button type="button" class="open-voting-instructions">Voting Instructions</button>' +
         `<small>Version ${escapeHtml(settings.version)} · Budget ${escapeHtml(currency.format(settings.budget))}. Fees depend on how many lots vote Yes.</small>` +
         '<div class="vote-contributions">' +
         `<div><span>Contribution ask</span><span>${amount(detail.contributionAsk)}</span></div>` +
@@ -8570,10 +8612,11 @@
         '<small>For this lot at published annual fees. A Yes vote commits to the contribution ask; No or Pending means $0 committed. These are commitments, not payments received.</small></div>' +
         `<div>Current vote: <b>${resultsReady ? voteLabel(voteFor(detail.payerKey, label)) : 'Results not loaded'}</b></div>` +
         '<label>Your name<input name="representative" type="text" maxlength="100" autocomplete="name" required></label>' +
+        '<label>Email address<input name="email" type="email" maxlength="254" autocomplete="email" autocapitalize="none" spellcheck="false" required></label>' +
         '<label><input name="authorized" type="checkbox" required> I confirm that I am authorized to vote on behalf of this lot/building.</label>' +
         `<fieldset><legend>Do you approve ${escapeHtml(mapViewLabel(label))}?</legend><label><input type="radio" name="vote" value="yes" required> Yes — For</label><label><input type="radio" name="vote" value="no" required> No — Against</label></fieldset>` +
         `<button type="submit"${ready ? '' : ' disabled'}>Submit vote</button>` +
-        '<small>The latest submission for this lot replaces its previous vote. Your name is stored with the ballot; the public map shows the vote only.</small>' +
+        '<small>The latest submission for this lot replaces its previous vote. Your name and email are stored privately with the ballot; the public map shows the vote only.</small>' +
         `<small class="vote-message" aria-live="polite">${ready ? '' : 'Voting is unavailable until shared results are connected and loaded.'}</small></form>`;
     }
     function renderVotingPanel() {
@@ -8695,7 +8738,8 @@
       }
       // Keep an identical request ID for retries after a lost response.
       const event = session.stage === 'no' ? 'no_vote_comment' : 'incomplete_vote_comment';
-      const signature = JSON.stringify([event, comments]);
+      const email = validVoteEmail(session.email) ? session.email.trim() : '';
+      const signature = JSON.stringify([event, comments, session.name.trim(), email]);
       if (session.commentSignature !== signature) {
         session.commentId = createActivityId();
         session.commentSignature = signature;
@@ -8705,7 +8749,8 @@
       renderBallot();
       try {
         await postVotingData({ action: 'activity', proposal: session.proposal, version: session.version,
-          payer: session.payer, name: session.name.trim(), event, comments, activityId: session.commentId });
+          payer: session.payer, name: session.name.trim(), email,
+          event, comments, activityId: session.commentId });
         session.stage = 'feedback_saved';
       } catch (error) {
         session.status = `Could not save your comments: ${error.message}. Please try again.`;
@@ -8724,20 +8769,26 @@
       const form = event.target.closest?.('.vote-form');
       if (!form) return;
       event.preventDefault();
-      if (voteSubmitting || !votingFeed || !votingUrl) return;
+      if (voteSubmitting || !votingFeed || !votingUrl || votingFeed.features?.voteEmail !== true) return;
       const name = form.elements.representative.value.trim();
+      const email = form.elements.email.value.trim();
       const message = form.querySelector('.vote-message');
+      if (!validVoteEmail(email)) {
+        message.textContent = 'Enter a valid email address, such as name@example.com.';
+        form.elements.email.focus();
+        return;
+      }
       if (!name || !form.elements.authorized.checked || !['yes', 'no'].includes(form.elements.vote.value)) {
         message.textContent = 'Enter your name, confirm authorization, and choose Yes or No.';
         return;
       }
       const data = { proposal: form.dataset.proposal, version: form.dataset.version,
-        payer: form.dataset.payer, name, authorized: true, vote: form.elements.vote.value };
+        payer: form.dataset.payer, name, email, authorized: true, vote: form.elements.vote.value };
       const session = ballotDialog.open && ballotSession?.payer === data.payer && ballotSession.proposal === data.proposal ? ballotSession : null;
       if (session) {
         captureBallotDraft();
         session.version = data.version;
-        const signature = JSON.stringify([name, data.vote]);
+        const signature = JSON.stringify([name, email, data.vote]);
         if (session.voteSignature !== signature) {
           session.voteActivityId = createActivityId();
           session.voteSignature = signature;
@@ -8746,7 +8797,7 @@
         session.status = 'Recording your vote…';
       }
       voteSubmitting = true;
-      form.querySelector('button').disabled = true;
+      form.querySelector('button[type="submit"]').disabled = true;
       document.getElementById('voting-ballot-close').disabled = true;
       message.textContent = 'Recording your vote…';
       try {
@@ -8769,7 +8820,7 @@
         if (session) session.status = message.textContent;
       } finally {
         voteSubmitting = false;
-        form.querySelector('button').disabled = false;
+        form.querySelector('button[type="submit"]').disabled = false;
         document.getElementById('voting-ballot-close').disabled = false;
         if (session === ballotSession && ballotDialog.open) renderBallot();
       }
