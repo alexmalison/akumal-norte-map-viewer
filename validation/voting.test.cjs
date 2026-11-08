@@ -193,7 +193,18 @@ const sheet = {
     };
   }
 };
-const book = { getSheetByName: () => rows.length ? sheet : null, insertSheet: () => sheet };
+const activityRows = [];
+const activitySheet = { ...sheet, getLastRow: () => activityRows.length,
+  getRange(row, column, height, width) {
+    return {
+      getValues: () => activityRows.slice(row - 1, row - 1 + height).map(r => r.slice(column - 1, column - 1 + width)),
+      setNumberFormat() { return this; },
+      setValues(values) { values.forEach((r, i) => { activityRows[row - 1 + i] = [...r]; }); return this; }
+    };
+  }
+};
+const book = { getSheetByName: name => name === 'Votes' ? (rows.length ? sheet : null) : (activityRows.length ? activitySheet : null),
+  insertSheet: name => name === 'Votes' ? sheet : activitySheet };
 const output = text => ({ text, setMimeType() { return this; } });
 const storage = vm.createContext({
   PropertiesService: { getScriptProperties: () => ({ getProperty: () => 'test-sheet' }) },
@@ -346,16 +357,20 @@ console.log('Label checks passed: asks followed by Yes/No/Pending status, both p
 // Direct lot clicks open the existing ballot with the requested lot/name/category heading.
 const titleElement = { textContent: '' };
 const originalGetElement = context.document.getElementById;
-context.document.getElementById = id => id === 'voting-ballot-title' ? titleElement : originalGetElement(id);
+const ballotClose = {};
+context.document.getElementById = id => id === 'voting-ballot-title' ? titleElement :
+  id === 'voting-ballot-close' ? ballotClose : originalGetElement(id);
 context.ballotLotId = null;
-context.ballotContent = { innerHTML: '' };
+context.ballotSession = null;
+context.voteSubmitting = false;
+context.ballotContent = { innerHTML: '', querySelector: () => null, addEventListener() {} };
 context.lotLayers = new Map();
 context.sharedNames = new Map();
 let modalOpens = 0;
 let popupCloses = 0;
 context.ballotDialog = { open: false, showModal() { this.open = true; modalOpens++; } };
 context.map.closePopup = () => { popupCloses++; };
-const ballotHelpersStart = main.indexOf('function ballotTitle');
+const ballotHelpersStart = main.indexOf('function createActivityId');
 run(main.slice(ballotHelpersStart, main.indexOf("document.addEventListener('click', event => {", ballotHelpersStart)));
 for (const label of ['Funding Proposal', 'Funding Proposal (Only Barrier)']) {
   context.selectedContributionSet = label;
@@ -375,7 +390,7 @@ for (const label of ['Funding Proposal', 'Funding Proposal (Only Barrier)']) {
   run('openVotingBallot(targetLot)'); // Reopening an already open ballot must not throw.
 }
 assert.equal(modalOpens, 2);
-assert.equal(popupCloses, 4);
+assert.equal(popupCloses, 2);
 context.sharedNames.set(context.targetLot, 'Updated name');
 run('renderBallot()');
 assert.equal(titleElement.textContent, 'Lot G51: Updated name, Bay Building High Impact Zone');
